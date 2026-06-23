@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map style comparison</title>
+    <link href="https://unpkg.com/maplibre-gl@5/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          13px/1.4 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        color: #1a1a1a;
+      }
+      header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 8px 12px;
+        background: #fff;
+        border-bottom: 1px solid #ddd;
+      }
+      /* Centred in the bar regardless of the flexed items on either side. */
+      #center-controls {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #size-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: #666;
+      }
+      #size-controls input {
+        font: inherit;
+        width: 52px;
+        padding: 4px 6px;
+        border: 1px solid #bbb;
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+      /* Drop the native up/down spinners; they only eat horizontal space. */
+      #size-controls input::-webkit-inner-spin-button,
+      #size-controls input::-webkit-outer-spin-button {
+        appearance: none;
+        margin: 0;
+      }
+      #debug-toggle::before,
+      #inspect-toggle::before,
+      #diff-toggle::before {
+        display: inline-block;
+        margin-right: 6px;
+        width: 15px;
+        height: 15px;
+        line-height: 15px;
+        text-align: center;
+        border: 1px solid #bbb;
+        border-radius: 3px;
+        color: #666;
+        font-size: 11px;
+      }
+      #inspect-toggle::before {
+        content: "i";
+      }
+      #debug-toggle::before {
+        content: "d";
+      }
+      #diff-toggle::before {
+        content: "p";
+      }
+      #debug-toggle[data-on="true"],
+      #diff-toggle[data-on="true"] {
+        background: #1a1a1a;
+        color: #fff;
+        border-color: #1a1a1a;
+      }
+      header h1 {
+        font-size: 13px;
+        margin: 0;
+        font-weight: 600;
+      }
+      button,
+      select {
+        font: inherit;
+        padding: 4px 8px;
+        border: 1px solid #bbb;
+        cursor: pointer;
+      }
+      #tabs {
+        display: flex;
+        gap: 4px;
+      }
+      .tab {
+        background: #f2f2f2;
+        border: 1px solid #bbb;
+        border-bottom: none;
+        padding: 4px 12px;
+      }
+      .tab[aria-selected="true"] {
+        background: #fff;
+        font-weight: 600;
+      }
+      #zoom-readout {
+        margin-left: auto;
+        margin-right: 24px;
+        font-variant-numeric: tabular-nums;
+        color: #666;
+      }
+      .swatch {
+        width: 10px;
+        height: 10px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      #maps {
+        display: grid;
+        gap: 8px;
+        padding: 8px;
+        height: calc(100vh - 41px);
+      }
+      #maps[data-view="compare"] {
+        grid-template-columns: 1fr 1fr;
+      }
+      #maps[data-view="single"] {
+        grid-template-columns: 1fr;
+      }
+      /* When explicit dimensions are set, give the panel a fixed pixel size
+         and centre it within its (still full-size) grid cell. An unset axis
+         falls back to 100%, filling the cell, so setting only one dimension
+         pins that axis and leaves the other auto. The grid tracks themselves
+         stay stretched — only the panel shrinks — so centring works per cell.
+         The map fills the panel as usual. */
+      #maps[data-sized="true"] .panel {
+        width: var(--map-w, 100%);
+        height: var(--map-h, 100%);
+        place-self: center;
+      }
+      #maps[data-view="compare"] [data-panel="single"] {
+        display: none;
+      }
+      #maps[data-view="single"] [data-panel="a"],
+      #maps[data-view="single"] [data-panel="b"] {
+        display: none;
+      }
+      .panel {
+        position: relative;
+        min-height: 0;
+      }
+      .map {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ccc;
+      }
+      .map .maplibregl-canvas-container,
+      .map .maplibregl-canvas-container.maplibregl-interactive,
+      .map .maplibregl-canvas-container.maplibregl-interactive:active,
+      .map .maplibregl-canvas {
+        cursor: default;
+      }
+      /* The style selectors sit outside the maps, each anchored to the
+         bottom-left of the map it controls. #style-controls spans the maps'
+         width so its children can align to either column; the overlays inside
+         are positioned absolutely. Which ones show depends on the current
+         view, keyed off #maps via the sibling combinator below. */
+      #style-controls {
+        position: fixed;
+        left: 12px;
+        right: 8px;
+        bottom: 12px;
+        z-index: 4;
+        pointer-events: none;
+      }
+      .style-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        pointer-events: auto;
+      }
+      .style-overlay label {
+        color: #666;
+      }
+      /* In compare view the right selector anchors to the right map: two equal
+         columns split at 50%, so its left edge starts just past the midline. */
+      .style-overlay[data-panel="b"] {
+        left: calc(50% + 12px);
+      }
+      /* Compare view shows the left/right selectors; single shows just one. */
+      #maps[data-view="compare"] ~ #style-controls [data-panel="single"] {
+        display: none;
+      }
+      #maps[data-view="single"] ~ #style-controls [data-panel="a"],
+      #maps[data-view="single"] ~ #style-controls [data-panel="b"] {
+        display: none;
+      }
+      .feature-tooltip {
+        position: absolute;
+        z-index: 5;
+        max-width: 320px;
+        max-height: 40vh;
+        overflow: auto;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 6px 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        /* Hovering tooltips are click-through so they don't block the map; a
+           pinned one (below) becomes interactive so its scrollbar is reachable. */
+        pointer-events: none;
+        font-size: 12px;
+      }
+      /* A pinned tooltip is frozen in place and interactive: catch pointer
+         events so it can be hovered and scrolled, and mark it with an accent
+         border so it reads as pinned rather than a passing hover. */
+      .feature-tooltip[data-pinned="true"] {
+        pointer-events: auto;
+        border-color: #1a1a1a;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+      }
+      .feature-tooltip[hidden] {
+        display: none;
+      }
+      /* Semi-transparent arrow echoing the OS cursor onto the map(s) the
+         pointer isn't physically over, so the hovered point is visible on
+         every synced map. Positioned by its tip (top-left of the SVG). */
+      .cursor-marker {
+        position: absolute;
+        z-index: 6;
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+        opacity: 0.55;
+        background: no-repeat
+          url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M2 1 L2 16 L6 12 L9 18 L11.5 17 L8.5 11 L14 11 Z" fill="black" stroke="white" stroke-width="1" stroke-linejoin="round"/></svg>');
+      }
+      .cursor-marker[hidden] {
+        display: none;
+      }
+      .feature-tooltip .empty {
+        color: #999;
+      }
+      .feature-tooltip .feature {
+        padding: 2px 0;
+      }
+      .feature-tooltip .feature + .feature {
+        border-top: 1px solid #eee;
+        margin-top: 2px;
+      }
+      .feature-tooltip .layer {
+        font-weight: 600;
+      }
+      .feature-tooltip .source {
+        color: #999;
+      }
+      .feature-tooltip .prop {
+        color: #444;
+      }
+      .feature-tooltip .prop .key {
+        color: #888;
+      }
+      #diff-panel {
+        position: fixed;
+        right: 12px;
+        bottom: 12px;
+        width: 280px;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+      #diff-panel .title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: #666;
+        margin-bottom: 4px;
+      }
+      #diff-panel .title #diff-stat {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-variant-numeric: tabular-nums;
+      }
+      #diff-canvas {
+        width: 100%;
+        display: block;
+        image-rendering: pixelated;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div id="tabs" role="tablist">
+        <button class="tab" role="tab" data-view="single" aria-selected="false">single</button>
+        <button class="tab" role="tab" data-view="compare" aria-selected="true">compare</button>
+      </div>
+      <div id="center-controls">
+        <button id="randomise">randomise view</button>
+        <button id="inspect-toggle" data-mode="data">inspect data</button>
+        <button id="debug-toggle" data-on="false">debug</button>
+        <button id="diff-toggle" data-on="true">diff</button>
+        <span id="size-controls">
+          <label for="size-w">w</label>
+          <input id="size-w" type="number" min="0" step="1" placeholder="auto" />
+          <label for="size-h">h</label>
+          <input id="size-h" type="number" min="0" step="1" placeholder="auto" />
+        </span>
+      </div>
+      <div id="zoom-readout">z —</div>
+    </header>
+    <div id="maps" data-view="compare">
+      <div class="panel" data-panel="a">
+        <div class="map" id="map-a"></div>
+        <div class="feature-tooltip" data-tooltip hidden></div>
+        <div class="cursor-marker" data-cursor hidden></div>
+      </div>
+      <div class="panel" data-panel="b">
+        <div class="map" id="map-b"></div>
+        <div class="feature-tooltip" data-tooltip hidden></div>
+        <div class="cursor-marker" data-cursor hidden></div>
+      </div>
+      <div class="panel" data-panel="single">
+        <div class="map" id="map-single"></div>
+        <div class="feature-tooltip" data-tooltip hidden></div>
+        <div class="cursor-marker" data-cursor hidden></div>
+      </div>
+    </div>
+    <div id="style-controls">
+      <div class="style-overlay" data-panel="a">
+        <label for="style-a">left</label>
+        <select id="style-a"></select>
+      </div>
+      <div class="style-overlay" data-panel="b">
+        <label for="style-b">right</label>
+        <select id="style-b"></select>
+      </div>
+      <div class="style-overlay" data-panel="single">
+        <label for="style-single">style</label>
+        <select id="style-single"></select>
+      </div>
+    </div>
+    <div id="diff-panel">
+      <div class="title">
+        <span>pixel diff overlay</span>
+        <span id="diff-stat">
+          <span class="swatch" id="diff-swatch"></span>
+          <span id="diff-match">no comparison yet</span>
+        </span>
+      </div>
+      <canvas id="diff-canvas"></canvas>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

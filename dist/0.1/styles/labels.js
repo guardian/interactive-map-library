@@ -1,18 +1,15 @@
-import { compose } from "../core/style.js"
+import { merge, style } from "../core/style.js"
 import { color } from "../tokens/colors.js"
 import { font, fontSize, haloWidth, haloBlur } from "../tokens/typography.js"
-import { tTextField, tFadeIn, tSize, tSwap, tFade } from "./utils/traits.js"
+import { pTextField, pFadeIn, pSize, pSwap, pFade } from "./utils/partials.js"
 import { zInterp, zStep } from "./utils/zoom.js"
 
 const { sm, md, lg } = fontSize
 
-/**
- * @import { Trait, TraitFn } from "./utils/traits.js"
- * @import { StyleFn } from "../core/style.js"
- */
+/** @import { Partial, PartialFn } from "./utils/partials.js" */
 
-/** @type {Trait} */
-const tPlaceLabel = {
+/** @type {Partial} */
+const pPlaceLabel = {
   type: "symbol",
   layout: {
     "text-anchor": "center",
@@ -27,9 +24,9 @@ const tPlaceLabel = {
   },
 }
 
-/** @type {TraitFn} */
-const tRegularSans = (size = sm) =>
-  compose(tPlaceLabel, {
+/** @type {PartialFn} */
+const pRegularSans = (size = sm) =>
+  merge(pPlaceLabel, {
     layout: {
       "text-font": font.sansRegular,
       "text-letter-spacing": 0.05,
@@ -37,9 +34,9 @@ const tRegularSans = (size = sm) =>
     },
   })
 
-/** @type {TraitFn} */
-const tBoldSans = (size = md) =>
-  compose(tPlaceLabel, {
+/** @type {PartialFn} */
+const pBoldSans = (size = md) =>
+  merge(pPlaceLabel, {
     layout: {
       "text-font": font.sansBold,
       "text-letter-spacing": 0.05,
@@ -47,9 +44,9 @@ const tBoldSans = (size = md) =>
     },
   })
 
-/** @type {TraitFn} */
-const tHeadlineBold = (size = lg) =>
-  compose(tPlaceLabel, {
+/** @type {PartialFn} */
+const pHeadlineBold = (size = lg) =>
+  merge(pPlaceLabel, {
     layout: {
       "text-font": font.headlineBold,
       "text-letter-spacing": 0.08,
@@ -57,9 +54,9 @@ const tHeadlineBold = (size = lg) =>
     },
   })
 
-/** @type {TraitFn} */
-const tEgyptianRegular = (size = sm) =>
-  compose(tPlaceLabel, {
+/** @type {PartialFn} */
+const pEgyptianRegular = (size = sm) =>
+  merge(pPlaceLabel, {
     layout: {
       "text-font": font.egyptianRegular,
       "text-letter-spacing": 0.12,
@@ -71,9 +68,9 @@ const tEgyptianRegular = (size = sm) =>
  * @param {string} iconImage
  * @param {number} iconSize
  * @param {{ min?: number, max?: number }} [options]
- * @returns {Trait}
+ * @returns {Partial}
  */
-const tLabelPoint = (iconImage, iconSize, { min, max } = {}) => {
+const pLabelPoint = (iconImage, iconSize, { min, max } = {}) => {
   const offset = [iconSize, iconSize * 0.4]
 
   const gate = (inside, outside) => {
@@ -104,8 +101,8 @@ const tLabelPoint = (iconImage, iconSize, { min, max } = {}) => {
   }
 }
 
-/** @type {Trait} */
-const tLineLabel = {
+/** @type {Partial} */
+const pLineLabel = {
   type: "symbol",
   layout: {
     "text-font": font.sansRegular,
@@ -124,9 +121,8 @@ const tLineLabel = {
   },
 }
 
-/** @type {StyleFn} */
-export const HighwayNameOther = (theme) =>
-  compose(tLineLabel, tTextField(theme.textField), {
+export const HighwayNameOther = style((theme) => [
+  merge(pLineLabel, pTextField(theme.textField), {
     id: "highway_name_other",
     minzoom: 15,
     layout: {
@@ -135,21 +131,21 @@ export const HighwayNameOther = (theme) =>
     paint: {
       "text-color": color.placeLabel,
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const HighwayNameMotorway = (theme) =>
-  compose(tLineLabel, tTextField(theme.textField), {
+export const HighwayNameMotorway = style((theme) => [
+  merge(pLineLabel, pTextField(theme.textField), {
     id: "highway_name_motorway",
     minzoom: 13,
     paint: {
       "text-color": color.placeLabel,
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const PlaceParkLabel = (theme) =>
-  compose(tRegularSans(), tTextField(theme.textField), {
+export const PlaceParkLabel = style((theme) => [
+  merge(pRegularSans(), pTextField(theme.textField), {
     id: "label_place_park",
     minzoom: 15,
     layout: {
@@ -157,65 +153,65 @@ export const PlaceParkLabel = (theme) =>
       "symbol-placement": "point",
       "text-letter-spacing": 0.1,
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const PlaceOther = (theme) =>
-  compose(
-    tSwap({
-      0: tRegularSans(),
-      15: tBoldSans(),
+export const PlaceOther = style((theme) => [
+  merge(
+    pSwap({
+      0: pRegularSans(),
+      15: pBoldSans(),
     }),
-    tTextField(theme.textField),
+    pTextField(theme.textField),
     {
       id: "label_place_other",
       minzoom: 14,
     },
-  )
+  ),
+])
 
-/** @type {StyleFn} */
-export const PlaceSuburb = (theme) =>
-  compose(
-    tSwap({
-      0: tRegularSans(),
-      14: tBoldSans(),
-      15: tHeadlineBold(),
+export const PlaceSuburb = style((theme) => [
+  merge(
+    pSwap({
+      0: pRegularSans(),
+      14: pBoldSans(),
+      15: pHeadlineBold(),
     }),
-    tTextField(theme.textField),
-    tFadeIn("text-opacity", 12, 13),
+    pTextField(theme.textField),
+    pFadeIn("text-opacity", 12, 13),
     {
       id: "label_place_suburb",
     },
-  )
+  ),
+])
 
-/** @type {StyleFn} */
-export const PlaceVillage = (theme) => {
-  const typography = tSwap({ 0: tRegularSans(), 14: tBoldSans() })
+export const PlaceVillage = style((theme) => {
+  const typography = pSwap({ 0: pRegularSans(), 14: pBoldSans() })
 
-  return compose(typography, tTextField(theme.textField), tFadeIn("text-opacity", 12, 14), {
-    id: "label_place_village",
-  })
-}
-
-/** @type {StyleFn} */
-export const PlaceTown = (theme) => {
-  return compose(
-    tSwap({
-      0: tRegularSans(),
-      13: tBoldSans(),
-      14: tHeadlineBold(),
+  return [
+    merge(typography, pTextField(theme.textField), pFadeIn("text-opacity", 12, 14), {
+      id: "label_place_village",
     }),
-    tTextField(theme.textField),
-    tFadeIn("text-opacity", 10, 11),
+  ]
+})
+
+export const PlaceTown = style((theme) => [
+  merge(
+    pSwap({
+      0: pRegularSans(),
+      13: pBoldSans(),
+      14: pHeadlineBold(),
+    }),
+    pTextField(theme.textField),
+    pFadeIn("text-opacity", 10, 11),
     {
       id: "label_place_town",
     },
-  )
-}
+  ),
+])
 
-/** @type {StyleFn} */
-export const WaterName = (theme) =>
-  compose(tTextField(theme.textField), tFadeIn("text-opacity", 2, 4, { max: 0.75 }), {
+export const WaterName = style((theme) => [
+  merge(pTextField(theme.textField), pFadeIn("text-opacity", 2, 4, { max: 0.75 }), {
     id: "label_water_name",
     type: "symbol",
     layout: {
@@ -229,54 +225,54 @@ export const WaterName = (theme) =>
       "text-halo-color": color.halo,
       "text-halo-width": haloWidth.thick,
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const WaterNameLineMinor = (theme) =>
-  compose(tLineLabel, tTextField(theme.textField), tFadeIn("text-opacity", 10, 13, { min: 0.25 }), {
+export const WaterNameLineMinor = style((theme) => [
+  merge(pLineLabel, pTextField(theme.textField), pFadeIn("text-opacity", 10, 13, { min: 0.25 }), {
     id: "label_water_name_line_minor",
     paint: {
       "text-color": color.blueWaterLabel,
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const WaterNameLineMajor = (theme) =>
-  compose(tLineLabel, tTextField(theme.textField), {
+export const WaterNameLineMajor = style((theme) => [
+  merge(pLineLabel, pTextField(theme.textField), {
     id: "label_water_name_line_major",
     maxzoom: 14,
     minzoom: 5,
     paint: {
       "text-color": color.blueWaterLabel,
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const PlaceCity = (theme) =>
-  compose(
-    tSwap({
-      0: tRegularSans(),
-      11: tBoldSans(sm),
-      12: tBoldSans(md),
-      13: tHeadlineBold(),
+export const PlaceCity = style((theme) => [
+  merge(
+    pSwap({
+      0: pRegularSans(),
+      11: pBoldSans(sm),
+      12: pBoldSans(md),
+      13: pHeadlineBold(),
     }),
-    tTextField(theme.textField),
-    tFadeIn("text-opacity", 6, 7),
+    pTextField(theme.textField),
+    pFadeIn("text-opacity", 6, 7),
     {
       maxzoom: 14,
       id: "label_place_city",
     },
-  )
+  ),
+])
 
-/** @type {StyleFn} */
-export const PlaceState = (theme) =>
-  compose(
-    tSwap({
-      0: tEgyptianRegular(),
-      6: tEgyptianRegular(sm + 1),
+export const PlaceState = style((theme) => [
+  merge(
+    pSwap({
+      0: pEgyptianRegular(),
+      6: pEgyptianRegular(sm + 1),
     }),
-    tTextField(theme.textField),
-    tFade("text-opacity", { in: [5, 7], out: [7, 8] }),
+    pTextField(theme.textField),
+    pFade("text-opacity", { in: [5, 7], out: [7, 8] }),
     {
       id: "label_place_state",
       maxzoom: 13,
@@ -284,57 +280,58 @@ export const PlaceState = (theme) =>
         "text-letter-spacing": 0.12,
       },
     },
-  )
+  ),
+])
 
 // TODO: is this actually used anywhere?
-/** @type {StyleFn} */
-export const PlaceIsland = (theme) =>
-  compose(tRegularSans(), tTextField(theme.textField), tSize({ 0: sm, 2: sm, 4: md }, 1.4), {
+export const PlaceIsland = style((theme) => [
+  merge(pRegularSans(), pTextField(theme.textField), pSize({ 0: sm, 2: sm, 4: md }, 1.4), {
     id: "label_place_island",
     maxzoom: 10,
     paint: {
       "text-opacity": zInterp({ 2: 0.5, 4: 1, 8: 1, 10: 0 }),
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const PlaceCityLarge = (theme) =>
-  compose(
-    tSwap({
-      0: tRegularSans(),
-      9: tBoldSans(md),
-      12: tHeadlineBold(),
+export const PlaceCityLarge = style((theme) => [
+  merge(
+    pSwap({
+      0: pRegularSans(),
+      9: pBoldSans(md),
+      12: pHeadlineBold(),
     }),
-    tTextField(theme.textField),
-    tLabelPoint("circle-12", 0.5, { max: 9 }),
-    tFadeIn("text-opacity", 4, 5),
+    pTextField(theme.textField),
+    pLabelPoint("circle-12", 0.5, { max: 9 }),
+    pFadeIn("text-opacity", 4, 5),
     {
       maxzoom: 13,
       id: "label_place_city_large",
     },
-  )
+  ),
+])
 
-/** @type {StyleFn} */
-export const PlaceCapital = (theme) =>
-  compose(
-    tSwap({
-      0: tBoldSans(),
-      12: tHeadlineBold(),
+export const PlaceCapital = style((theme) => [
+  merge(
+    pSwap({
+      0: pBoldSans(),
+      12: pHeadlineBold(),
     }),
-    tTextField(theme.textField),
-    tLabelPoint("square-12", 0.625, { max: 12 }),
-    tFadeIn("text-opacity", 4, 5),
-    tSize({ 4: sm, 8: md, 12: lg }),
+    pTextField(theme.textField),
+    pLabelPoint("square-12", 0.625, { max: 12 }),
+    pFadeIn("text-opacity", 4, 5),
+    pSize({ 4: sm, 8: md, 12: lg }),
     {
       maxzoom: 13,
       id: "label_place_capital",
     },
-  )
+  ),
+])
 
-/** @type {Trait} */
-const tLabelCountry = compose(
-  tSwap({ 0: tEgyptianRegular(), 6: tHeadlineBold() }),
-  tFade("text-opacity", { out: [8, 9] }),
+/** @type {Partial} */
+const pLabelCountry = merge(
+  pSwap({ 0: pEgyptianRegular(), 6: pHeadlineBold() }),
+  pFade("text-opacity", { out: [8, 9] }),
   {
     layout: {
       "symbol-z-order": "auto",
@@ -342,36 +339,26 @@ const tLabelCountry = compose(
   },
 )
 
-/** @type {StyleFn} */
-export const PlaceCountryOther = (theme) =>
-  compose(tLabelCountry, tTextField(theme.textField), tSize({ 0: sm, 4: sm, 6: md }, 2), {
+export const PlaceCountryOther = style((theme) => [
+  merge(pLabelCountry, pTextField(theme.textField), pSize({ 0: sm, 4: sm, 6: md }, 2), {
     id: "label_place_country_other",
     maxzoom: 8,
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const PlaceCountryMinor = (theme) =>
-  compose(
-    tLabelCountry,
-    tTextField(theme.textField),
-    tSize({ 0: sm, 4: sm + 1, 6: md, 7: lg }, 1.6),
-    {
-      id: "label_place_country_minor",
-      maxzoom: 10,
-    },
-  )
+export const PlaceCountryMinor = style((theme) => [
+  merge(pLabelCountry, pTextField(theme.textField), pSize({ 0: sm, 4: sm + 1, 6: md, 7: lg }, 1.6), {
+    id: "label_place_country_minor",
+    maxzoom: 10,
+  }),
+])
 
-/** @type {StyleFn} */
-export const PlaceCountryMajor = (theme) =>
-  compose(
-    tLabelCountry,
-    tTextField(theme.textField),
-    tSize({ 0: sm, 4: sm + 1, 6: md, 7: lg }, 1.2),
-    {
-      id: "label_place_country_major",
-      maxzoom: 12,
-      layout: {
-        "text-allow-overlap": true,
-      },
+export const PlaceCountryMajor = style((theme) => [
+  merge(pLabelCountry, pTextField(theme.textField), pSize({ 0: sm, 4: sm + 1, 6: md, 7: lg }, 1.2), {
+    id: "label_place_country_major",
+    maxzoom: 12,
+    layout: {
+      "text-allow-overlap": true,
     },
-  )
+  }),
+])

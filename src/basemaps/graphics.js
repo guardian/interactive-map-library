@@ -1,8 +1,8 @@
-import { Stylesheet } from "../core/stylesheet.js"
+import { buildGlStyle, casingsFirst } from "../core/build.js"
 import { f, any } from "../core/filter/openmaptiles.js"
 import * as s from "../styles/index.js"
 
-const { defaults, group, layer, build } = new Stylesheet({
+const furniture = {
   version: 8,
   name: "Graphics",
   glyphs: "https://interactive.guim.co.uk/maptiles/fonts/{fontstack}/{range}.pbf",
@@ -25,202 +25,203 @@ const { defaults, group, layer, build } = new Stylesheet({
       maxzoom: 10,
     },
   },
-})
+}
 
-layer(s.Background)
+const omt = { source: "openmaptiles", theme: { textField: ["name:en", "name_en", "name"] } }
+const landcover = { ...omt, sourceLayer: "landcover" }
+const water = { ...omt, sourceLayer: "water" }
+const transport = { ...omt, sourceLayer: "transportation" }
+const boundary = { ...omt, sourceLayer: "boundary" }
 
-defaults({
-  source: "openmaptiles",
-  theme: { textField: ["name:en", "name_en", "name"] },
-})
+const landcoverLayers = [
+  s.LanduseResidential.apply({
+    ...omt,
+    sourceLayer: "landuse",
+    filter: f.polygon().cls("residential"),
+  }),
+  s.LandcoverIce.apply({ ...landcover, filter: f.cls("ice") }),
+  s.LandcoverGrass.apply({ ...landcover, filter: f.cls("grass") }),
+  s.LandcoverWood.apply({ ...landcover, filter: f.cls("wood") }),
+]
 
-// Landuse & landcover -------------------------------------------------------
+const reliefSource = { source: "terrain", sourceLayer: "relief" }
 
-layer(s.LanduseResidential, {
-  sourceLayer: "landuse",
-  filter: f.polygon().cls("residential"),
-})
+const reliefs = [
+  s.Mountains1.apply({ ...reliefSource, filter: f.is("shadow", 1) }),
+  s.Mountains2.apply({ ...reliefSource, filter: f.is("shadow", 2) }),
+  s.Mountains3.apply({
+    ...reliefSource,
+    filter: f.is("shadow", 3).isNot("source_id", 2598, 4847, 4851),
+  }),
+  s.Mountains4.apply({ ...reliefSource, filter: f.is("shadow", 4).isNot("source_id", 4848, 4852) }),
+  s.Mountains5.apply({ ...reliefSource, filter: f.is("shadow", 5).isNot("source_id", 4849) }),
+  s.Mountains6.apply({ ...reliefSource, filter: f.is("shadow", 6) }),
+]
 
-group({ sourceLayer: "landcover" }).within((layer) => {
-  layer(s.LandcoverIce, { filter: f.cls("ice") })
-  layer(s.LandcoverGrass, { filter: f.cls("grass") })
-  layer(s.LandcoverWood, { filter: f.cls("wood") })
-})
-
-// Relief --------------------------------------------------------------------
-
-group({ source: "terrain", sourceLayer: "relief" }).within((layer) => {
-  layer(s.Mountains1, { filter: f.is("shadow", 1) })
-  layer(s.Mountains2, { filter: f.is("shadow", 2) })
-  layer(s.Mountains3, { filter: f.is("shadow", 3).isNot("source_id", 2598, 4847, 4851) })
-  layer(s.Mountains4, { filter: f.is("shadow", 4).isNot("source_id", 4848, 4852) })
-  layer(s.Mountains5, { filter: f.is("shadow", 5).isNot("source_id", 4849) })
-  layer(s.Mountains6, { filter: f.is("shadow", 6) })
-})
-
-// Water ---------------------------------------------------------------------
-
-layer(s.Waterway, { sourceLayer: "waterway", filter: f.line() })
-
-group({ sourceLayer: "water" }).within((layer) => {
-  layer(s.WaterOutline, { filter: f.polygon().clsNot("swimming_pool") })
-  layer(s.Water, { filter: f.polygon().clsNot("swimming_pool") })
-  layer(s.Ocean, { filter: f.cls("ocean") })
-})
-
-// Roads ---------------------------------------------------------------------
+const waterLayers = [
+  s.Waterway.apply({ ...omt, sourceLayer: "waterway", filter: f.line() }),
+  s.Water.apply({ ...water, filter: f.polygon().clsNot("swimming_pool") }),
+  s.Ocean.apply({ ...water, filter: f.cls("ocean") }),
+]
 
 const trunkOrUsState = any(f.cls("trunk", "trunk_construction"), f.is("network", "us-state"))
 
-layer(s.BridgePlatform, { sourceLayer: "transportation", filter: f.polygon().cls("bridge") })
+const majorTunnel = f
+  .line()
+  .tunnel()
+  .cls(
+    "secondary",
+    "secondary_construction",
+    "tertiary",
+    "tertiary_construction",
+    "primary",
+    "primary_construction",
+    "trunk",
+    "trunk_construction",
+  )
 
-// NOTE: these are invisible in the graphics style reference
-// const aeroway = group({ sourceLayer: "aeroway" });
-// aeroway(AerowayArea, { filter: f.polygon().cls("runway", "taxiway") });
-// aeroway(AerowayTaxiway, { filter: f.line().cls("taxiway") });
-// aeroway(AerowayRunway, { filter: f.line().cls("runway") });
-
-group({ sourceLayer: "transportation" }).within((layer) => {
-  const majorTunnel = f
-    .line()
-    .tunnel()
-    .cls(
-      "secondary",
-      "secondary_construction",
-      "tertiary",
-      "tertiary_construction",
-      "primary",
-      "primary_construction",
-      "trunk",
-      "trunk_construction",
-    )
-
-  layer(s.TunnelMinorCasing, { filter: f.line().tunnel().cls("minor", "minor_construction") })
-  layer(s.TunnelMinor, { filter: f.line().tunnel().cls("minor", "minor_construction") })
-  layer(s.TunnelMajorCasing, { filter: majorTunnel })
-  layer(s.TunnelMajor, { filter: majorTunnel })
-  layer(s.TunnelMotorwayCasing, {
+const tunnels = [
+  s.TunnelMinor.apply({
+    ...transport,
+    filter: f.line().tunnel().cls("minor", "minor_construction"),
+  }),
+  s.TunnelMajor.apply({ ...transport, filter: majorTunnel }),
+  s.TunnelMotorway.apply({
+    ...transport,
     filter: f.line().tunnel().cls("motorway", "motorway_construction"),
-  })
-  layer(s.TunnelMotorway, {
-    filter: f.line().tunnel().cls("motorway", "motorway_construction"),
-  })
+  }),
+]
 
-  layer(s.RoadMinorCasing, { filter: f.line().notTunnel().cls("minor", "minor_construction") })
-  layer(s.RoadService, { filter: f.line().notTunnel().cls("service", "service_construction") })
-  layer(s.RoadSecondaryTertiaryCasing, {
+const surfaceRoads = [
+  s.RoadService.apply({
+    ...transport,
+    filter: f.line().notTunnel().cls("service", "service_construction"),
+  }),
+
+  casingsFirst(
+    s.RoadMinor.apply({
+      ...transport,
+      filter: f.line().notTunnel().cls("minor", "minor_construction"),
+    }),
+    s.RoadSecondaryTertiary.apply({
+      ...transport,
+      filter: f
+        .line()
+        .notTunnel()
+        .cls("secondary", "secondary_construction", "tertiary", "tertiary_construction"),
+    }),
+    s.RoadPrimary.apply({
+      ...transport,
+      filter: f.line().notTunnel().cls("primary", "primary_construction"),
+    }),
+    s.RoadTrunk.apply({ ...transport, filter: f.line().notTunnel().where(trunkOrUsState) }),
+    s.MotorwayRamp.apply({
+      ...transport,
+      filter: f.line().notTunnel().cls("motorway", "motorway_construction").ramp(),
+    }),
+    s.Motorway.apply({
+      ...transport,
+      filter: f.line().notTunnel().cls("motorway", "motorway_construction").notRamp(),
+    }),
+  ),
+]
+
+const railways = [
+  s.Railway.apply({ ...transport, filter: f.cls("rail").notTunnel() }),
+
+  s.Railway.apply({ ...transport, filter: f.cls("transit").notTunnel() }).map((layer) => ({
+    ...layer,
+    id: layer.id.replace("railway", "railway-transit"),
+  })),
+]
+
+const roads = [
+  s.BridgePlatform.apply({ ...transport, filter: f.polygon().cls("bridge") }),
+  tunnels,
+  surfaceRoads,
+  railways,
+]
+
+const buildings = [
+  s.Building.apply({
+    ...omt,
+    sourceLayer: "building",
+    filter: any(f.gte("layer", 0), f.hasNot("layer")),
+  }),
+]
+
+const bridges = [
+  s.BridgeWaterway.apply({ ...omt, sourceLayer: "waterway", filter: f.line().bridge() }),
+]
+
+const boundaries = [
+  s.BoundaryCountry.apply({ ...boundary, filter: f.is("admin_level", 2).is("maritime", 0) }),
+]
+
+const waterLabels = [
+  s.WaterNameLineMinor.apply({
+    ...omt,
+    sourceLayer: "waterway",
+    filter: f.line().notTunnel().clsNot("stream"),
+  }),
+  s.WaterNameLineMajor.apply({ ...omt, sourceLayer: "water_name", filter: f.line() }),
+  s.WaterName.apply({ ...omt, sourceLayer: "water_name", filter: f.point().clsNot("lake", "bay") }),
+]
+
+const highwayLabels = [
+  s.HighwayNameOther.apply({
+    ...omt,
+    sourceLayer: "transportation_name",
+    filter: f.line().cls("trunk", "primary", "secondary"),
+  }),
+  s.HighwayNameMotorway.apply({
+    ...omt,
+    sourceLayer: "transportation_name",
+    filter: f.line().cls("motorway", "motorway_construction"),
+  }),
+]
+
+const place = { ...omt, sourceLayer: "place" }
+
+const placeLabels = [
+  s.PlaceOther.apply({
+    ...place,
     filter: f
-      .line()
-      .notTunnel()
-      .cls("secondary", "secondary_construction", "tertiary", "tertiary_construction"),
-  })
-  layer(s.RoadTrunkCasing, { filter: f.line().notTunnel().where(trunkOrUsState) })
-  layer(s.MotorwayRampCasing, {
-    filter: f.line().notTunnel().cls("motorway", "motorway_construction").ramp(),
-  })
-  layer(s.MotorwayCasing, {
-    filter: f.line().notTunnel().cls("motorway", "motorway_construction").notRamp(),
-  })
-
-  // Surface roads exclude tunnels; each tunnel is drawn once by its dedicated
-  // tunnel layer above, beneath every road.
-  layer(s.RoadMinor, { filter: f.line().notTunnel().cls("minor", "minor_construction") })
-  layer(s.RoadSecondaryTertiary, {
+      .point()
+      .clsNot("city", "suburb", "town", "village", "province", "country", "state", "continent"),
+  }),
+  s.PlaceSuburb.apply({ ...place, filter: f.point().cls("suburb").lte("rank", 16) }),
+  s.PlaceVillage.apply({ ...place, filter: f.point().cls("village") }),
+  s.PlaceTown.apply({ ...place, filter: f.point().cls("town").lte("rank", 13) }),
+  s.PlaceCity.apply({
+    ...place,
     filter: f
-      .line()
-      .notTunnel()
-      .cls("secondary", "secondary_construction", "tertiary", "tertiary_construction"),
-  })
-  layer(s.RoadPrimary, {
-    filter: f.line().notTunnel().cls("primary", "primary_construction"),
-  })
-  layer(s.RoadTrunk, { filter: f.line().notTunnel().where(trunkOrUsState) })
-  layer(s.MotorwayRamp, {
-    filter: f.line().notTunnel().cls("motorway", "motorway_construction").ramp(),
-  })
-  layer(s.Motorway, {
-    filter: f.line().notTunnel().cls("motorway", "motorway_construction").notRamp(),
-  })
-
-  layer(s.Railway, { id: "railway", filter: f.cls("rail").notTunnel() })
-  layer(s.RailwayDash, { id: "railway-dash", filter: f.cls("rail").notTunnel() })
-
-  layer(s.Railway, { id: "railway-transit", filter: f.cls("transit").notTunnel() })
-  layer(s.RailwayDash, { id: "railway-transit-dash", filter: f.cls("transit").notTunnel() })
-})
-
-// Buildings -----------------------------------------------------------------
-
-layer(s.Building, {
-  sourceLayer: "building",
-  filter: any(f.gte("layer", 0), f.hasNot("layer")),
-})
-
-// Bridges -------------------------------------------------------------------
-
-group({ sourceLayer: "waterway" }).within((layer) => {
-  layer(s.BridgeWaterwayCasing, { filter: f.line().bridge() })
-  layer(s.BridgeWaterway, { filter: f.line().bridge() })
-})
-
-// Boundaries ----------------------------------------------------------------
-
-group({ sourceLayer: "boundary" }).within((layer) => {
-  // NOTE: Datawrapper lets us add/remove this specifically
-  // layer(s.BoundaryState, { filter: f.is("admin_level", 4).isNot("maritime", 1) })
-  layer(s.BoundaryCountry, { filter: f.is("admin_level", 2).is("maritime", 0) })
-})
-
-// Labels --------------------------------------------------------------------
-
-layer(s.WaterNameLineMinor, {
-  sourceLayer: "waterway",
-  filter: f.line().notTunnel().clsNot("stream"),
-})
-
-layer(s.WaterNameLineMajor, { sourceLayer: "water_name", filter: f.line() })
-
-layer(s.WaterName, {
-  sourceLayer: "water_name",
-  filter: f.point().clsNot("lake", "bay"),
-})
-
-group({ sourceLayer: "transportation_name" }).within((layer) => {
-  layer(s.HighwayNameOther, { filter: f.line().cls("trunk", "primary", "secondary") })
-  layer(s.HighwayNameMotorway, { filter: f.line().cls("motorway", "motorway_construction") })
-})
-
-group({ sourceLayer: "place", filter: f.point() }).within((layer) => {
-  layer(s.PlaceOther, {
-    filter: f.clsNot(
-      "city",
-      "suburb",
-      "town",
-      "village",
-      "province",
-      "country",
-      "state",
-      "continent",
-    ),
-  })
-
-  layer(s.PlaceSuburb, { filter: f.cls("suburb").lte("rank", 16) })
-  layer(s.PlaceVillage, { filter: f.cls("village") })
-  layer(s.PlaceTown, { filter: f.cls("town").lte("rank", 13) })
-
-  layer(s.PlaceCity, {
-    filter: f
+      .point()
       .cls("city")
       .isNot("capital", 2)
       .gte("rank", 4)
       .isNot("name", "City of Westminster", "City of London"),
-  })
+  }),
+  s.PlaceCityLarge.apply({
+    ...place,
+    filter: f.point().isNot("capital", 2).lte("rank", 3).cls("city"),
+  }),
+  s.PlaceCapital.apply({ ...place, filter: f.point().is("capital", 2).cls("city") }),
+  s.PlaceState.apply({ ...place, filter: f.point().cls("state").lte("rank", 1) }),
+  s.PlaceCountryMinor.apply({ ...place, filter: f.point().cls("country").gte("rank", 2) }),
+  s.PlaceCountryMajor.apply({ ...place, filter: f.point().lte("rank", 1).cls("country") }),
+]
 
-  layer(s.PlaceCityLarge, { filter: f.isNot("capital", 2).lte("rank", 3).cls("city") })
-  layer(s.PlaceCapital, { filter: f.is("capital", 2).cls("city") })
-  layer(s.PlaceState, { filter: f.cls("state").lte("rank", 1) })
-  layer(s.PlaceCountryMinor, { filter: f.cls("country").gte("rank", 2) })
-  layer(s.PlaceCountryMajor, { filter: f.lte("rank", 1).cls("country") })
-})
-
-export const graphics = build()
+export const graphics = buildGlStyle(furniture, [
+  s.Background.apply(),
+  landcoverLayers,
+  reliefs,
+  waterLayers,
+  roads,
+  buildings,
+  bridges,
+  boundaries,
+  waterLabels,
+  highwayLabels,
+  placeLabels,
+])

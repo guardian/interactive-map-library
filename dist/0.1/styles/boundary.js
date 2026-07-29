@@ -1,22 +1,18 @@
-import { compose } from "../core/style.js"
+import { merge, style } from "../core/style.js"
 import { color } from "../tokens/colors.js"
-import { tFade, tFadeIn } from "./utils/traits.js"
+import { pFadeIn } from "./utils/partials.js"
 import { zInterp } from "./utils/zoom.js"
 
-/**
- * @import { Trait } from "./utils/traits.js"
- * @import { StyleFn } from "../core/style.js"
- */
+/** @import { Partial } from "./utils/partials.js" */
 
-/** @type {Trait} */
-const tBoundaryLine = {
+/** @type {Partial} */
+const pBoundaryLine = {
   type: "line",
   layout: { "line-cap": "round", "line-join": "round" },
 }
 
-/** @type {StyleFn} */
-export const BoundaryState = () =>
-  compose(tBoundaryLine, tFadeIn("line-opacity", 2, 4, { min: 0, max: 0.625 }), {
+export const BoundaryState = style(() => [
+  merge(pBoundaryLine, pFadeIn("line-opacity", 2, 4, { min: 0, max: 0.625 }), {
     id: "boundary_state",
     maxzoom: 8,
     paint: {
@@ -24,11 +20,11 @@ export const BoundaryState = () =>
       "line-color": color.boundaryState,
       "line-dasharray": zInterp({ 0: [4, 3], 12: [6, 4] }),
     },
-  })
+  }),
+])
 
-/** @type {StyleFn} */
-export const BoundaryCountry = () =>
-  compose(tBoundaryLine, {
+export const BoundaryCountry = style(() => [
+  merge(pBoundaryLine, {
     id: "boundary_country",
     maxzoom: 8,
     paint: {
@@ -36,4 +32,5 @@ export const BoundaryCountry = () =>
       "line-width": zInterp({ 0: 0.5, 5: 1, 7: 1.5 }),
       "line-blur": 1,
     },
-  })
+  }),
+])

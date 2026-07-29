@@ -132,7 +132,7 @@ export class Filter {
 // expression: a Filter builder is compiled (an empty one yielding `undefined`),
 // a raw array passes through, and `undefined` stays `undefined`. Callers that
 // know they hold a real filter (`where`, `and`) never see the empty case; the
-// one caller that accepts an absent filter (`makeLayer`) relies on it.
+// callers that accept an absent filter (`bindLayer`, `combineFilters`) rely on it.
 /**
  * @param {Filter|Expression} [value]
  * @returns {Expression|undefined}

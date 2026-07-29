@@ -1179,7 +1179,7 @@
           30.6046511627907
         ]
       },
-      "id": "road_minor-casing",
+      "id": "road_service",
       "minzoom": 5,
       "source": "protomaps",
       "source-layer": "roads",
@@ -1208,7 +1208,7 @@
           "minor_road"
         ],
         [
-          "!=",
+          "==",
           [
             "get",
             "kind_detail"
@@ -1240,7 +1240,7 @@
           30.6046511627907
         ]
       },
-      "id": "road_service",
+      "id": "road_minor-casing",
       "minzoom": 5,
       "source": "protomaps",
       "source-layer": "roads",
@@ -1269,7 +1269,7 @@
           "minor_road"
         ],
         [
-          "==",
+          "!=",
           [
             "get",
             "kind_detail"
@@ -1344,6 +1344,69 @@
               "tertiary"
             ]
           ]
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "id": "road_primary-casing",
+      "minzoom": 12,
+      "paint": {
+        "line-color": [
+          "step",
+          [
+            "zoom"
+          ],
+          "#c0c0c0",
+          11,
+          "#bbbbbb"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.4
+          ],
+          [
+            "zoom"
+          ],
+          4,
+          0.17889570552147238,
+          13,
+          2.761904761904762,
+          18,
+          32.637362637362635
+        ]
+      },
+      "source": "protomaps",
+      "source-layer": "roads",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "!",
+          [
+            "has",
+            "is_tunnel"
+          ]
+        ],
+        [
+          "==",
+          [
+            "get",
+            "kind_detail"
+          ],
+          "primary"
         ]
       ]
     },

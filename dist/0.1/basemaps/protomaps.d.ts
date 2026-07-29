@@ -1,5 +1,5 @@
 export const protomaps: {
-    layers: import("../core/style.js").ResolvedLayer[];
+    layers: any[];
     sources: any;
     metadata: any;
     sprite: string;

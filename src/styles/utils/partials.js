@@ -4,25 +4,25 @@ import { zInterp, zStep } from "./zoom.js"
 
 /**
  * A re-usable chunk of layer style — the public {@link Style} in its internal
- * authoring role. Traits are an authoring convenience for composing styles; they
- * are not part of the library's public surface.
+ * authoring role. Partials are an authoring convenience for composing styles;
+ * they are not part of the library's public surface.
  *
- * @typedef {Style} Trait
+ * @typedef {Style} Partial
  */
 
 /**
- * A function that produces a {@link Trait} from arguments, for styles
+ * A function that produces a {@link Partial} from arguments, for styles
  * parameterised at the call site (zoom levels, theme, icon, etc.).
  *
- * @callback TraitFn
+ * @callback PartialFn
  * @param {...any} args
- * @returns {Trait}
+ * @returns {Partial}
  */
 
 /**
  * Creates a zoom-interpolated `text-size` layout property.
  *
- * For example, `tSize({ 4: 10, 12: 14 })` returns:
+ * For example, `pSize({ 4: 10, 12: 14 })` returns:
  *
  * ```js
  * {
@@ -30,9 +30,9 @@ import { zInterp, zStep } from "./zoom.js"
  * }
  * ```
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tSize = (stops, base) => ({
+export const pSize = (stops, base) => ({
   layout: { "text-size": zInterp(stops, base) },
 })
 
@@ -55,17 +55,17 @@ export const tSize = (stops, base) => ({
  * the element is invisible. When "text-opacity" is given, an identical
  * "icon-opacity" ramp is emitted also.
  *
- * For example, `tFade("fill-opacity", { in: [5, 9], out: [10, 12] })` fades in
+ * For example, `pFade("fill-opacity", { in: [5, 9], out: [10, 12] })` fades in
  * over 5→9, holds, then out over 10→12, with `minzoom: 5` and `maxzoom: 12`.
  *
  * @param {string} prop
  * @param {{ in?: FadeRange, out?: FadeRange }} config
- * @returns {Trait}
+ * @returns {Partial}
  */
-export const tFade = (prop, { in: fadeIn, out: fadeOut } = {}) => {
+export const pFade = (prop, { in: fadeIn, out: fadeOut } = {}) => {
   /** @type {Record<number, number>} */
   const stops = {}
-  /** @type {Trait} */
+  /** @type {Partial} */
   const bounds = {}
   let base
 
@@ -96,30 +96,30 @@ export const tFade = (prop, { in: fadeIn, out: fadeOut } = {}) => {
 
 /**
  * Fades the given property *in* between the given zoom levels. Shorthand for
- * {@link tFade} with an `in` range; the default floor is 0.5.
+ * {@link pFade} with an `in` range; the default floor is 0.5.
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tFadeIn = (prop, from, to, opts = {}) =>
-  tFade(prop, { in: [from, to, { min: 0.5, ...opts }] })
+export const pFadeIn = (prop, from, to, opts = {}) =>
+  pFade(prop, { in: [from, to, { min: 0.5, ...opts }] })
 
 /**
  * Fades the given property *out* between the given zoom levels. Shorthand for
- * {@link tFade} with an `out` range; the default floor is 0, so the element
+ * {@link pFade} with an `out` range; the default floor is 0, so the element
  * disappears completely.
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tFadeOut = (prop, from, to, opts = {}) =>
-  tFade(prop, { out: [from, to, { min: 0, ...opts }] })
+export const pFadeOut = (prop, from, to, opts = {}) =>
+  pFade(prop, { out: [from, to, { min: 0, ...opts }] })
 
 /**
  * Creates a `text-field` layout property from a property name or array of names.
  * Multiple names are coalesced in order; a pre-built expression array is passed through.
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tTextField = (textField) => {
+export const pTextField = (textField) => {
   if (textField === undefined) {
     return {}
   }
@@ -140,39 +140,39 @@ export const tTextField = (textField) => {
 }
 
 /**
- * Swaps whole traits by zoom, hard-stepping at each band's zoom. Given
- * `{ zoom: trait }` stops, every `layout`/`paint` property appearing in any
+ * Swaps whole partials by zoom, hard-stepping at each band's zoom. Given
+ * `{ zoom: partial }` stops, every `layout`/`paint` property appearing in any
  * band becomes a `zStep` selecting that band's value (or `undefined` where a
  * band omits it) at and above the band's zoom. Static keys like `type` are
  * taken as-is from whichever band sets them last.
  *
- * Bands are expected to be complete traits, so a property present in one band
+ * Bands are expected to be complete partials, so a property present in one band
  * and absent in another genuinely means "unset there" rather than "inherit".
  *
  * @example
  * ```js
- * tSwap({ 0: tTypography("regularSans"), 14: tTypography("boldSans") })
+ * pSwap({ 0: pTypography("regularSans"), 14: pTypography("boldSans") })
  * // regularSans below z14, boldSans at/above, stepping each property.
  * ```
  *
  * @param {Record<number, Style>} stops
- * @returns {Trait}
+ * @returns {Partial}
  */
-export const tSwap = (stops) => {
+export const pSwap = (stops) => {
   const bands = Object.keys(stops)
     .map(Number)
     .sort((a, b) => a - b)
-    .map((zoom) => ({ zoom, trait: stops[zoom] }))
+    .map((zoom) => ({ zoom, partial: stops[zoom] }))
 
-  /** @type {Trait} */
+  /** @type {Partial} */
   const swapped = {}
 
   for (const block of ["layout", "paint"]) {
     /** @type {Set<string>} */
     const props = new Set()
 
-    for (const { trait } of bands) {
-      Object.keys(trait[block] ?? {}).forEach((prop) => props.add(prop))
+    for (const { partial } of bands) {
+      Object.keys(partial[block] ?? {}).forEach((prop) => props.add(prop))
     }
 
     if (props.size === 0) {
@@ -186,7 +186,7 @@ export const tSwap = (stops) => {
       // expression when dropped straight into a `step`, their first element
       // parsed as a bogus function name — so wrap them as literals.
       const valueAt = (band) => {
-        const value = band.trait[block]?.[prop]
+        const value = band.partial[block]?.[prop]
         return Array.isArray(value) ? ["literal", value] : value
       }
 
@@ -200,8 +200,8 @@ export const tSwap = (stops) => {
   }
 
   // Static keys (eg. `type`) aren't zoom-varying; last band to set one wins.
-  for (const { trait } of bands) {
-    for (const [key, value] of Object.entries(trait)) {
+  for (const { partial } of bands) {
+    for (const [key, value] of Object.entries(partial)) {
       if (key === "layout" || key === "paint") {
         continue
       }

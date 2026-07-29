@@ -626,6 +626,24 @@
       ]
     },
     {
+      "id": "ocean-outline",
+      "type": "line",
+      "paint": {
+        "line-color": "#aed6ea",
+        "line-width": 2
+      },
+      "source": "openmaptiles",
+      "source-layer": "water",
+      "filter": [
+        "==",
+        [
+          "get",
+          "class"
+        ],
+        "ocean"
+      ]
+    },
+    {
       "type": "fill",
       "paint": {
         "fill-color": "#dbebf7",
@@ -1233,66 +1251,6 @@
           30.6046511627907
         ]
       },
-      "id": "road_minor-casing",
-      "minzoom": 5,
-      "source": "openmaptiles",
-      "source-layer": "transportation",
-      "filter": [
-        "all",
-        [
-          "==",
-          [
-            "geometry-type"
-          ],
-          "LineString"
-        ],
-        [
-          "!=",
-          [
-            "get",
-            "brunnel"
-          ],
-          "tunnel"
-        ],
-        [
-          "in",
-          [
-            "get",
-            "class"
-          ],
-          [
-            "literal",
-            [
-              "minor",
-              "minor_construction"
-            ]
-          ]
-        ]
-      ]
-    },
-    {
-      "type": "line",
-      "layout": {
-        "line-cap": "round",
-        "line-join": "round"
-      },
-      "paint": {
-        "line-color": "rgba(0, 0, 0, 0)",
-        "line-width": [
-          "interpolate",
-          [
-            "exponential",
-            1.8
-          ],
-          [
-            "zoom"
-          ],
-          13,
-          0.8742857142857143,
-          18,
-          30.6046511627907
-        ]
-      },
       "id": "road_service",
       "minzoom": 5,
       "source": "openmaptiles",
@@ -1325,6 +1283,66 @@
             [
               "service",
               "service_construction"
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "rgba(0, 0, 0, 0)",
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.8
+          ],
+          [
+            "zoom"
+          ],
+          13,
+          0.8742857142857143,
+          18,
+          30.6046511627907
+        ]
+      },
+      "id": "road_minor-casing",
+      "minzoom": 5,
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "brunnel"
+          ],
+          "tunnel"
+        ],
+        [
+          "in",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "literal",
+            [
+              "minor",
+              "minor_construction"
             ]
           ]
         ]
@@ -1389,6 +1407,76 @@
               "secondary_construction",
               "tertiary",
               "tertiary_construction"
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "type": "line",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "id": "road_primary-casing",
+      "minzoom": 12,
+      "paint": {
+        "line-color": [
+          "step",
+          [
+            "zoom"
+          ],
+          "#c0c0c0",
+          11,
+          "#bbbbbb"
+        ],
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.4
+          ],
+          [
+            "zoom"
+          ],
+          4,
+          0.17889570552147238,
+          13,
+          2.761904761904762,
+          18,
+          32.637362637362635
+        ]
+      },
+      "source": "openmaptiles",
+      "source-layer": "transportation",
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type"
+          ],
+          "LineString"
+        ],
+        [
+          "!=",
+          [
+            "get",
+            "brunnel"
+          ],
+          "tunnel"
+        ],
+        [
+          "in",
+          [
+            "get",
+            "class"
+          ],
+          [
+            "literal",
+            [
+              "primary",
+              "primary_construction"
             ]
           ]
         ]

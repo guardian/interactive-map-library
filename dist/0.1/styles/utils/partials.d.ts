@@ -1,23 +1,23 @@
 /** @import { Style } from "../../core/style.js" */
 /**
  * A re-usable chunk of layer style — the public {@link Style} in its internal
- * authoring role. Traits are an authoring convenience for composing styles; they
- * are not part of the library's public surface.
+ * authoring role. Partials are an authoring convenience for composing styles;
+ * they are not part of the library's public surface.
  *
- * @typedef {Style} Trait
+ * @typedef {Style} Partial
  */
 /**
- * A function that produces a {@link Trait} from arguments, for styles
+ * A function that produces a {@link Partial} from arguments, for styles
  * parameterised at the call site (zoom levels, theme, icon, etc.).
  *
- * @callback TraitFn
+ * @callback PartialFn
  * @param {...any} args
- * @returns {Trait}
+ * @returns {Partial}
  */
 /**
  * Creates a zoom-interpolated `text-size` layout property.
  *
- * For example, `tSize({ 4: 10, 12: 14 })` returns:
+ * For example, `pSize({ 4: 10, 12: 14 })` returns:
  *
  * ```js
  * {
@@ -25,47 +25,47 @@
  * }
  * ```
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tSize: TraitFn;
-export function tFade(prop: string, { in: fadeIn, out: fadeOut }?: {
+export const pSize: PartialFn;
+export function pFade(prop: string, { in: fadeIn, out: fadeOut }?: {
     in?: FadeRange;
     out?: FadeRange;
-}): Trait;
+}): Partial;
 /**
  * Fades the given property *in* between the given zoom levels. Shorthand for
- * {@link tFade} with an `in` range; the default floor is 0.5.
+ * {@link pFade} with an `in` range; the default floor is 0.5.
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tFadeIn: TraitFn;
+export const pFadeIn: PartialFn;
 /**
  * Fades the given property *out* between the given zoom levels. Shorthand for
- * {@link tFade} with an `out` range; the default floor is 0, so the element
+ * {@link pFade} with an `out` range; the default floor is 0, so the element
  * disappears completely.
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tFadeOut: TraitFn;
+export const pFadeOut: PartialFn;
 /**
  * Creates a `text-field` layout property from a property name or array of names.
  * Multiple names are coalesced in order; a pre-built expression array is passed through.
  *
- * @type {TraitFn}
+ * @type {PartialFn}
  */
-export const tTextField: TraitFn;
-export function tSwap(stops: Record<number, Style>): Trait;
+export const pTextField: PartialFn;
+export function pSwap(stops: Record<number, Style>): Partial;
 /**
  * A re-usable chunk of layer style — the public {@link Style} in its internal
- * authoring role. Traits are an authoring convenience for composing styles; they
- * are not part of the library's public surface.
+ * authoring role. Partials are an authoring convenience for composing styles;
+ * they are not part of the library's public surface.
  */
-export type Trait = Style;
+export type Partial = Style;
 /**
- * A function that produces a {@link Trait} from arguments, for styles
+ * A function that produces a {@link Partial} from arguments, for styles
  * parameterised at the call site (zoom levels, theme, icon, etc.).
  */
-export type TraitFn = (...args: any[]) => Trait;
+export type PartialFn = (...args: any[]) => Partial;
 /**
  * A fade range: the two zoom levels to fade across, plus an optional config
  * object. `min`/`max` set the ramp's floor and ceiling, `base` its curve.

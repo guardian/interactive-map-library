@@ -11,7 +11,7 @@ const pBoundaryLine = {
   layout: { "line-cap": "round", "line-join": "round" },
 }
 
-export const BoundaryState = style(() => [
+export const BoundaryState = style("BoundaryState", () => [
   merge(pBoundaryLine, pFadeIn("line-opacity", 2, 4, { min: 0, max: 0.625 }), {
     id: "boundary_state",
     maxzoom: 8,
@@ -23,7 +23,7 @@ export const BoundaryState = style(() => [
   }),
 ])
 
-export const BoundaryCountry = style(() => [
+export const BoundaryCountry = style("BoundaryCountry", () => [
   merge(pBoundaryLine, {
     id: "boundary_country",
     maxzoom: 8,

@@ -82,7 +82,7 @@ const aerowayWidths = {
 /** The casing colour shared by the major roads, deepening a step at z11. */
 const majorRoadCasingColor = zStep(color.roadCasing, { 11: color.roadCasingStrong })
 
-export const Path = style(() => [
+export const Path = style("Path", () => [
   merge(pRoundLine, pFadeIn("line-opacity", 14, 15), {
     id: "road_path",
     minzoom: 14,
@@ -113,7 +113,7 @@ const pTunnelFill = {
   paint: { "line-color": zStep("#e8e8e8", { 14: color.pathFill }) },
 }
 
-export const TunnelMinor = style(() => [
+export const TunnelMinor = style("TunnelMinor", () => [
   merge(pTunnelCasing, pFadeIn("line-opacity", 12, 13), {
     id: "tunnel_minor-casing",
     minzoom: 12,
@@ -128,7 +128,7 @@ export const TunnelMinor = style(() => [
   }),
 ])
 
-export const TunnelMajor = style(() => [
+export const TunnelMajor = style("TunnelMajor", () => [
   merge(pTunnelCasing, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
     id: "tunnel_major-casing",
     paint: { "line-width": tunnelCasings.major },
@@ -141,7 +141,7 @@ export const TunnelMajor = style(() => [
   }),
 ])
 
-export const TunnelMotorway = style(() => [
+export const TunnelMotorway = style("TunnelMotorway", () => [
   merge(pTunnelCasing, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
     id: "tunnel_motorway-casing",
     minzoom: 5,
@@ -158,7 +158,7 @@ export const TunnelMotorway = style(() => [
 
 // A casing-shaped fill with no visible casing of its own; drawn among the
 // surface-road casings so minor roads read continuously at junctions.
-export const RoadService = style(() => [
+export const RoadService = style("RoadService", () => [
   merge(pRoundLine, pStructuralCasing, {
     id: "road_service",
     minzoom: 5,
@@ -166,7 +166,7 @@ export const RoadService = style(() => [
   }),
 ])
 
-export const RoadMinor = style(() => [
+export const RoadMinor = style("RoadMinor", () => [
   merge(pRoundLine, pStructuralCasing, {
     id: "road_minor-casing",
     minzoom: 5,
@@ -183,7 +183,7 @@ export const RoadMinor = style(() => [
   }),
 ])
 
-export const RoadSecondaryTertiary = style(() => [
+export const RoadSecondaryTertiary = style("RoadSecondaryTertiary", () => [
   merge(pRoundLine, pStructuralCasing, {
     id: "road_secondary_tertiary-casing",
     minzoom: 6,
@@ -199,7 +199,7 @@ export const RoadSecondaryTertiary = style(() => [
   }),
 ])
 
-export const RoadPrimary = style(() => [
+export const RoadPrimary = style("RoadPrimary", () => [
   merge(pRoundLine, {
     id: "road_primary-casing",
     minzoom: 12,
@@ -217,7 +217,7 @@ export const RoadPrimary = style(() => [
   }),
 ])
 
-export const RoadTrunk = style(() => [
+export const RoadTrunk = style("RoadTrunk", () => [
   merge(pRoundLine, {
     id: "road_trunk-casing",
     minzoom: 12,
@@ -235,7 +235,7 @@ export const RoadTrunk = style(() => [
   }),
 ])
 
-export const MotorwayRamp = style(() => [
+export const MotorwayRamp = style("MotorwayRamp", () => [
   merge(pRoundLine, {
     id: "road_major_motorway_ramp-casing",
     minzoom: 12,
@@ -254,7 +254,7 @@ export const MotorwayRamp = style(() => [
   }),
 ])
 
-export const Motorway = style(() => [
+export const Motorway = style("Motorway", () => [
   merge(pRoundLine, {
     id: "road_major_motorway-casing",
     minzoom: 12,
@@ -293,12 +293,12 @@ const pRailwayDash = merge(pFadeIn("line-opacity", 13, 14), {
   },
 })
 
-export const Railway = style(() => [
+export const Railway = style("Railway", () => [
   merge(pRailwayBase, { id: "railway" }),
   merge(pRailwayDash, { id: "railway-dash" }),
 ])
 
-export const BridgePlatform = style(() => [
+export const BridgePlatform = style("BridgePlatform", () => [
   merge({
     id: "bridge_platform",
     type: "fill",
@@ -309,7 +309,7 @@ export const BridgePlatform = style(() => [
   }),
 ])
 
-export const BridgeWaterway = style(() => [
+export const BridgeWaterway = style("BridgeWaterway", () => [
   merge(pMitreLine, {
     id: "waterway-bridge-casing",
     paint: {
@@ -326,7 +326,7 @@ export const BridgeWaterway = style(() => [
   }),
 ])
 
-export const AerowayArea = style(() => [
+export const AerowayArea = style("AerowayArea", () => [
   merge({
     id: "aeroway-area",
     type: "fill",
@@ -337,7 +337,7 @@ export const AerowayArea = style(() => [
   }),
 ])
 
-export const AerowayTaxiway = style(() => [
+export const AerowayTaxiway = style("AerowayTaxiway", () => [
   merge(pRoundLine, pOverlayLine, {
     id: "aeroway-taxiway",
     minzoom: 12,
@@ -347,7 +347,7 @@ export const AerowayTaxiway = style(() => [
   }),
 ])
 
-export const AerowayRunway = style(() => [
+export const AerowayRunway = style("AerowayRunway", () => [
   merge(pRoundLine, pOverlayLine, {
     id: "aeroway-runway",
     minzoom: 4,

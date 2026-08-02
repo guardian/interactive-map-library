@@ -1,15 +1,17 @@
 {
   "name": "interactive-map-library",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "exports": {
-    "./basemaps/*": "./dist/0.1/basemaps/*",
-    "./styles": "./dist/0.1/styles/index.js",
-    "./styles/*": "./dist/0.1/styles/*",
-    "./tokens/*": "./dist/0.1/tokens/*",
-    "./core/*": "./dist/0.1/core/*",
+    "./basemaps/*": "./dist/0.2/basemaps/*",
+    "./styles": "./dist/0.2/styles/index.js",
+    "./styles/*": "./dist/0.2/styles/*",
+    "./tokens/*": "./dist/0.2/tokens/*",
+    "./core/*": "./dist/0.2/core/*",
     "./0.1/*": "./dist/0.1/*",
-    "./0.1/styles": "./dist/0.1/styles/index.js"
+    "./0.1/styles": "./dist/0.1/styles/index.js",
+    "./0.2/*": "./dist/0.2/*",
+    "./0.2/styles": "./dist/0.2/styles/index.js"
   },
   "files": [
     "src",

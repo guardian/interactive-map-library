@@ -121,7 +121,7 @@ const pLineLabel = {
   },
 }
 
-export const HighwayNameOther = style((theme) => [
+export const HighwayNameOther = style("HighwayNameOther", (theme) => [
   merge(pLineLabel, pTextField(theme.textField), {
     id: "highway_name_other",
     minzoom: 15,
@@ -134,7 +134,7 @@ export const HighwayNameOther = style((theme) => [
   }),
 ])
 
-export const HighwayNameMotorway = style((theme) => [
+export const HighwayNameMotorway = style("HighwayNameMotorway", (theme) => [
   merge(pLineLabel, pTextField(theme.textField), {
     id: "highway_name_motorway",
     minzoom: 13,
@@ -144,7 +144,7 @@ export const HighwayNameMotorway = style((theme) => [
   }),
 ])
 
-export const PlaceParkLabel = style((theme) => [
+export const PlaceParkLabel = style("PlaceParkLabel", (theme) => [
   merge(pRegularSans(), pTextField(theme.textField), {
     id: "label_place_park",
     minzoom: 15,
@@ -156,7 +156,7 @@ export const PlaceParkLabel = style((theme) => [
   }),
 ])
 
-export const PlaceOther = style((theme) => [
+export const PlaceOther = style("PlaceOther", (theme) => [
   merge(
     pSwap({
       0: pRegularSans(),
@@ -170,7 +170,7 @@ export const PlaceOther = style((theme) => [
   ),
 ])
 
-export const PlaceSuburb = style((theme) => [
+export const PlaceSuburb = style("PlaceSuburb", (theme) => [
   merge(
     pSwap({
       0: pRegularSans(),
@@ -185,7 +185,7 @@ export const PlaceSuburb = style((theme) => [
   ),
 ])
 
-export const PlaceVillage = style((theme) => {
+export const PlaceVillage = style("PlaceVillage", (theme) => {
   const typography = pSwap({ 0: pRegularSans(), 14: pBoldSans() })
 
   return [
@@ -195,7 +195,7 @@ export const PlaceVillage = style((theme) => {
   ]
 })
 
-export const PlaceTown = style((theme) => [
+export const PlaceTown = style("PlaceTown", (theme) => [
   merge(
     pSwap({
       0: pRegularSans(),
@@ -210,7 +210,7 @@ export const PlaceTown = style((theme) => [
   ),
 ])
 
-export const WaterName = style((theme) => [
+export const WaterName = style("WaterName", (theme) => [
   merge(pTextField(theme.textField), pFadeIn("text-opacity", 2, 4, { max: 0.75 }), {
     id: "label_water_name",
     type: "symbol",
@@ -228,7 +228,7 @@ export const WaterName = style((theme) => [
   }),
 ])
 
-export const WaterNameLineMinor = style((theme) => [
+export const WaterNameLineMinor = style("WaterNameLineMinor", (theme) => [
   merge(pLineLabel, pTextField(theme.textField), pFadeIn("text-opacity", 10, 13, { min: 0.25 }), {
     id: "label_water_name_line_minor",
     paint: {
@@ -237,7 +237,7 @@ export const WaterNameLineMinor = style((theme) => [
   }),
 ])
 
-export const WaterNameLineMajor = style((theme) => [
+export const WaterNameLineMajor = style("WaterNameLineMajor", (theme) => [
   merge(pLineLabel, pTextField(theme.textField), {
     id: "label_water_name_line_major",
     maxzoom: 14,
@@ -248,7 +248,7 @@ export const WaterNameLineMajor = style((theme) => [
   }),
 ])
 
-export const PlaceCity = style((theme) => [
+export const PlaceCity = style("PlaceCity", (theme) => [
   merge(
     pSwap({
       0: pRegularSans(),
@@ -265,7 +265,7 @@ export const PlaceCity = style((theme) => [
   ),
 ])
 
-export const PlaceState = style((theme) => [
+export const PlaceState = style("PlaceState", (theme) => [
   merge(
     pSwap({
       0: pEgyptianRegular(),
@@ -284,7 +284,7 @@ export const PlaceState = style((theme) => [
 ])
 
 // TODO: is this actually used anywhere?
-export const PlaceIsland = style((theme) => [
+export const PlaceIsland = style("PlaceIsland", (theme) => [
   merge(pRegularSans(), pTextField(theme.textField), pSize({ 0: sm, 2: sm, 4: md }, 1.4), {
     id: "label_place_island",
     maxzoom: 10,
@@ -294,7 +294,7 @@ export const PlaceIsland = style((theme) => [
   }),
 ])
 
-export const PlaceCityLarge = style((theme) => [
+export const PlaceCityLarge = style("PlaceCityLarge", (theme) => [
   merge(
     pSwap({
       0: pRegularSans(),
@@ -311,7 +311,7 @@ export const PlaceCityLarge = style((theme) => [
   ),
 ])
 
-export const PlaceCapital = style((theme) => [
+export const PlaceCapital = style("PlaceCapital", (theme) => [
   merge(
     pSwap({
       0: pBoldSans(),
@@ -339,21 +339,21 @@ const pLabelCountry = merge(
   },
 )
 
-export const PlaceCountryOther = style((theme) => [
+export const PlaceCountryOther = style("PlaceCountryOther", (theme) => [
   merge(pLabelCountry, pTextField(theme.textField), pSize({ 0: sm, 4: sm, 6: md }, 2), {
     id: "label_place_country_other",
     maxzoom: 8,
   }),
 ])
 
-export const PlaceCountryMinor = style((theme) => [
+export const PlaceCountryMinor = style("PlaceCountryMinor", (theme) => [
   merge(pLabelCountry, pTextField(theme.textField), pSize({ 0: sm, 4: sm + 1, 6: md, 7: lg }, 1.6), {
     id: "label_place_country_minor",
     maxzoom: 10,
   }),
 ])
 
-export const PlaceCountryMajor = style((theme) => [
+export const PlaceCountryMajor = style("PlaceCountryMajor", (theme) => [
   merge(pLabelCountry, pTextField(theme.textField), pSize({ 0: sm, 4: sm + 1, 6: md, 7: lg }, 1.2), {
     id: "label_place_country_major",
     maxzoom: 12,

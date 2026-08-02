@@ -1,5 +1,5 @@
-import { graphics } from "../src/basemaps/graphics.js"
-import { protomaps } from "../src/basemaps/protomaps.js"
+import { Graphics } from "../src/basemaps/graphics.js"
+import { Protomaps } from "../src/basemaps/protomaps.js"
 import graphicsMapStyle from "./res/graphics-map-style.json"
 import reutersStyle from "./res/reuters-style.json"
 
@@ -11,8 +11,8 @@ import reutersStyle from "./res/reuters-style.json"
  * was derived from, for side-by-side comparison.
  */
 export const styles = {
-  graphics,
-  protomaps,
+  graphics: Graphics.toGlStyle(),
+  protomaps: Protomaps.toGlStyle(),
   "graphics (original)": graphicsMapStyle,
   reuters: reutersStyle,
 }

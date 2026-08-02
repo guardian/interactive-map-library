@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec"
-import { graphics } from "../src/basemaps/graphics.js"
-import { protomaps } from "../src/basemaps/protomaps.js"
+import { Graphics } from "../src/basemaps/graphics.js"
+import { Protomaps } from "../src/basemaps/protomaps.js"
 
 // Snapshot tests for the generated basemaps, so any code changes that unintentionally change
 // the basemap output leads to failing tests.
@@ -9,8 +9,8 @@ import { protomaps } from "../src/basemaps/protomaps.js"
 // After code changes that make valid changes to the snapshots, update them with
 // `npm run test -- -u`.
 describe.each([
-  ["graphics", graphics],
-  ["protomaps", protomaps],
+  ["Graphics", Graphics.toGlStyle()],
+  ["Protomaps", Protomaps.toGlStyle()],
 ])("%s basemap", (name, style) => {
   it("matches its snapshot", () => {
     expect(style).toMatchSnapshot()
@@ -32,6 +32,13 @@ describe.each([
         continue
       }
       expect(sources).toContain(l.source)
+    }
+  })
+
+  it("stamps every layer with iml.style and an iml.group path rooted at the basemap", () => {
+    for (const l of style.layers) {
+      expect(l.metadata.iml.style).toBeTruthy()
+      expect(l.metadata.iml.group[0]).toBe(name)
     }
   })
 })

@@ -1,68 +1,76 @@
-import { buildGlStyle, casingsFirst } from "../core/build.js"
+import { group } from "../core/group.js"
 import { f, any } from "../core/filter/protomaps.js"
 import * as s from "../styles/index.js"
 
-const furniture = {
-  version: 8,
-  name: "Graphics (Protomaps)",
-  glyphs: "https://interactive.guim.co.uk/maptiles/fonts/{fontstack}/{range}.pbf",
-  sprite: "https://tiles.dwcdn.net/sprites/dwsprites",
-  metadata: {
-    copyright:
-      "Basemap data © OpenStreetMap contributors, served via Protomaps. Positron design derived from 'CartoDB Basemaps' designed by Stamen and Paul Norman for CartoDB Inc., licensed under CC-BY 3.0.",
-  },
-  sources: {
-    protomaps: {
-      type: "vector",
-      url: "pmtiles://https://gdn-cdn.s3.amazonaws.com/maptiles/pmtiles/2025/20251208.pmtiles",
-      attribution: "© OpenStreetMap",
-    },
+export { GLYPHS_URL as glyphs, SPRITE_URL as sprite } from "../core/resources.js"
+
+export const sources = {
+  protomaps: {
+    type: "vector",
+    url: "pmtiles://https://gdn-cdn.s3.amazonaws.com/maptiles/pmtiles/2025/20251208.pmtiles",
+    attribution: "© OpenStreetMap",
   },
 }
-
-const pm = { source: "protomaps", theme: { textField: ["name:en", "name"] } }
-const landcover = { ...pm, sourceLayer: "landcover" }
-const landuse = { ...pm, sourceLayer: "landuse" }
-const water = { ...pm, sourceLayer: "water" }
-const roads = { ...pm, sourceLayer: "roads" }
-const boundaries = { ...pm, sourceLayer: "boundaries" }
-const places = { ...pm, sourceLayer: "places" }
 
 const oceanKinds = ["ocean", "sea", "bay", "strait", "fjord"]
 const waterwayKinds = ["river", "stream", "canal", "ditch", "drain"]
 const settlements = ["city", "town", "village", "hamlet"]
 
-const tunnels = [
-  s.TunnelMinor.apply({ ...roads, filter: f.line().tunnel().kind("minor_road") }),
-  s.TunnelMajor.apply({ ...roads, filter: f.line().tunnel().kind("major_road") }),
-  s.TunnelMotorway.apply({ ...roads, filter: f.line().tunnel().kind("highway") }),
-]
+const pm = { source: "protomaps" }
+const landuse = { ...pm, sourceLayer: "landuse" }
+const landcoverLayer = { ...pm, sourceLayer: "landcover" }
+const roadsLayer = { ...pm, sourceLayer: "roads" }
+const waterLayer = { ...pm, sourceLayer: "water" }
+const boundariesLayer = { ...pm, sourceLayer: "boundaries" }
+const places = { ...pm, sourceLayer: "places" }
 
-// RoadService is a transparent structural casing with no fill, so it draws with
-// the casings even though its id carries no "-casing" suffix for `casingsFirst`
-// to key off. It is applied ahead of the sorted roads to sit beneath every fill.
-const roadService = s.RoadService.apply({
-  ...roads,
-  filter: f.line().notTunnel().kind("minor_road").kindDetail("service"),
-})
+const Tunnels = group("Tunnels", [
+  s.TunnelMinor.apply({ ...roadsLayer, filter: f.line().tunnel().kind("minor_road") }),
+  s.TunnelMajor.apply({ ...roadsLayer, filter: f.line().tunnel().kind("major_road") }),
+  s.TunnelMotorway.apply({ ...roadsLayer, filter: f.line().tunnel().kind("highway") }),
+], { sources })
 
-const surfaceRoads = [
-  roadService,
-  casingsFirst(
+const SurfaceRoads = group(
+  "SurfaceRoads",
+  [
+    s.RoadService.apply({
+      ...roadsLayer,
+      filter: f.line().notTunnel().kind("minor_road").kindDetail("service"),
+    }),
     s.RoadMinor.apply({
-      ...roads,
+      ...roadsLayer,
       filter: f.line().notTunnel().kind("minor_road").kindDetailNot("service"),
     }),
     s.RoadSecondaryTertiary.apply({
-      ...roads,
+      ...roadsLayer,
       filter: f.line().notTunnel().kind("major_road").kindDetail("secondary", "tertiary"),
     }),
-    s.RoadPrimary.apply({ ...roads, filter: f.line().notTunnel().kindDetail("primary") }),
-    s.RoadTrunk.apply({ ...roads, filter: f.line().notTunnel().kindDetail("trunk") }),
-    s.MotorwayRamp.apply({ ...roads, filter: f.line().notTunnel().kind("highway", "major_road").ramp() }),
-    s.Motorway.apply({ ...roads, filter: f.line().notTunnel().kind("highway").notRamp() }),
-  ),
-]
+    s.RoadPrimary.apply({ ...roadsLayer, filter: f.line().notTunnel().kindDetail("primary") }),
+    s.RoadTrunk.apply({ ...roadsLayer, filter: f.line().notTunnel().kindDetail("trunk") }),
+    s.MotorwayRamp.apply({
+      ...roadsLayer,
+      filter: f.line().notTunnel().kind("highway", "major_road").ramp(),
+    }),
+    s.Motorway.apply({ ...roadsLayer, filter: f.line().notTunnel().kind("highway").notRamp() }),
+  ],
+  {
+    sources,
+    post: [
+      // RoadService is a transparent structural casing with no fill and no "-casing"
+      // suffix, so it stays pinned at the front to sit beneath every fill; the paved
+      // roads that follow are partitioned casings-first so a later road's casing
+      // never paints over an earlier road's fill at a junction.
+      (layers) => {
+        const isService = (layer) => layer.metadata?.iml?.style === "RoadService"
+        const isCasing = (layer) => layer.id.endsWith("-casing")
+        const service = layers.filter(isService)
+        const paved = layers.filter((layer) => !isService(layer))
+
+        return [...service, ...paved.sort((a, b) => Number(isCasing(b)) - Number(isCasing(a)))]
+      },
+    ],
+  },
+)
 
 const railwayTransit = f
   .line()
@@ -70,14 +78,33 @@ const railwayTransit = f
   .kind("rail")
   .kindDetail("transit", "light_rail", "subway", "tram")
 
-const railways = [
+const Railways = group("Railways", [
   s.Railway
-    .apply({ ...roads, filter: railwayTransit })
-    .map((layer) => ({ ...layer, id: layer.id.replace("railway", "railway-transit") })),
-  s.Railway.apply({ ...roads, filter: f.line().notTunnel().kind("rail") }),
-]
+    .apply({ ...roadsLayer, filter: railwayTransit })
+    .renameIds((id) => id.replace("railway", "railway-transit")),
+  s.Railway.apply({ ...roadsLayer, filter: f.line().notTunnel().kind("rail") }),
+], { sources })
+
+const Aeroways = group("Aeroways", [
+  s.AerowayArea.apply({ ...landuse, filter: f.polygon().kind("aerodrome") }),
+  s.AerowayTaxiway.apply({ ...roadsLayer, filter: f.line().kind("aeroway").kindDetail("taxiway") }),
+  s.AerowayRunway.apply({ ...roadsLayer, filter: f.line().kind("aeroway").kindDetail("runway") }),
+], { sources })
 
 // Landuse polygons re-used as landcover, kept under their landuse ids.
+const landusePedestrian = s.BridgePlatform
+  .apply({ ...landuse, filter: f.polygon().kind("pedestrian") })
+  .renameIds({ bridge_platform: "landuse_pedestrian" })
+
+export const Roads = group("Roads", [
+  landusePedestrian,
+  s.Path.apply({ ...roadsLayer, filter: f.line().kind("path") }),
+  Aeroways,
+  Tunnels,
+  SurfaceRoads,
+  Railways,
+], { sources })
+
 const landuseGrass = s.LandcoverGrass
   .apply({
     ...landuse,
@@ -96,68 +123,58 @@ const landuseGrass = s.LandcoverGrass
         "allotments",
       ),
   })
-  .map((layer) => ({ ...layer, id: "landuse_grass" }))
+  .renameIds({ landcover_grass: "landuse_grass" })
 
 const landuseWood = s.LandcoverWood
   .apply({ ...landuse, filter: f.polygon().kind("wood", "forest") })
-  .map((layer) => ({ ...layer, id: "landuse_wood" }))
+  .renameIds({ landcover_wood: "landuse_wood" })
 
-const landusePedestrian = s.BridgePlatform
-  .apply({ ...landuse, filter: f.polygon().kind("pedestrian") })
-  .map((layer) => ({ ...layer, id: "landuse_pedestrian" }))
-
-const landcoverLayers = [
+export const Landcover = group("Landcover", [
   s.LanduseResidential.apply({ ...landuse, filter: f.polygon().kind("residential") }),
-  s.LandcoverIce.apply({ ...landcover, filter: f.kind("glacier") }),
-  s.LandcoverGrass.apply({ ...landcover, filter: f.kind("grassland") }),
+  s.LandcoverIce.apply({ ...landcoverLayer, filter: f.kind("glacier") }),
+  s.LandcoverGrass.apply({ ...landcoverLayer, filter: f.kind("grassland") }),
   landuseGrass,
   landuseWood,
-]
+], { sources })
 
-const waterLayers = [
-  s.Waterway.apply({ ...water, filter: f.line().kind(...waterwayKinds) }),
-  s.Water.apply({ ...water, filter: f.polygon().kind("water", "lake", "reservoir", "dock") }),
-  s.Ocean.apply({ ...water, filter: f.kind(...oceanKinds) }),
-]
+export const Water = group("Water", [
+  s.Waterway.apply({ ...waterLayer, filter: f.line().kind(...waterwayKinds) }),
+  s.Water.apply({ ...waterLayer, filter: f.polygon().kind("water", "lake", "reservoir", "dock") }),
+  s.Ocean.apply({ ...waterLayer, filter: f.kind(...oceanKinds) }),
+], { sources })
 
-const aeroways = [
-  s.AerowayArea.apply({ ...landuse, filter: f.polygon().kind("aerodrome") }),
-  s.AerowayTaxiway.apply({ ...roads, filter: f.line().kind("aeroway").kindDetail("taxiway") }),
-  s.AerowayRunway.apply({ ...roads, filter: f.line().kind("aeroway").kindDetail("runway") }),
-]
+export const Buildings = group("Buildings", [
+  s.Building.apply({
+    ...pm,
+    sourceLayer: "buildings",
+    filter: f.kind("building", "building_part"),
+  }),
+], { sources })
 
-const roadLayers = [
-  landusePedestrian,
-  s.Path.apply({ ...roads, filter: f.line().kind("path") }),
-  aeroways,
-  tunnels,
-  surfaceRoads,
-  railways,
-]
+export const Bridges = group("Bridges", [
+  s.BridgeWaterway.apply({
+    ...waterLayer,
+    filter: f.line().has("bridge").kind(...waterwayKinds),
+  }),
+], { sources })
 
-const buildings = [
-  s.Building.apply({ ...pm, sourceLayer: "buildings", filter: f.kind("building", "building_part") }),
-]
+export const Boundaries = group("Boundaries", [
+  s.BoundaryState.apply({ ...boundariesLayer, filter: f.line().kind("region") }),
+  s.BoundaryCountry.apply({ ...boundariesLayer, filter: f.line().kind("country") }),
+], { sources })
 
-const bridges = [s.BridgeWaterway.apply({ ...water, filter: f.line().has("bridge").kind(...waterwayKinds) })]
+const WaterLabels = group("WaterLabels", [
+  s.WaterNameLineMajor.apply({ ...waterLayer, filter: f.line().kind("river") }),
+  s.WaterNameLineMinor.apply({ ...waterLayer, filter: f.line().kind("canal") }),
+  s.WaterName.apply({ ...waterLayer, filter: f.point() }),
+], { sources })
 
-const boundaryLayers = [
-  s.BoundaryState.apply({ ...boundaries, filter: f.line().kind("region") }),
-  s.BoundaryCountry.apply({ ...boundaries, filter: f.line().kind("country") }),
-]
+const HighwayLabels = group("HighwayLabels", [
+  s.HighwayNameOther.apply({ ...roadsLayer, filter: f.line().kindNot("highway") }),
+  s.HighwayNameMotorway.apply({ ...roadsLayer, filter: f.line().kind("highway") }),
+], { sources })
 
-const waterLabels = [
-  s.WaterNameLineMajor.apply({ ...water, filter: f.line().kind("river") }),
-  s.WaterNameLineMinor.apply({ ...water, filter: f.line().kind("canal") }),
-  s.WaterName.apply({ ...water, filter: f.point() }),
-]
-
-const highwayLabels = [
-  s.HighwayNameOther.apply({ ...roads, filter: f.line().kindNot("highway") }),
-  s.HighwayNameMotorway.apply({ ...roads, filter: f.line().kind("highway") }),
-]
-
-const placeLabels = [
+const PlaceLabels = group("PlaceLabels", [
   s.PlaceSuburb.apply({ ...places, filter: f.point().kindDetail("suburb") }),
   s.PlaceOther.apply({
     ...places,
@@ -190,17 +207,29 @@ const placeLabels = [
   s.PlaceState.apply({ ...places, filter: f.point().kind("region") }),
   s.PlaceCountryMinor.apply({ ...places, filter: f.point().kind("country").minZoomGte(4) }),
   s.PlaceCountryMajor.apply({ ...places, filter: f.point().kind("country").minZoomLte(3) }),
-]
+], { sources })
 
-export const protomaps = buildGlStyle(furniture, [
+export const Labels = group("Labels", [WaterLabels, HighwayLabels, PlaceLabels], {
+  sources,
+  theme: { textField: ["name:en", "name"] },
+})
+
+export const Protomaps = group("Protomaps", [
   s.Background.apply(),
-  landcoverLayers,
-  waterLayers,
-  roadLayers,
-  buildings,
-  bridges,
-  boundaryLayers,
-  waterLabels,
-  highwayLabels,
-  placeLabels,
-])
+  Landcover,
+  Water,
+  Roads,
+  Buildings,
+  Bridges,
+  Boundaries,
+  Labels,
+], {
+  sources,
+  document: {
+    name: "Graphics (Protomaps)",
+    metadata: {
+      copyright:
+        "Basemap data © OpenStreetMap contributors, served via Protomaps. Positron design derived from 'CartoDB Basemaps' designed by Stamen and Paul Norman for CartoDB Inc., licensed under CC-BY 3.0.",
+    },
+  }
+})

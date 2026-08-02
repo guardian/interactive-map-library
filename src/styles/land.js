@@ -8,7 +8,7 @@ import { zInterp, zStep } from "./utils/zoom.js"
 /** @type {Partial} */
 const pFill = { type: "fill" }
 
-export const Background = style(() => [
+export const Background = style("Background", () => [
   merge({
     id: "background",
     type: "background",
@@ -45,7 +45,7 @@ const pMountainShade = merge(pMountainFill, {
   },
 })
 
-export const LanduseResidential = style(() => [
+export const LanduseResidential = style("LanduseResidential", () => [
   // TODO: fade out to 12
   merge(pFill, pFade("fill-opacity", { in: [5, 6, { min: 0.25 }], out: [10, 11] }), {
     id: "landuse_residential",
@@ -55,7 +55,7 @@ export const LanduseResidential = style(() => [
   }),
 ])
 
-export const LandcoverIce = style(() => [
+export const LandcoverIce = style("LandcoverIce", () => [
   merge(pFill, pNoOutline, {
     id: "landcover_ice",
     paint: {
@@ -79,7 +79,7 @@ export const LandcoverIce = style(() => [
   }),
 ])
 
-export const LandcoverGrass = style(() => [
+export const LandcoverGrass = style("LandcoverGrass", () => [
   merge(pFill, pLandFade, {
     id: "landcover_grass",
     paint: {
@@ -88,7 +88,7 @@ export const LandcoverGrass = style(() => [
   }),
 ])
 
-export const LandcoverWood = style(() => [
+export const LandcoverWood = style("LandcoverWood", () => [
   merge(pFill, pLandFade, {
     id: "landcover_wood",
     paint: {
@@ -97,7 +97,7 @@ export const LandcoverWood = style(() => [
   }),
 ])
 
-export const Park = style(() => [
+export const Park = style("Park", () => [
   merge(pFill, pLandFade, {
     id: "park",
     paint: {
@@ -106,7 +106,7 @@ export const Park = style(() => [
   }),
 ])
 
-export const LandcoverPark = style(() => [
+export const LandcoverPark = style("LandcoverPark", () => [
   merge(pFill, pLandFade, {
     id: "landcover_park",
     paint: {
@@ -115,19 +115,19 @@ export const LandcoverPark = style(() => [
   }),
 ])
 
-export const Mountains1 = style(() => [merge(pMountainCap, { id: "mountains_1" })])
+export const Mountains1 = style("Mountains1", () => [merge(pMountainCap, { id: "mountains_1" })])
 
-export const Mountains2 = style(() => [merge(pMountainCap, { id: "mountains_2" })])
+export const Mountains2 = style("Mountains2", () => [merge(pMountainCap, { id: "mountains_2" })])
 
-export const Mountains3 = style(() => [merge(pMountainShade, { id: "mountains_3" })])
+export const Mountains3 = style("Mountains3", () => [merge(pMountainShade, { id: "mountains_3" })])
 
-export const Mountains4 = style(() => [merge(pMountainShade, { id: "mountains_4" })])
+export const Mountains4 = style("Mountains4", () => [merge(pMountainShade, { id: "mountains_4" })])
 
-export const Mountains5 = style(() => [merge(pMountainShade, { id: "mountains_5" })])
+export const Mountains5 = style("Mountains5", () => [merge(pMountainShade, { id: "mountains_5" })])
 
-export const Mountains6 = style(() => [merge(pMountainShade, { id: "mountains_6" })])
+export const Mountains6 = style("Mountains6", () => [merge(pMountainShade, { id: "mountains_6" })])
 
-export const Building = style(() => [
+export const Building = style("Building", () => [
   merge(pFill, {
     id: "building",
     minzoom: 14,
@@ -139,7 +139,7 @@ export const Building = style(() => [
   }),
 ])
 
-export const Building3d = style(() => [
+export const Building3d = style("Building3d", () => [
   merge({
     id: "building3d",
     type: "fill-extrusion",

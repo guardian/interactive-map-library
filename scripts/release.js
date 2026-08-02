@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url"
 
 import ts from "typescript"
 
-import { graphics } from "../src/basemaps/graphics.js"
-import { protomaps } from "../src/basemaps/protomaps.js"
+import { Graphics } from "../src/basemaps/graphics.js"
+import { Protomaps } from "../src/basemaps/protomaps.js"
 
 /**
  * Releases a versioned snapshot of the library into `dist/<major>.<minor>/`.
@@ -31,8 +31,8 @@ const distDir = resolve(root, "dist")
 const pkgPath = resolve(root, "package.json")
 
 const documents = {
-  "basemaps/graphics.json": graphics,
-  "basemaps/protomaps.json": protomaps,
+  "basemaps/graphics.json": Graphics.toGlStyle(),
+  "basemaps/protomaps.json": Protomaps.toGlStyle(),
 }
 
 // Emits `.d.ts` declarations for every `.js` under `dir`, in place, using the compiler API so the

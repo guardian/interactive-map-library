@@ -37,21 +37,21 @@ describe("merge", () => {
 })
 
 // A plural style: an outline plus a fill, sharing a source and filter.
-const Water = style(() => [
+const Water = style("Water", () => [
   merge({ id: "water-outline", type: "line", paint: { "line-color": "blue" } }),
   merge({ id: "water", type: "fill", paint: { "fill-color": "blue" } }),
 ])
 
 // A single-layer style that echoes the resolved theme.
-const Label = style((theme) => [{ id: "label", type: "symbol", theme }])
+const Label = style("Label", (theme) => [{ id: "label", type: "symbol", theme }])
 
-describe("style().apply", () => {
-  it("returns every layer, binding source/source-layer/filter onto each", () => {
+describe("style builder", () => {
+  it("builds every layer, binding source/source-layer/filter onto each", () => {
     const layers = Water.apply({
       source: "openmaptiles",
       sourceLayer: "water",
       filter: new Filter().polygon(),
-    })
+    }).build()
 
     expect(layers.map((l) => l.id)).toEqual(["water-outline", "water"])
     for (const layer of layers) {
@@ -63,12 +63,20 @@ describe("style().apply", () => {
     }
   })
 
+  it("is immutable: .apply/.theme/.patch return new builders", () => {
+    const base = Label.apply({ source: "a" })
+    const themed = base.theme({ textField: "name" })
+
+    expect(themed).not.toBe(base)
+    expect(base.build()[0].theme).toEqual({})
+  })
+
   it("ANDs the context filter with a layer's own filter", () => {
-    const Road = style(() => [
+    const Road = style("Road", () => [
       { id: "road", type: "line", filter: new Filter().is("class", "primary") },
     ])
 
-    const [road] = Road.apply({ filter: new Filter().line() })
+    const [road] = Road.apply({ filter: new Filter().line() }).build()
 
     // The layer's own filter leads, with the context filter AND-ed onto it.
     expect(road.filter).toEqual([
@@ -78,13 +86,25 @@ describe("style().apply", () => {
     ])
   })
 
+  it("ANDs filters accumulated across repeated .apply calls", () => {
+    const [road] = Label.apply({ filter: new Filter().line() })
+      .apply({ filter: new Filter().is("class", "primary") })
+      .build()
+
+    expect(road.filter).toEqual([
+      "all",
+      ["==", ["geometry-type"], "LineString"],
+      ["==", ["get", "class"], "primary"],
+    ])
+  })
+
   it("compiles a Filter and passes a raw expression through untouched", () => {
-    expect(Label.apply({ filter: new Filter().point() })[0].filter).toEqual([
+    expect(Label.apply({ filter: new Filter().point() }).build()[0].filter).toEqual([
       "==",
       ["geometry-type"],
       "Point",
     ])
-    expect(Label.apply({ filter: ["==", ["get", "x"], 1] })[0].filter).toEqual([
+    expect(Label.apply({ filter: ["==", ["get", "x"], 1] }).build()[0].filter).toEqual([
       "==",
       ["get", "x"],
       1,
@@ -92,43 +112,77 @@ describe("style().apply", () => {
   })
 
   it("omits filter when neither the layer nor the context sets one", () => {
-    expect(Label.apply()[0]).not.toHaveProperty("filter")
+    expect(Label.apply().build()[0]).not.toHaveProperty("filter")
   })
 
-  it("passes the context theme to the style function", () => {
-    expect(Label.apply({ theme: { textField: "name" } })[0].theme).toEqual({ textField: "name" })
+  it("passes the theme to the style function", () => {
+    expect(Label.theme({ textField: "name" }).build()[0].theme).toEqual({ textField: "name" })
   })
 
-  it("injects `patch` as identity-property references into the named block", () => {
-    const Extrusion = style(() => [{ id: "b", type: "fill-extrusion", paint: {} }])
+  it("merges themes across calls: a later theme doesn't wipe an earlier field", () => {
+    const [layer] = Label.theme({ textField: "name" }).apply({ source: "x" }).theme({}).build()
+    expect(layer.theme).toEqual({ textField: "name" })
+  })
 
-    const [layer] = Extrusion.apply({
-      patch: { paint: { "fill-extrusion-height": "render_height" } },
-    })
+  it("merges a patch verbatim onto every built layer", () => {
+    const Extrusion = style("Extrusion", () => [{ id: "b", type: "fill-extrusion", paint: { "fill-extrusion-opacity": 1 } }])
 
-    expect(layer.paint).toMatchObject({
+    const [layer] = Extrusion.patch({
+      paint: { "fill-extrusion-height": { property: "render_height", type: "identity" } },
+    }).build()
+
+    expect(layer.paint).toEqual({
+      "fill-extrusion-opacity": 1,
       "fill-extrusion-height": { property: "render_height", type: "identity" },
     })
+  })
+
+  it("renames built ids with a function, over every layer", () => {
+    const ids = Water.renameIds((id) => id.replace("water", "sea"))
+      .build()
+      .map((l) => l.id)
+
+    expect(ids).toEqual(["sea-outline", "sea"])
+  })
+
+  it("renames built ids with a lookup, leaving unlisted ids untouched", () => {
+    const ids = Water.renameIds({ water: "lake" })
+      .build()
+      .map((l) => l.id)
+
+    expect(ids).toEqual(["water-outline", "lake"])
+  })
+
+  it("applies renames after patches, in accumulation order", () => {
+    const ids = Label.renameIds({ label: "first" })
+      .renameIds({ first: "second" })
+      .build()
+      .map((l) => l.id)
+
+    expect(ids).toEqual(["second"])
   })
 })
 
 describe("style().onlyLayer", () => {
-  it("returns the single named layer, bound, not wrapped in an array", () => {
-    const outline = Water.onlyLayer("water-outline").apply({
-      source: "openmaptiles",
-      sourceLayer: "water",
-    })
+  it("builds only the single named layer, bound", () => {
+    const [outline] = Water.onlyLayer("water-outline")
+      .apply({ source: "openmaptiles", sourceLayer: "water" })
+      .build()
 
     expect(outline).toMatchObject({
       id: "water-outline",
       source: "openmaptiles",
       "source-layer": "water",
     })
-    expect(Array.isArray(outline)).toBe(false)
+  })
+
+  it("preserves accumulated config when selecting a layer", () => {
+    const [outline] = Water.apply({ source: "openmaptiles" }).onlyLayer("water-outline").build()
+    expect(outline).toMatchObject({ id: "water-outline", source: "openmaptiles" })
   })
 
   it("throws when the id is not present in the style", () => {
-    expect(() => Water.onlyLayer("nope").apply()).toThrow()
+    expect(() => Water.onlyLayer("nope").build()).toThrow()
   })
 })
 

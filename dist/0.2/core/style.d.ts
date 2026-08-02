@@ -166,7 +166,7 @@ export type ResolvedLayer = Style & {
     id: string;
     source?: string;
     "source-layer"?: string;
-    filter?: import("./filter/index.js").Expression;
+    filter?: import("../filter/index.js").Expression;
     [block: string]: any;
 };
 /**
@@ -197,7 +197,7 @@ export type LayerContext = {
     /**
      * AND-ed with each layer's own filter
      */
-    filter?: import("./filter/index.js").Filter | any[];
+    filter?: import("../filter/index.js").Filter | any[];
 };
 /**
  * The accumulated configuration a builder carries until `.build()` resolves it.

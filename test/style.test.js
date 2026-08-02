@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest"
 import { merge, style } from "../src/core/style.js"
-import { Filter } from "../src/core/filter/index.js"
+import { Filter } from "../src/filter/index.js"
 
 describe("merge", () => {
   it("deep-merges `paint` and `layout`, keeping keys from every part", () => {

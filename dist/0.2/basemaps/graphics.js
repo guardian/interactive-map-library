@@ -1,5 +1,5 @@
 import { group } from "../core/group.js"
-import { f, any } from "../core/filter/openmaptiles.js"
+import { f, any } from "../filter/openmaptiles.js"
 import * as s from "../styles/index.js"
 
 export { GLYPHS_URL as glyphs, SPRITE_URL as sprite } from "../core/resources.js"

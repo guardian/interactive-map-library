@@ -1,4 +1,4 @@
-import { Filter, expr } from "./filter/index.js"
+import { Filter, expr } from "../filter/index.js"
 import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js"
 
 // TODO: type this with MapBox/MapLibre types?
@@ -25,7 +25,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  *   id: string,
  *   source?: string,
  *   "source-layer"?: string,
- *   filter?: import("./filter/index.js").Expression,
+ *   filter?: import("../filter/index.js").Expression,
  *   [block: string]: any,
  * }} ResolvedLayer
  */
@@ -54,7 +54,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  * @typedef {object} LayerContext
  * @property {string} [source] The layers' "source" property
  * @property {string} [sourceLayer] The layers' "source-layer" property
- * @property {import("./filter/index.js").Filter | any[]} [filter] AND-ed with each layer's own filter
+ * @property {import("../filter/index.js").Filter | any[]} [filter] AND-ed with each layer's own filter
  */
 
 /**
@@ -101,9 +101,9 @@ export const merge = (...parts) => {
  * AND-s a layer's own filter with the context filter. Either may be absent, and
  * each may be a `Filter` builder or a raw GL expression.
  *
- * @param {import("./filter/index.js").Filter | any[]} [own]
- * @param {import("./filter/index.js").Filter | any[]} [context]
- * @returns {import("./filter/index.js").Expression | undefined}
+ * @param {import("../filter/index.js").Filter | any[]} [own]
+ * @param {import("../filter/index.js").Filter | any[]} [context]
+ * @returns {import("../filter/index.js").Expression | undefined}
  */
 const combineFilters = (own, context) => {
   if (own === undefined) {

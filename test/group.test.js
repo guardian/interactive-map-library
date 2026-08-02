@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { style } from "../src/core/style.js"
 import { group } from "../src/core/group.js"
-import { Filter } from "../src/core/filter/index.js"
+import { Filter } from "../src/filter/index.js"
 
 const Water = style("Water", () => [
   { id: "water-outline", type: "line", paint: { "line-color": "blue" } },

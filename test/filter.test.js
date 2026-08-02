@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
-import { Filter, expr, any } from "../src/core/filter/index.js"
-import { f as omt, OpenMapTilesFilter } from "../src/core/filter/openmaptiles.js"
-import { f as pm, ProtomapsFilter } from "../src/core/filter/protomaps.js"
+import { Filter, expr, any } from "../src/filter/index.js"
+import { f as omt, OpenMapTilesFilter } from "../src/filter/openmaptiles.js"
+import { f as pm, ProtomapsFilter } from "../src/filter/protomaps.js"
 
 describe("Filter", () => {
   it("compiles an empty filter to undefined", () => {

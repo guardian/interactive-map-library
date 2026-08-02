@@ -116,16 +116,18 @@ for (const [file, document] of Object.entries(documents)) {
 
 // Rebuild the exports map from the versioned dist folders. Each version gets a namespaced alias
 // (`interactive-map-library/0.1/basemaps/graphics.js`), and the unversioned convenience specifiers
-// (bare `./styles`, `./basemaps/*`, ...) are repointed at the just-built folder, the latest.
+// (bare `./core`, `./styles`, `./tokens`, `./filter/*`, `./basemaps/*`) are repointed at the
+// just-built folder, the latest.
 const versions = readdirSync(distDir).filter((name) => /^\d+\.\d+$/.test(name))
 
 pkg.version = version
 pkg.exports = {
   "./basemaps/*": `./dist/${dir}/basemaps/*`,
+  "./core": `./dist/${dir}/core/index.js`,
   "./styles": `./dist/${dir}/styles/index.js`,
-  "./styles/*": `./dist/${dir}/styles/*`,
-  "./tokens/*": `./dist/${dir}/tokens/*`,
-  "./core/*": `./dist/${dir}/core/*`,
+  "./tokens": `./dist/${dir}/tokens/index.js`,
+  "./filter/openmaptiles": `./dist/${dir}/filter/openmaptiles.js`,
+  "./filter/protomaps": `./dist/${dir}/filter/protomaps.js`,
   ...Object.fromEntries(
     versions.flatMap((v) => [
       [`./${v}/*`, `./dist/${v}/*`],

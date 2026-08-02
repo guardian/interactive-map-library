@@ -1,4 +1,3 @@
-// TODO: create colour scales (gray-400, etc) and use them instead
 export const color = {
   halo: "#fafafa",
   overlaySurface: "#ffffff",

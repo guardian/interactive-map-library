@@ -121,19 +121,19 @@ describe("append / prepend", () => {
   })
 })
 
+const ids = (g) => g.build().map((l) => l.id)
+
 describe("omitGroups / pickGroups", () => {
-  it("omits a nested group wherever it sits", () => {
-    const g = buildTree().omitGroups("Railways")
+  // omit drops a matched group's subtree wherever it sits; pick keeps it whole
+  // with its ancestor path, dropping siblings.
+  it.each([
+    ["omitGroups", (t) => t.omitGroups("Railways"), ["Root", "Water", "Roads", "Labels"], ["water-outline", "water", "road", "label"]],
+    ["pickGroups", (t) => t.pickGroups("Railways"), ["Root", "Roads", "Railways"], ["railway"]],
+  ])("%s matches a nested group by name", (_, refine, names, layerIds) => {
+    const g = refine(buildTree())
 
-    expect(g.groupNames()).toEqual(["Root", "Water", "Roads", "Labels"])
-    expect(g.build().map((l) => l.id)).toEqual(["water-outline", "water", "road", "label"])
-  })
-
-  it("picks a nested group whole, retaining its ancestor path, dropping siblings", () => {
-    const g = buildTree().pickGroups("Railways")
-
-    expect(g.groupNames()).toEqual(["Root", "Roads", "Railways"])
-    expect(g.build().map((l) => l.id)).toEqual(["railway"])
+    expect(g.groupNames()).toEqual(names)
+    expect(ids(g)).toEqual(layerIds)
   })
 
   it("accepts an instance, matching by its name", () => {
@@ -143,38 +143,35 @@ describe("omitGroups / pickGroups", () => {
     expect(g.build()).toHaveLength(0)
   })
 
-  it("throws on a name absent from the current tree", () => {
+  it("throws on a name absent from the current tree, including a double-remove", () => {
     expect(() => buildTree().omitGroups("Nope")).toThrow(/no group named "Nope"/)
     expect(() => buildTree().omitGroups("Railways").omitGroups("Railways")).toThrow()
   })
 })
 
 describe("omitStyles / pickStyles", () => {
-  it("omits a style's leaves wherever they sit, preserving tree shape", () => {
-    const g = buildTree().omitStyles("Road")
+  // Leaf-level: omit drops a style's leaves wherever they sit (tree shape kept),
+  // pick keeps only the named style's leaves.
+  it.each([
+    ["omitStyles", (t) => t.omitStyles("Road"), ["water-outline", "water", "label"]],
+    ["pickStyles", (t) => t.pickStyles("Water"), ["water-outline", "water"]],
+  ])("%s matches a style by name, preserving tree shape", (_, refine, layerIds) => {
+    const g = refine(buildTree())
 
     expect(g.groupNames()).toContain("Railways")
-    expect(g.build().map((l) => l.id)).toEqual(["water-outline", "water", "label"])
-  })
-
-  it("picks only the named style's leaves", () => {
-    const g = buildTree().pickStyles("Water")
-
-    expect(g.build().map((l) => l.id)).toEqual(["water-outline", "water"])
+    expect(ids(g)).toEqual(layerIds)
   })
 
   it("omitStylesBy sees the builder handle for identity matching", () => {
     const only = Road.apply({ source: "omt" })
     const g = group("Root", [only, Road.apply({ source: "omt" }).renameIds({ road: "road-2" })])
 
-    expect(g.omitStylesBy((s) => s === only).build().map((l) => l.id)).toEqual(["road-2"])
+    expect(ids(g.omitStylesBy((s) => s === only))).toEqual(["road-2"])
   })
 
-  it("throws on a style name absent from the current tree", () => {
+  it("throws on an absent style name, and rejects a nameless instance", () => {
     expect(() => buildTree().omitStyles("Nope")).toThrow(/no style named "Nope"/)
-  })
 
-  it("rejects a nameless instance passed to omitStyles", () => {
     const nameless = style(undefined, () => [{ id: "x", type: "line" }])
     expect(() => buildTree().omitStyles(nameless.apply({ source: "omt" }))).toThrow(/nameless/)
   })
@@ -206,12 +203,28 @@ describe("group toGlStyle", () => {
 })
 
 describe("group resources", () => {
-  it("resolves the source subset its layers reference", () => {
-    const g = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })], {
-      sources: { omt: { type: "vector" }, terrain: { type: "vector" } },
-    })
+  const water = () => Water.apply({ source: "omt", sourceLayer: "water" })
+  const carrying = (sources) => group("Water", [water()], { sources })
 
-    expect(g.getSources()).toEqual({ omt: { type: "vector" } })
+  // getSources resolves only the source subset its layers reference, wherever the
+  // lookup is carried in the tree: on the group itself, on a standalone sub-group,
+  // or gathered up through a wrapper (even deeply nested). An unresolved source is
+  // omitted, not an error. On a name conflict the shallower definition wins.
+  it.each([
+    ["the subset its layers reference", carrying({ omt: { type: "vector" }, terrain: { type: "vector" } }), { omt: { type: "vector" } }],
+    ["a sub-group's standalone lookup", group([carrying({ omt: { type: "vector" } })]), { omt: { type: "vector" } }],
+    ["a deeply nested lookup", group("Outer", [group("Inner", [carrying({ omt: { type: "vector" } })])]), { omt: { type: "vector" } }],
+    ["nothing when no lookup is carried", group("Water", [water()]), {}],
+    ["the shallower definition on a conflict", group([carrying({ omt: { type: "vector", tiles: ["child"] } })], { sources: { omt: { type: "vector", tiles: ["parent"] } } }), { omt: { type: "vector", tiles: ["parent"] } }],
+  ])("getSources resolves %s", (_, g, expected) => {
+    expect(g.getSources()).toEqual(expected)
+  })
+
+  it("emits its resolved sources through toGlStyle, omitting unresolved ones", () => {
+    const g = group("Water", [water()])
+
+    expect(g.toGlStyle().sources).toEqual({})
+    expect(g.toGlStyle().layers).toHaveLength(2)
   })
 
   it("derives glyphs only when a layer renders text", () => {
@@ -220,49 +233,5 @@ describe("group resources", () => {
 
     expect(withText.getGlyphsUrl()).toBeTruthy()
     expect(withoutText.getGlyphsUrl()).toBeUndefined()
-  })
-
-  it("resolves a sub-group's own sources when it carries the lookup standalone", () => {
-    const inner = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })], {
-      sources: { omt: { type: "vector" } },
-    })
-
-    expect(inner.getSources()).toEqual({ omt: { type: "vector" } })
-  })
-
-  it("omits unresolved sources rather than throwing when no lookup is carried", () => {
-    const g = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })])
-
-    expect(g.getSources()).toEqual({})
-    expect(g.toGlStyle().sources).toEqual({})
-    expect(g.toGlStyle().layers).toHaveLength(2)
-  })
-
-  it("gathers a nested group's sources so a wrapper needs no re-declaration", () => {
-    const inner = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })], {
-      sources: { omt: { type: "vector" } },
-    })
-    const wrapper = group([inner])
-
-    expect(wrapper.getSources()).toEqual({ omt: { type: "vector" } })
-  })
-
-  it("lets the outer definition win over a child's on a name conflict", () => {
-    const inner = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })], {
-      sources: { omt: { type: "vector", tiles: ["child"] } },
-    })
-    const wrapper = group([inner], { sources: { omt: { type: "vector", tiles: ["parent"] } } })
-
-    expect(wrapper.getSources()).toEqual({ omt: { type: "vector", tiles: ["parent"] } })
-  })
-
-  it("gathers sources from a deeply nested group", () => {
-    const deep = group("Outer", [
-      group("Inner", [group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })])], {
-        sources: { omt: { type: "vector" } },
-      }),
-    ])
-
-    expect(deep.getSources()).toEqual({ omt: { type: "vector" } })
   })
 })

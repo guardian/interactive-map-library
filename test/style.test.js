@@ -71,55 +71,30 @@ describe("style builder", () => {
     expect(base.build()[0].theme).toEqual({})
   })
 
-  it("ANDs the context filter with a layer's own filter", () => {
-    const Road = style("Road", () => [
-      { id: "road", type: "line", filter: new Filter().is("class", "primary") },
-    ])
+  const line = ["==", ["geometry-type"], "LineString"]
+  const cls = ["==", ["get", "class"], "primary"]
 
-    const [road] = Road.apply({ filter: new Filter().line() }).build()
+  // Filter resolution: a layer's own filter, the context filter, and filters
+  // accumulated across repeated .apply calls all AND together (own leading),
+  // Filters compile while raw expressions pass through, and an absent filter is
+  // omitted entirely.
+  it.each([
+    ["own AND context, own leading", () => Label.apply({ filter: new Filter().is("class", "primary") }).apply({ filter: new Filter().line() }), ["all", cls, line]],
+    ["accumulates across .apply", () => Label.apply({ filter: new Filter().line() }).apply({ filter: new Filter().is("class", "primary") }), ["all", line, cls]],
+    ["compiles a Filter", () => Label.apply({ filter: new Filter().line() }), line],
+    ["passes a raw expression through", () => Label.apply({ filter: ["==", ["get", "x"], 1] }), ["==", ["get", "x"], 1]],
+    ["omits an absent filter", () => Label.apply(), undefined],
+  ])("filter resolution: %s", (_, build, expected) => {
+    const [layer] = build().build()
 
-    // The layer's own filter leads, with the context filter AND-ed onto it.
-    expect(road.filter).toEqual([
-      "all",
-      ["==", ["get", "class"], "primary"],
-      ["==", ["geometry-type"], "LineString"],
-    ])
+    if (expected === undefined) {
+      expect(layer).not.toHaveProperty("filter")
+    } else {
+      expect(layer.filter).toEqual(expected)
+    }
   })
 
-  it("ANDs filters accumulated across repeated .apply calls", () => {
-    const [road] = Label.apply({ filter: new Filter().line() })
-      .apply({ filter: new Filter().is("class", "primary") })
-      .build()
-
-    expect(road.filter).toEqual([
-      "all",
-      ["==", ["geometry-type"], "LineString"],
-      ["==", ["get", "class"], "primary"],
-    ])
-  })
-
-  it("compiles a Filter and passes a raw expression through untouched", () => {
-    expect(Label.apply({ filter: new Filter().point() }).build()[0].filter).toEqual([
-      "==",
-      ["geometry-type"],
-      "Point",
-    ])
-    expect(Label.apply({ filter: ["==", ["get", "x"], 1] }).build()[0].filter).toEqual([
-      "==",
-      ["get", "x"],
-      1,
-    ])
-  })
-
-  it("omits filter when neither the layer nor the context sets one", () => {
-    expect(Label.apply().build()[0]).not.toHaveProperty("filter")
-  })
-
-  it("passes the theme to the style function", () => {
-    expect(Label.theme({ textField: "name" }).build()[0].theme).toEqual({ textField: "name" })
-  })
-
-  it("merges themes across calls: a later theme doesn't wipe an earlier field", () => {
+  it("merges themes across calls, passing the resolved theme to the style function", () => {
     const [layer] = Label.theme({ textField: "name" }).apply({ source: "x" }).theme({}).build()
     expect(layer.theme).toEqual({ textField: "name" })
   })
@@ -137,48 +112,29 @@ describe("style builder", () => {
     })
   })
 
-  it("renames built ids with a function, over every layer", () => {
-    const ids = Water.renameIds((id) => id.replace("water", "sea"))
-      .build()
-      .map((l) => l.id)
-
-    expect(ids).toEqual(["sea-outline", "sea"])
-  })
-
-  it("renames built ids with a lookup, leaving unlisted ids untouched", () => {
-    const ids = Water.renameIds({ water: "lake" })
-      .build()
-      .map((l) => l.id)
-
-    expect(ids).toEqual(["water-outline", "lake"])
-  })
-
-  it("applies renames after patches, in accumulation order", () => {
-    const ids = Label.renameIds({ label: "first" })
-      .renameIds({ first: "second" })
-      .build()
-      .map((l) => l.id)
-
-    expect(ids).toEqual(["second"])
+  // renameIds takes a function or a lookup (unlisted ids untouched), and repeated
+  // calls apply in accumulation order.
+  it.each([
+    ["a function, over every layer", Water.renameIds((id) => id.replace("water", "sea")), ["sea-outline", "sea"]],
+    ["a lookup, leaving unlisted ids untouched", Water.renameIds({ water: "lake" }), ["water-outline", "lake"]],
+    ["repeated calls, in order", Water.renameIds({ water: "lake" }).renameIds({ lake: "sea" }), ["water-outline", "sea"]],
+  ])("renames built ids with %s", (_, builder, expected) => {
+    expect(builder.build().map((l) => l.id)).toEqual(expected)
   })
 })
 
 describe("style().onlyLayer", () => {
-  it("builds only the single named layer, bound", () => {
-    const [outline] = Water.onlyLayer("water-outline")
-      .apply({ source: "openmaptiles", sourceLayer: "water" })
+  it("builds only the single named layer, with accumulated config bound", () => {
+    const layers = Water.apply({ source: "openmaptiles", sourceLayer: "water" })
+      .onlyLayer("water-outline")
       .build()
 
-    expect(outline).toMatchObject({
+    expect(layers).toHaveLength(1)
+    expect(layers[0]).toMatchObject({
       id: "water-outline",
       source: "openmaptiles",
       "source-layer": "water",
     })
-  })
-
-  it("preserves accumulated config when selecting a layer", () => {
-    const [outline] = Water.apply({ source: "openmaptiles" }).onlyLayer("water-outline").build()
-    expect(outline).toMatchObject({ id: "water-outline", source: "openmaptiles" })
   })
 
   it("throws when the id is not present in the style", () => {

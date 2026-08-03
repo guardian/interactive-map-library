@@ -1,15 +1,14 @@
 export function merge(...parts: Style[]): Style;
 /**
- * The shared builder body: accumulates {@link StyleConfig} through immutable
- * `.apply`/`.theme`/`.patch` calls, resolving to layers only at `.build`.
- * Subclasses supply how the style function's output becomes layers.
+ * Accumulates {@link StyleConfig} through immutable `.apply`/`.theme`/`.patch`
+ * calls, resolving to layers only at `.build`. Subclasses decide how the style
+ * function's output becomes layers.
  *
  * @abstract
  */
 export class Builder {
     /**
-     * @param {string | undefined} name The style name, stamped as `iml.style` on
-     *   every built layer. `undefined` for a nameless ad-hoc style.
+     * @param {string | undefined} name Stamped as `iml.style` on every built layer.
      * @param {StyleFn} fn
      * @param {StyleConfig} [config]
      */
@@ -18,20 +17,16 @@ export class Builder {
     fn: StyleFn;
     config: StyleConfig;
     /**
-     * Returns a new builder of the same kind carrying the merged config. Each
-     * subclass implements {@link clone} so its extra fields (eg. a selected layer
-     * id) survive the copy.
+     * A new builder of the same kind carrying the merged config.
      *
      * @param {StyleConfig} next
      * @returns {this}
      */
     withConfig(next: StyleConfig): this;
     /**
-     * Returns a new builder with `base` merged *underneath* this builder's own
-     * config: the builder's own `source`/`source-layer`/`theme` win, unset fields
-     * fill from `base`, and filters AND with `base`'s first. This is the
-     * inheritance a group applies when pushing its `theme`/source-binding down to a
-     * child that hasn't set its own.
+     * A new builder with `base` merged underneath its own config: the builder's own
+     * fields win, unset ones fill from `base`, and its filters AND with `base`'s
+     * first.
      *
      * @param {StyleConfig} base
      * @returns {this}
@@ -44,31 +39,40 @@ export class Builder {
      */
     clone(config: StyleConfig): this;
     /**
-     * Accumulates source-binding context (`source`/`source-layer`/`filter`).
+     * Binds the layers to a source.
+     *
+     * @example
+     * ```js
+     * Ocean.apply({ source: "openmaptiles", sourceLayer: "water", filter: f.cls("ocean") })
+     * ```
      *
      * @param {LayerContext} [context]
      * @returns {this}
      */
     apply(context?: LayerContext): this;
     /**
-     * Accumulates rendering preferences, shallow-merged over any already set.
+     * Accumulates rendering preferences, merged over any already set.
      *
      * @param {Theme} theme
      * @returns {this}
      */
     theme(theme: Theme): this;
     /**
-     * Accumulates a verbatim patch applied to every built layer at `.build`.
+     * Accumulates a patch merged onto every built layer.
      *
      * @param {object} patch
      * @returns {this}
      */
     patch(patch: object): this;
     /**
-     * Accumulates an id rewrite applied to every built layer at `.build`, after
-     * patches. Lets a style be reapplied without its ids colliding, eg.
-     * `Railway.renameIds((id) => id.replace("railway", "railway-transit"))` or
-     * `Railway.renameIds({ railway: "railway-transit" })`.
+     * Accumulates an id rewrite, letting a style be reapplied without its ids
+     * colliding.
+     *
+     * @example
+     * ```js
+     * Railway.renameIds((id) => id.replace("railway", "railway-transit"))
+     * Railway.renameIds({ railway: "railway-transit" })
+     * ```
      *
      * @param {IdRename} rename
      * @returns {this}
@@ -76,14 +80,13 @@ export class Builder {
     renameIds(rename: IdRename): this;
     /**
      * Resolves the accumulated config to bound, patched, renamed layers, each
-     * stamped with `iml.style`. A group walk adds `iml.group` on top of this.
+     * stamped with `iml.style`.
      *
      * @returns {ResolvedLayer[]}
      */
     build(): ResolvedLayer[];
     /**
-     * Selects the produced layers from the style function's raw output. Overridden
-     * by {@link SingleLayerHandle} to pick one.
+     * Selects which of the style function's layers to keep.
      *
      * @param {Style[]} layers
      * @returns {ResolvedLayer[]}
@@ -91,7 +94,7 @@ export class Builder {
     resolve(layers: Style[]): ResolvedLayer[];
     /**
      * The glyphs URL this style needs, or `undefined` if none of its layers render
-     * text. Glyphs are a fixed library constant a text style is authored against.
+     * text.
      *
      * @returns {string | undefined}
      */
@@ -105,8 +108,8 @@ export class Builder {
     getSpriteUrl(): string | undefined;
 }
 /**
- * A builder for a single named layer within a style, returned by
- * {@link StyleHandle.onlyLayer}. `.build` resolves to that one layer.
+ * A builder narrowed to one layer of a style, returned by
+ * {@link StyleHandle#onlyLayer}.
  */
 export class SingleLayerHandle extends Builder {
     /**
@@ -121,23 +124,20 @@ export class SingleLayerHandle extends Builder {
     clone(config: StyleConfig): this;
 }
 /**
- * A builder for a style: a stack of one or more layers. The entrypoint for using
- * a style — you import it, chain `.apply`/`.theme`/`.patch`, and `.build` to get
- * its bound layers.
+ * A builder for a style — a stack of one or more layers. Chain
+ * `.apply`/`.theme`/`.patch`, then `.build` for its bound layers.
  */
 export class StyleHandle extends Builder {
     /** @param {StyleConfig} config */
     clone(config: StyleConfig): this;
     /**
-     * Selects the single layer with the given id, returning a builder whose
-     * `.build` yields that one layer while preserving accumulated config.
+     * Narrows to the single layer with the given id, preserving accumulated config.
      *
      * @param {string} id
      */
     onlyLayer(id: string): SingleLayerHandle;
     /**
-     * The style's raw, unbound layers. An escape hatch for introspection; most
-     * code uses `.build`.
+     * The style's raw, unbound layers. An escape hatch for introspection.
      *
      * @param {Theme} [theme]
      */
@@ -145,10 +145,8 @@ export class StyleHandle extends Builder {
 }
 export function style(name: string, fn: StyleFn): StyleHandle;
 /**
- * Re-usable style properties for a MapBox/MapLibre layer.
- *
- * `source`, `source-layer` and `filter` are absent – the properties that
- * bind a layer to a specific source.
+ * A MapBox/MapLibre layer minus its source binding (`source`, `source-layer`,
+ * `filter`), which `.apply` supplies.
  */
 export type Style = {
     id?: string;
@@ -159,8 +157,7 @@ export type Style = {
     maxzoom?: number;
 };
 /**
- * A `Style` resolved into a complete GL layer, with "source", "source-layer",
- * "filter" and any other properties.
+ * A `Style` resolved into a complete GL layer, with its source binding.
  */
 export type ResolvedLayer = Style & {
     id: string;
@@ -176,14 +173,11 @@ export type Theme = {
     textField?: string | string[];
 };
 /**
- * A function producing the `Style`s of a style's layers from a resolved
- * `Theme`. Wrapped by {@link style} to make the style itself the entrypoint.
+ * A style body: produces its layers' `Style`s from a `Theme`.
  */
 export type StyleFn = (theme: Theme) => Style[];
 /**
- * The context binding a style's layers to a source: its address into the tiles.
- * Passed to `.apply` as plain data and accumulated on the builder; theme and
- * patches are set through their own methods.
+ * The source binding passed to `.apply`.
  */
 export type LayerContext = {
     /**
@@ -200,7 +194,7 @@ export type LayerContext = {
     filter?: import("../filter/index.js").Filter | any[];
 };
 /**
- * The accumulated configuration a builder carries until `.build()` resolves it.
+ * The config a builder accumulates until `.build` resolves it.
  */
 export type StyleConfig = {
     context?: LayerContext;
@@ -215,7 +209,7 @@ export type StyleConfig = {
     renames?: IdRename[];
 };
 /**
- * How to rewrite built layer ids: a function `(id) => newId`, or a lookup object
- * mapping old id to new id (ids absent from the map are left unchanged).
+ * How to rewrite built layer ids: a `(id) => newId` function, or an old-to-new
+ * lookup (missing ids left unchanged).
  */
 export type IdRename = ((id: string) => string) | Record<string, string>;

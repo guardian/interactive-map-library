@@ -6,15 +6,14 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * A child of a group: another {@link Group}, or a style {@link Builder} (an
- * `.apply(...)` result). Both resolve to stamped layers via `.build`.
+ * A child of a group: another {@link Group}, or a style {@link Builder}.
  *
  * @typedef {Group | Builder} GroupChild
  */
 
 /**
- * A function run over a group's built child layers before they are concatenated,
- * for structural reordering such as drawing casings before fills.
+ * Reorders a group's built layers before they are concatenated, eg. drawing
+ * casings before fills.
  *
  * @typedef {(layers: ResolvedLayer[]) => ResolvedLayer[]} PostProcessor
  */
@@ -30,28 +29,21 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
 
 /**
  * A group's config. `theme` flows down to descendants that don't set their own;
- * `document` and `post` belong to the node they're set on. `sources` is the lookup
- * `.toGlStyle`/`.getSources` resolve layers against; it merges with every
- * descendant group's `sources` so a group composed from self-contained sub-groups
- * needs no re-declaration, the outer (shallower) definition winning on a conflict.
- * Glyphs and sprite are style concerns derived from the layer body, not configured
- * here — see {@link Builder#getGlyphsUrl}.
+ * `sources` merges across the whole subtree, the shallower definition winning on
+ * a name conflict.
  *
  * @typedef {object} GroupConfig
  * @property {Theme} [theme]
- * @property {Record<string, object>} [sources] Source lookup keyed by source name;
- *   only names a layer references are resolved.
+ * @property {Record<string, object>} [sources] Source definitions keyed by name.
  * @property {DocumentFields} [document]
  * @property {PostProcessor[]} [post]
  */
 
 /**
- * Prepends this group's name to each layer's `iml.group` path, building the path
- * leaves-to-root as the walk unwinds.
+ * Prepends `name` to each layer's `iml.group` path.
  *
  * @param {ResolvedLayer[]} layers
  * @param {string} name
- * @returns {ResolvedLayer[]}
  */
 const stampGroup = (layers, name) => {
   if (name === undefined) {
@@ -67,8 +59,7 @@ const stampGroup = (layers, name) => {
 }
 
 /**
- * The inheritable part of a group's config (theme), as a {@link StyleConfig} a
- * child builder can inherit.
+ * The part of a group's config a child builder inherits.
  *
  * @param {GroupConfig} config
  * @returns {StyleConfig}
@@ -76,13 +67,11 @@ const stampGroup = (layers, name) => {
 const inheritable = (config) => ({ theme: config.theme })
 
 /**
- * Reduces an omit/pick argument to the name it matches on. A nameless instance
- * has no name to match — identity matching belongs to the `...By` variants — so
- * it throws rather than silently matching nothing.
+ * The name an omit/pick argument matches on. A nameless instance throws, since
+ * identity matching belongs to the `...By` variants.
  *
  * @param {string | { name?: string }} arg
  * @param {string} axis "group" or "style", for the error message
- * @returns {string}
  */
 const nameOf = (arg, axis) => {
   if (typeof arg === "string") {
@@ -97,11 +86,10 @@ const nameOf = (arg, axis) => {
 }
 
 /**
- * The subset of a source lookup that `layers` reference by `source` name.
+ * The subset of `lookup` that `layers` reference by `source` name.
  *
  * @param {Record<string, object>} lookup
  * @param {ResolvedLayer[]} layers
- * @returns {Record<string, object>}
  */
 const resolveSources = (lookup, layers) => {
   const referenced = new Set(layers.map((layer) => layer.source).filter(Boolean))
@@ -110,13 +98,10 @@ const resolveSources = (lookup, layers) => {
 }
 
 /**
- * The merged source lookup across a group and all its descendants, so a group
- * composed from self-contained sub-groups resolves their sources without
- * re-declaring them. On a name conflict the outer (shallower) definition wins,
- * letting a consumer override a child's source by declaring their own.
+ * The merged source lookup across `root` and its descendants. On a name conflict
+ * the shallower definition wins.
  *
  * @param {Group} root
- * @returns {Record<string, object>}
  */
 const gatherSources = (root) => {
   const merged = {}
@@ -130,8 +115,7 @@ const gatherSources = (root) => {
 }
 
 /**
- * Every {@link Group} node in a tree, this one and all its descendants, depth
- * first.
+ * `root` and its descendant group nodes, depth first.
  *
  * @param {Group} root
  * @returns {Group[]}
@@ -143,7 +127,7 @@ const groupNodes = (root) => {
 }
 
 /**
- * Every style {@link Builder} leaf in a tree, in tree order.
+ * Every style leaf under `root`, in tree order.
  *
  * @param {Group} root
  * @returns {Builder[]}
@@ -158,16 +142,14 @@ const styleLeaves = (root) =>
   })
 
 /**
- * A named, ordered, nestable set of children (styles or sub-groups) that retains
- * its tree and flattens to stamped layers on demand. `theme` flows down to
- * descendants that don't set their own; `iml.group` provenance flows up.
- * Immutable — every method returns a new group.
+ * An ordered, nestable set of children (styles or sub-groups) that flattens to
+ * layers on demand. Immutable — every method returns a new group. Prefer the
+ * {@link group} factory to constructing directly.
  */
 export class Group {
   /**
-   * @param {string | undefined} name The group's provenance name, prepended to
-   *   each descendant's `iml.group` path. `undefined` for an anonymous structural
-   *   container, which stamps nothing.
+   * @param {string | undefined} name Prepended to each descendant's `iml.group`
+   *   path. `undefined` for an anonymous group, which stamps nothing.
    * @param {GroupChild[]} children
    * @param {GroupConfig} [config]
    */
@@ -178,73 +160,64 @@ export class Group {
   }
 
   /**
-   * Returns a new group with `overrides` merged over this group's config.
+   * A new group with `overrides` merged over its config.
    *
    * @param {Partial<GroupConfig>} overrides
-   * @returns {Group}
    */
   copy(overrides) {
     return new Group(this.name, this.children, { ...this.config, ...overrides })
   }
 
   /**
-   * Returns a new group with `theme` shallow-merged over this group's, inherited
-   * by every descendant that doesn't set its own.
+   * A new group with `theme` merged over its own.
    *
    * @param {Theme} theme
-   * @returns {Group}
    */
   theme(theme) {
     return this.copy({ theme: { ...this.config.theme, ...theme } })
   }
 
   /**
-   * Returns a new group carrying the given source lookup, merged into any already
-   * carried. Optional — a group with no lookup still builds, omitting from its
-   * document any source a layer references but the lookup can't resolve.
+   * A new group carrying the given source definitions, merged into any already
+   * carried.
    *
    * @param {Record<string, object>} sources
-   * @returns {Group}
    */
   resources(sources) {
     return this.copy({ sources: { ...this.config.sources, ...sources } })
   }
 
   /**
-   * Returns a new group carrying the given document-envelope fields (`name`,
-   * `metadata`), so a root group's `.toGlStyle()` needs no args.
+   * A new group carrying the given document fields, so a root group's
+   * `.toGlStyle()` needs no args.
    *
    * @param {DocumentFields} document
-   * @returns {Group}
    */
   document(document) {
     return this.copy({ document: { ...this.config.document, ...document } })
   }
 
   /**
-   * Returns a new group with `children` appended after this group's own.
+   * A new group with `children` appended after its own.
    *
    * @param {...GroupChild} children
-   * @returns {Group}
    */
   append(...children) {
     return new Group(this.name, [...this.children, ...children], this.config)
   }
 
   /**
-   * Returns a new group with `children` prepended before this group's own.
+   * A new group with `children` prepended before its own.
    *
    * @param {...GroupChild} children
-   * @returns {Group}
    */
   prepend(...children) {
     return new Group(this.name, [...children, ...this.children], this.config)
   }
 
   /**
-   * The name of every named group node in this subtree, including this one, depth
-   * first. Empty groups (all leaves pruned) still appear — discovery reports what
-   * is refinable, not what survives to a built layer.
+   * The names of every named group in this subtree, including this one. Reports
+   * the tree, so an emptied group still appears.
    *
    * @returns {string[]}
    */
@@ -255,8 +228,7 @@ export class Group {
   }
 
   /**
-   * The name of every style leaf in this subtree, in tree order, with duplicates
-   * and nameless leaves dropped.
+   * The names of every style leaf in this subtree, deduplicated.
    *
    * @returns {string[]}
    */
@@ -269,8 +241,8 @@ export class Group {
   }
 
   /**
-   * A human-readable, indented tree of group and style names for console
-   * inspection — the companion to name-based refinement. Returned, not logged.
+   * An indented tree of group and style names, returned (not logged) for
+   * inspection.
    *
    * @returns {string}
    */
@@ -294,11 +266,9 @@ export class Group {
   }
 
   /**
-   * Returns a new group with every named group node in the subtree matching `pred`
-   * pruned (with its whole subtree). A node-drop: `pred` sees the {@link Group}.
+   * A new group with every group matching `pred` pruned, along with its subtree.
    *
    * @param {(group: Group) => boolean} pred
-   * @returns {Group}
    */
   omitGroupsBy(pred) {
     const children = this.children
@@ -309,12 +279,10 @@ export class Group {
   }
 
   /**
-   * Returns a new group keeping only the subtrees rooted at a group node matching
-   * `pred`, whole, plus the ancestor path leading to each. Style leaves not under a
-   * kept group are dropped; a matched group keeps all its descendants.
+   * A new group keeping only the subtrees rooted at a group matching `pred`, plus
+   * the ancestor path to each. Leaves not under a kept group are dropped.
    *
    * @param {(group: Group) => boolean} pred
-   * @returns {Group}
    */
   pickGroupsBy(pred) {
     const children = this.children.flatMap((child) => {
@@ -335,12 +303,10 @@ export class Group {
   }
 
   /**
-   * Returns a new group with the named groups pruned, wherever they nest. Each
-   * name (a string, or an instance's `.name`) must match a group in the current
-   * tree; an unmatched name throws, guarding typos and double-removes.
+   * A new group with the named groups pruned, wherever they nest. A name is a
+   * string or a group's `.name`; an unmatched name throws.
    *
    * @param {...(string | Group)} groups
-   * @returns {Group}
    */
   omitGroups(...groups) {
     const names = new Set(groups.map((group) => nameOf(group, "group")))
@@ -356,11 +322,9 @@ export class Group {
   }
 
   /**
-   * Returns a new group keeping only the named group subtrees, whole. Each name
-   * must match a group in the current tree; an unmatched name throws.
+   * A new group keeping only the named group subtrees. An unmatched name throws.
    *
    * @param {...(string | Group)} groups
-   * @returns {Group}
    */
   pickGroups(...groups) {
     const names = new Set(groups.map((group) => nameOf(group, "group")))
@@ -376,12 +340,10 @@ export class Group {
   }
 
   /**
-   * Returns a new group with every style leaf matching `pred` pruned, wherever it
-   * sits. Tree shape is preserved: a group emptied of leaves stays, contributing
-   * no layers. `pred` sees the style {@link Builder} handle.
+   * A new group with every style leaf matching `pred` pruned. Tree shape is
+   * preserved: an emptied group stays, contributing no layers.
    *
    * @param {(style: Builder) => boolean} pred
-   * @returns {Group}
    */
   omitStylesBy(pred) {
     const children = this.children
@@ -392,23 +354,19 @@ export class Group {
   }
 
   /**
-   * Returns a new group keeping only the style leaves matching `pred`. Tree shape
-   * is preserved.
+   * A new group keeping only the style leaves matching `pred`.
    *
    * @param {(style: Builder) => boolean} pred
-   * @returns {Group}
    */
   pickStylesBy(pred) {
     return this.omitStylesBy((style) => !pred(style))
   }
 
   /**
-   * Returns a new group with the named styles' leaves pruned, wherever they sit.
-   * Each name (a string, or an instance's `.name`) must match a style leaf in the
-   * current tree; an unmatched name throws.
+   * A new group with the named styles' leaves pruned, wherever they sit. A name is
+   * a string or a style's `.name`; an unmatched name throws.
    *
    * @param {...(string | Builder)} styles
-   * @returns {Group}
    */
   omitStyles(...styles) {
     const names = new Set(styles.map((style) => nameOf(style, "style")))
@@ -424,11 +382,9 @@ export class Group {
   }
 
   /**
-   * Returns a new group keeping only the named styles' leaves. Each name must
-   * match a style leaf in the current tree; an unmatched name throws.
+   * A new group keeping only the named styles' leaves. An unmatched name throws.
    *
    * @param {...(string | Builder)} styles
-   * @returns {Group}
    */
   pickStyles(...styles) {
     const names = new Set(styles.map((style) => nameOf(style, "style")))
@@ -444,9 +400,8 @@ export class Group {
   }
 
   /**
-   * The resolved source definitions this group's built layers reference, keyed by
-   * source name, for the imperative `map.addSource(name, def)` path. Only names the
-   * carried lookup can resolve appear; unresolved ones are the consumer's to load.
+   * The source definitions this group's layers reference, keyed by name, for the
+   * imperative `map.addSource(name, def)` path.
    *
    * @returns {Record<string, object>}
    */
@@ -466,7 +421,7 @@ export class Group {
 
   /**
    * The sprite URL this group's layers need, or `undefined` if none render an
-   * icon, for the imperative sprite-loading path.
+   * icon.
    *
    * @returns {string | undefined}
    */
@@ -475,9 +430,8 @@ export class Group {
   }
 
   /**
-   * Walks the tree once: pushes inherited config into each child, builds it, runs
-   * post-processors over the built layers, stamps `iml.group`, and returns them
-   * concatenated in order (order = z-order).
+   * Flattens the tree to layers in z-order: pushes inherited config into each
+   * child, builds it, runs post-processors, and stamps `iml.group`.
    *
    * @returns {ResolvedLayer[]}
    */
@@ -498,12 +452,10 @@ export class Group {
   }
 
   /**
-   * Returns a copy of this group with `parent`'s `theme` merged underneath its
-   * own, so this group's theme wins and unset fields fill from the parent. Used
-   * when nesting: the enclosing group seeds this one.
+   * A copy with `parent`'s `theme` merged underneath its own, so this group's
+   * theme wins and unset fields fill from the parent.
    *
    * @param {GroupConfig} parent
-   * @returns {Group}
    */
   under(parent) {
     if (parent.theme === undefined && this.config.theme === undefined) {
@@ -514,9 +466,8 @@ export class Group {
   }
 
   /**
-   * Resolves the tree to a complete GL style document. Sources are derived: only
-   * definitions a built layer references by `source` are emitted. Glyphs and
-   * sprite are included only when a layer needs them.
+   * Resolves the tree to a complete GL style document. Sources, glyphs and sprite
+   * are derived from the built layers, emitted only when referenced.
    *
    * @returns {object}
    */
@@ -540,13 +491,15 @@ export class Group {
 }
 
 /**
- * Creates a {@link Group}: an ordered set of children (styles or sub-groups) with
- * optional `theme`, `sources`, `document`, and `post` config.
+ * Creates a {@link Group}. The name is optional: a named group stamps its name
+ * into each descendant layer's `iml.group` path, while an anonymous one stamps
+ * nothing.
  *
- * The name is optional. A named group is a provenance level — its name is stamped
- * into each descendant layer's `iml.group` path. An anonymous group (name
- * omitted) is a structural container only: it stamps nothing, so a consumer's
- * throwaway wrapper doesn't pollute library provenance.
+ * @example
+ * ```js
+ * group("Water", [Waterway, Ocean], { sources })
+ * group([Water, Roads]) // anonymous, structural
+ * ```
  *
  * @overload
  * @param {string} name

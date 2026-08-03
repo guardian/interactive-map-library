@@ -3,10 +3,8 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
 
 // TODO: type this with MapBox/MapLibre types?
 /**
- * Re-usable style properties for a MapBox/MapLibre layer.
- *
- * `source`, `source-layer` and `filter` are absent – the properties that
- * bind a layer to a specific source.
+ * A MapBox/MapLibre layer minus its source binding (`source`, `source-layer`,
+ * `filter`), which `.apply` supplies.
  *
  * @typedef {object} Style
  * @property {string} [id]
@@ -18,8 +16,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * A `Style` resolved into a complete GL layer, with "source", "source-layer",
- * "filter" and any other properties.
+ * A `Style` resolved into a complete GL layer, with its source binding.
  *
  * @typedef {Style & {
  *   id: string,
@@ -38,8 +35,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * A function producing the `Style`s of a style's layers from a resolved
- * `Theme`. Wrapped by {@link style} to make the style itself the entrypoint.
+ * A style body: produces its layers' `Style`s from a `Theme`.
  *
  * @callback StyleFn
  * @param {Theme} theme
@@ -47,9 +43,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * The context binding a style's layers to a source: its address into the tiles.
- * Passed to `.apply` as plain data and accumulated on the builder; theme and
- * patches are set through their own methods.
+ * The source binding passed to `.apply`.
  *
  * @typedef {object} LayerContext
  * @property {string} [source] The layers' "source" property
@@ -58,7 +52,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * The accumulated configuration a builder carries until `.build()` resolves it.
+ * The config a builder accumulates until `.build` resolves it.
  *
  * @typedef {object} StyleConfig
  * @property {LayerContext} [context]
@@ -68,15 +62,20 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * How to rewrite built layer ids: a function `(id) => newId`, or a lookup object
- * mapping old id to new id (ids absent from the map are left unchanged).
+ * How to rewrite built layer ids: a `(id) => newId` function, or an old-to-new
+ * lookup (missing ids left unchanged).
  *
  * @typedef {((id: string) => string) | Record<string, string>} IdRename
  */
 
 /**
- * Merges style parts into a single layer. `layout` and `paint` objects are
- * shallow-merged across parts; all other keys are overwritten last-wins.
+ * Merges style parts into a single layer. `layout` and `paint` shallow-merge
+ * across parts; every other key is last-wins.
+ *
+ * @example
+ * ```js
+ * merge(pWaterFill, { id: "ocean", paint: { "fill-opacity": 0.8 } })
+ * ```
  *
  * @param {...Style} parts
  * @returns {Style}
@@ -98,8 +97,8 @@ export const merge = (...parts) => {
 }
 
 /**
- * AND-s a layer's own filter with the context filter. Either may be absent, and
- * each may be a `Filter` builder or a raw GL expression.
+ * AND-s two filters, either of which may be absent, a `Filter`, or a raw
+ * expression.
  *
  * @param {import("../filter/index.js").Filter | any[]} [own]
  * @param {import("../filter/index.js").Filter | any[]} [context]
@@ -120,10 +119,8 @@ const combineFilters = (own, context) => {
 }
 
 /**
- * Binds a single built layer to a source, stamping the context's `source`,
- * `source-layer` and `filter` onto it. The layer's own filter (if any) is AND-ed
- * with the context filter, so a shared filter cannot drift between the layers of
- * one style.
+ * Stamps the context's `source`, `source-layer` and `filter` onto a layer, its
+ * own filter AND-ed with the context's.
  *
  * @param {ResolvedLayer} layer
  * @param {LayerContext} context
@@ -152,11 +149,6 @@ const bindLayer = (layer, context) => {
 }
 
 /**
- * Merges one patch onto a built layer, verbatim. Nested `layout`/`paint` blocks
- * shallow-merge; everything else overwrites. To bind a property to a feature
- * attribute, write the GL form explicitly, eg.
- * `patch({ paint: { "fill-extrusion-height": { property: "render_height", type: "identity" } } })`.
- *
  * @param {ResolvedLayer} layer
  * @param {object} patch
  * @returns {ResolvedLayer}
@@ -164,9 +156,6 @@ const bindLayer = (layer, context) => {
 const applyPatch = (layer, patch) => /** @type {ResolvedLayer} */ (merge(layer, patch))
 
 /**
- * Rewrites a built layer's id. A function is applied to the id; an object is a
- * lookup where a missing key leaves the id unchanged.
- *
  * @param {ResolvedLayer} layer
  * @param {IdRename} rename
  * @returns {ResolvedLayer}
@@ -178,8 +167,7 @@ const applyRename = (layer, rename) => {
 }
 
 /**
- * Stamps a built layer's provenance `style` name into `metadata.iml`, preserving
- * any existing metadata. A nameless style leaves `iml.style` undefined.
+ * Stamps `name` into the layer's `metadata.iml.style`.
  *
  * @param {ResolvedLayer} layer
  * @param {string | undefined} name
@@ -191,9 +179,8 @@ const stampStyle = (layer, name) => ({
 })
 
 /**
- * Merges a new context onto an accumulated one. `source`/`source-layer` are
- * last-wins; `filter`s AND together so repeated `.apply` calls narrow rather
- * than clobber.
+ * Merges two contexts. `source`/`source-layer` are last-wins; `filter`s AND
+ * together.
  *
  * @param {LayerContext} prev
  * @param {LayerContext} next
@@ -211,8 +198,8 @@ const mergeContext = (prev, next) => {
 }
 
 /**
- * Merges accumulated config from a builder with a new fragment. `context` and
- * `theme` shallow-merge (filters AND); `patches` append in order.
+ * Merges two configs. `context` and `theme` shallow-merge; `patches` and
+ * `renames` append in order.
  *
  * @param {StyleConfig} config
  * @param {StyleConfig} next
@@ -226,16 +213,15 @@ const mergeConfig = (config, next) => ({
 })
 
 /**
- * The shared builder body: accumulates {@link StyleConfig} through immutable
- * `.apply`/`.theme`/`.patch` calls, resolving to layers only at `.build`.
- * Subclasses supply how the style function's output becomes layers.
+ * Accumulates {@link StyleConfig} through immutable `.apply`/`.theme`/`.patch`
+ * calls, resolving to layers only at `.build`. Subclasses decide how the style
+ * function's output becomes layers.
  *
  * @abstract
  */
 export class Builder {
   /**
-   * @param {string | undefined} name The style name, stamped as `iml.style` on
-   *   every built layer. `undefined` for a nameless ad-hoc style.
+   * @param {string | undefined} name Stamped as `iml.style` on every built layer.
    * @param {StyleFn} fn
    * @param {StyleConfig} [config]
    */
@@ -246,9 +232,7 @@ export class Builder {
   }
 
   /**
-   * Returns a new builder of the same kind carrying the merged config. Each
-   * subclass implements {@link clone} so its extra fields (eg. a selected layer
-   * id) survive the copy.
+   * A new builder of the same kind carrying the merged config.
    *
    * @param {StyleConfig} next
    * @returns {this}
@@ -258,11 +242,9 @@ export class Builder {
   }
 
   /**
-   * Returns a new builder with `base` merged *underneath* this builder's own
-   * config: the builder's own `source`/`source-layer`/`theme` win, unset fields
-   * fill from `base`, and filters AND with `base`'s first. This is the
-   * inheritance a group applies when pushing its `theme`/source-binding down to a
-   * child that hasn't set its own.
+   * A new builder with `base` merged underneath its own config: the builder's own
+   * fields win, unset ones fill from `base`, and its filters AND with `base`'s
+   * first.
    *
    * @param {StyleConfig} base
    * @returns {this}
@@ -281,7 +263,12 @@ export class Builder {
   }
 
   /**
-   * Accumulates source-binding context (`source`/`source-layer`/`filter`).
+   * Binds the layers to a source.
+   *
+   * @example
+   * ```js
+   * Ocean.apply({ source: "openmaptiles", sourceLayer: "water", filter: f.cls("ocean") })
+   * ```
    *
    * @param {LayerContext} [context]
    * @returns {this}
@@ -291,7 +278,7 @@ export class Builder {
   }
 
   /**
-   * Accumulates rendering preferences, shallow-merged over any already set.
+   * Accumulates rendering preferences, merged over any already set.
    *
    * @param {Theme} theme
    * @returns {this}
@@ -301,7 +288,7 @@ export class Builder {
   }
 
   /**
-   * Accumulates a verbatim patch applied to every built layer at `.build`.
+   * Accumulates a patch merged onto every built layer.
    *
    * @param {object} patch
    * @returns {this}
@@ -311,10 +298,14 @@ export class Builder {
   }
 
   /**
-   * Accumulates an id rewrite applied to every built layer at `.build`, after
-   * patches. Lets a style be reapplied without its ids colliding, eg.
-   * `Railway.renameIds((id) => id.replace("railway", "railway-transit"))` or
-   * `Railway.renameIds({ railway: "railway-transit" })`.
+   * Accumulates an id rewrite, letting a style be reapplied without its ids
+   * colliding.
+   *
+   * @example
+   * ```js
+   * Railway.renameIds((id) => id.replace("railway", "railway-transit"))
+   * Railway.renameIds({ railway: "railway-transit" })
+   * ```
    *
    * @param {IdRename} rename
    * @returns {this}
@@ -325,7 +316,7 @@ export class Builder {
 
   /**
    * Resolves the accumulated config to bound, patched, renamed layers, each
-   * stamped with `iml.style`. A group walk adds `iml.group` on top of this.
+   * stamped with `iml.style`.
    *
    * @returns {ResolvedLayer[]}
    */
@@ -342,8 +333,7 @@ export class Builder {
   }
 
   /**
-   * Selects the produced layers from the style function's raw output. Overridden
-   * by {@link SingleLayerHandle} to pick one.
+   * Selects which of the style function's layers to keep.
    *
    * @param {Style[]} layers
    * @returns {ResolvedLayer[]}
@@ -354,7 +344,7 @@ export class Builder {
 
   /**
    * The glyphs URL this style needs, or `undefined` if none of its layers render
-   * text. Glyphs are a fixed library constant a text style is authored against.
+   * text.
    *
    * @returns {string | undefined}
    */
@@ -374,8 +364,8 @@ export class Builder {
 }
 
 /**
- * A builder for a single named layer within a style, returned by
- * {@link StyleHandle.onlyLayer}. `.build` resolves to that one layer.
+ * A builder narrowed to one layer of a style, returned by
+ * {@link StyleHandle#onlyLayer}.
  */
 export class SingleLayerHandle extends Builder {
   /**
@@ -407,9 +397,8 @@ export class SingleLayerHandle extends Builder {
 }
 
 /**
- * A builder for a style: a stack of one or more layers. The entrypoint for using
- * a style — you import it, chain `.apply`/`.theme`/`.patch`, and `.build` to get
- * its bound layers.
+ * A builder for a style — a stack of one or more layers. Chain
+ * `.apply`/`.theme`/`.patch`, then `.build` for its bound layers.
  */
 export class StyleHandle extends Builder {
   /** @param {StyleConfig} config */
@@ -418,8 +407,7 @@ export class StyleHandle extends Builder {
   }
 
   /**
-   * Selects the single layer with the given id, returning a builder whose
-   * `.build` yields that one layer while preserving accumulated config.
+   * Narrows to the single layer with the given id, preserving accumulated config.
    *
    * @param {string} id
    */
@@ -428,8 +416,7 @@ export class StyleHandle extends Builder {
   }
 
   /**
-   * The style's raw, unbound layers. An escape hatch for introspection; most
-   * code uses `.build`.
+   * The style's raw, unbound layers. An escape hatch for introspection.
    *
    * @param {Theme} [theme]
    */
@@ -439,10 +426,13 @@ export class StyleHandle extends Builder {
 }
 
 /**
- * Wraps a style function as a {@link StyleHandle}, making the style itself the
- * entrypoint: `Ocean.apply(...).build()` builds and binds its layers. The `name`
- * is stamped as `iml.style` on every layer it produces and, by convention, must
- * match the export binding (`export const Ocean = style("Ocean", …)`).
+ * Wraps a style function as a {@link StyleHandle}. By convention `name` matches
+ * the export binding.
+ *
+ * @example
+ * ```js
+ * export const Ocean = style("Ocean", (theme) => [ ... ])
+ * ```
  *
  * @param {string} name
  * @param {StyleFn} fn

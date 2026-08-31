@@ -1,8 +1,9 @@
 import { Builder } from "./style.js"
-import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js"
+import { needsGlyphs, needsSprite } from "./resources.js"
 
 /**
  * @import { ResolvedLayer, StyleConfig, Theme } from "./style.js"
+ * @import { Resources } from "./resources.js"
  */
 
 /**
@@ -28,13 +29,12 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
- * A group's config. `theme` flows down to descendants that don't set their own;
- * `sources` merges across the whole subtree, the shallower definition winning on
- * a name conflict.
+ * A group's config. `theme` and `resources` flow down to descendants that don't
+ * set their own.
  *
  * @typedef {object} GroupConfig
  * @property {Theme} [theme]
- * @property {Record<string, object>} [sources] Source definitions keyed by name.
+ * @property {Resources} [resources] The externals its layers reference.
  * @property {DocumentFields} [document]
  * @property {PostProcessor[]} [post]
  */
@@ -95,23 +95,6 @@ const resolveSources = (lookup, layers) => {
   const referenced = new Set(layers.map((layer) => layer.source).filter(Boolean))
 
   return Object.fromEntries(Object.entries(lookup).filter(([name]) => referenced.has(name)))
-}
-
-/**
- * The merged source lookup across `root` and its descendants. On a name conflict
- * the shallower definition wins.
- *
- * @param {Group} root
- */
-const gatherSources = (root) => {
-  const merged = {}
-
-  // groupNodes is outer-first; merge deepest-first so shallower overwrites.
-  for (const node of groupNodes(root).reverse()) {
-    Object.assign(merged, node.config.sources)
-  }
-
-  return merged
 }
 
 /**
@@ -178,13 +161,13 @@ export class Group {
   }
 
   /**
-   * A new group carrying the given source definitions, merged into any already
-   * carried.
+   * A new group carrying the given resources, from which its layers' sources,
+   * glyphs and sprite are resolved.
    *
-   * @param {Record<string, object>} sources
+   * @param {Resources} resources
    */
-  resources(sources) {
-    return this.copy({ sources: { ...this.config.sources, ...sources } })
+  withResources(resources) {
+    return this.copy({ resources })
   }
 
   /**
@@ -406,7 +389,7 @@ export class Group {
    * @returns {Record<string, object>}
    */
   getSources() {
-    return resolveSources(gatherSources(this), this.build())
+    return resolveSources(this.config.resources?.sources ?? {}, this.build())
   }
 
   /**
@@ -416,7 +399,7 @@ export class Group {
    * @returns {string | undefined}
    */
   getGlyphsUrl() {
-    return needsGlyphs(this.build()) ? GLYPHS_URL : undefined
+    return needsGlyphs(this.build()) ? this.config.resources?.glyphs : undefined
   }
 
   /**
@@ -426,7 +409,7 @@ export class Group {
    * @returns {string | undefined}
    */
   getSpriteUrl() {
-    return needsSprite(this.build()) ? SPRITE_URL : undefined
+    return needsSprite(this.build()) ? this.config.resources?.sprite : undefined
   }
 
   /**
@@ -452,17 +435,23 @@ export class Group {
   }
 
   /**
-   * A copy with `parent`'s `theme` merged underneath its own, so this group's
-   * theme wins and unset fields fill from the parent.
+   * A copy with `parent`'s `theme` merged underneath its own and its `resources`
+   * inherited where unset, so this group's own values win.
    *
    * @param {GroupConfig} parent
    */
   under(parent) {
-    if (parent.theme === undefined && this.config.theme === undefined) {
+    const inheritsTheme = parent.theme !== undefined
+    const inheritsResources = parent.resources !== undefined && this.config.resources === undefined
+
+    if (!inheritsTheme && !inheritsResources) {
       return this
     }
 
-    return this.copy({ theme: { ...parent.theme, ...this.config.theme } })
+    return this.copy({
+      theme: { ...parent.theme, ...this.config.theme },
+      resources: this.config.resources ?? parent.resources,
+    })
   }
 
   /**
@@ -473,10 +462,11 @@ export class Group {
    */
   toGlStyle() {
     const { version, name, metadata } = this.config.document ?? {}
+    const resources = this.config.resources
     const layers = this.build()
 
-    const glyphs = needsGlyphs(layers) ? GLYPHS_URL : undefined
-    const sprite = needsSprite(layers) ? SPRITE_URL : undefined
+    const glyphs = needsGlyphs(layers) ? resources?.glyphs : undefined
+    const sprite = needsSprite(layers) ? resources?.sprite : undefined
 
     return {
       version: version ?? 8,
@@ -484,7 +474,7 @@ export class Group {
       ...(glyphs !== undefined && { glyphs }),
       ...(sprite !== undefined && { sprite }),
       ...(metadata !== undefined && { metadata }),
-      sources: resolveSources(gatherSources(this), layers),
+      sources: resolveSources(resources?.sources ?? {}, layers),
       layers,
     }
   }
@@ -497,7 +487,7 @@ export class Group {
  *
  * @example
  * ```js
- * group("Water", [Waterway, Ocean], { sources })
+ * group("Water", [Waterway, Ocean], { resources })
  * group([Water, Roads]) // anonymous, structural
  * ```
  *

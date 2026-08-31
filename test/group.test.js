@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { style } from "../src/core/style.js"
 import { group } from "../src/core/group.js"
+import { resources } from "../src/core/resources.js"
 import { Filter } from "../src/filter/index.js"
 
 const Water = style("Water", () => [
@@ -45,7 +46,7 @@ describe("group build", () => {
   it("inherits theme down, and a subgroup shadows it for its subtree", () => {
     const g = group("Labels", [
       Label.apply({ source: "omt" }),
-      group("Loud", [Label.apply({ source: "omt" }).renameIds({ label: "loud-label" })]).theme({
+      group("Loud", [Label.apply({ source: "omt" }).patch({ label: { id: "loud-label" } })]).theme({
         textField: "SHOUT",
       }),
     ]).theme({ textField: "name" })
@@ -70,7 +71,7 @@ const buildTree = () =>
     group("Roads", [
       Road.apply({ source: "omt", sourceLayer: "transportation" }),
       group("Railways", [
-        Road.apply({ source: "omt", sourceLayer: "transportation" }).renameIds({ road: "railway" }),
+        Road.apply({ source: "omt", sourceLayer: "transportation" }).patch({ road: { id: "railway" } }),
       ]),
     ]),
     group("Labels", [Label.apply({ source: "omt" })]).theme({ textField: "name" }),
@@ -164,7 +165,7 @@ describe("omitStyles / pickStyles", () => {
 
   it("omitStylesBy sees the builder handle for identity matching", () => {
     const only = Road.apply({ source: "omt" })
-    const g = group("Root", [only, Road.apply({ source: "omt" }).renameIds({ road: "road-2" })])
+    const g = group("Root", [only, Road.apply({ source: "omt" }).patch({ road: { id: "road-2" } })])
 
     expect(ids(g.omitStylesBy((s) => s === only))).toEqual(["road-2"])
   })
@@ -189,10 +190,11 @@ describe("provenance invariant", () => {
   })
 })
 
+const twoSources = resources({ omt: { type: "vector" }, terrain: { type: "vector" } })
+
 describe("group toGlStyle", () => {
   it("emits only referenced sources", () => {
-    const doc = group("Root", [Water.apply({ source: "omt", sourceLayer: "water" })])
-      .resources({ omt: { type: "vector" }, terrain: { type: "vector" } })
+    const doc = group("Root", [Water.apply({ source: "omt", sourceLayer: "water" })], { resources: twoSources })
       .document({ name: "Test" })
       .toGlStyle()
 
@@ -204,32 +206,28 @@ describe("group toGlStyle", () => {
 
 describe("group resources", () => {
   const water = () => Water.apply({ source: "omt", sourceLayer: "water" })
-  const carrying = (sources) => group("Water", [water()], { sources })
 
-  // getSources resolves only the source subset its layers reference, wherever the
-  // lookup is carried in the tree: on the group itself, on a standalone sub-group,
-  // or gathered up through a wrapper (even deeply nested). An unresolved source is
-  // omitted, not an error. On a name conflict the shallower definition wins.
+  // Sources come from the group's resources, tree-shaken to those the built layers
+  // reference; resources flow to a sub-group that hasn't set their own. A group with
+  // no resources resolves nothing.
   it.each([
-    ["the subset its layers reference", carrying({ omt: { type: "vector" }, terrain: { type: "vector" } }), { omt: { type: "vector" } }],
-    ["a sub-group's standalone lookup", group([carrying({ omt: { type: "vector" } })]), { omt: { type: "vector" } }],
-    ["a deeply nested lookup", group("Outer", [group("Inner", [carrying({ omt: { type: "vector" } })])]), { omt: { type: "vector" } }],
-    ["nothing when no lookup is carried", group("Water", [water()]), {}],
-    ["the shallower definition on a conflict", group([carrying({ omt: { type: "vector", tiles: ["child"] } })], { sources: { omt: { type: "vector", tiles: ["parent"] } } }), { omt: { type: "vector", tiles: ["parent"] } }],
+    ["the subset its layers reference", group("Water", [water()], { resources: twoSources }), { omt: { type: "vector" } }],
+    ["resources inherited by a sub-group", group("Outer", [group("Inner", [water()])], { resources: twoSources }), { omt: { type: "vector" } }],
+    ["nothing when no resources are carried", group("Water", [water()]), {}],
   ])("getSources resolves %s", (_, g, expected) => {
     expect(g.getSources()).toEqual(expected)
   })
 
-  it("emits its resolved sources through toGlStyle, omitting unresolved ones", () => {
-    const g = group("Water", [water()])
+  it("emits its resolved sources through toGlStyle, omitting unreferenced ones", () => {
+    const g = group("Water", [water()], { resources: twoSources })
 
-    expect(g.toGlStyle().sources).toEqual({})
+    expect(g.toGlStyle().sources).toEqual({ omt: { type: "vector" } })
     expect(g.toGlStyle().layers).toHaveLength(2)
   })
 
   it("derives glyphs only when a layer renders text", () => {
-    const withText = group("Labels", [Label.apply({ source: "omt" })]).theme({ textField: "name" })
-    const withoutText = group("Water", [Water.apply({ source: "omt" })])
+    const withText = group("Labels", [Label.apply({ source: "omt" })], { resources: twoSources }).theme({ textField: "name" })
+    const withoutText = group("Water", [Water.apply({ source: "omt" })], { resources: twoSources })
 
     expect(withText.getGlyphsUrl()).toBeTruthy()
     expect(withoutText.getGlyphsUrl()).toBeUndefined()

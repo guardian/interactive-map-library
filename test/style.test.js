@@ -99,10 +99,10 @@ describe("style builder", () => {
     expect(layer.theme).toEqual({ textField: "name" })
   })
 
-  it("merges a patch verbatim onto every built layer", () => {
+  it("patchAll merges a patch onto every built layer", () => {
     const Extrusion = style("Extrusion", () => [{ id: "b", type: "fill-extrusion", paint: { "fill-extrusion-opacity": 1 } }])
 
-    const [layer] = Extrusion.patch({
+    const [layer] = Extrusion.patchAll({
       paint: { "fill-extrusion-height": { property: "render_height", type: "identity" } },
     }).build()
 
@@ -112,14 +112,21 @@ describe("style builder", () => {
     })
   })
 
-  // renameIds takes a function or a lookup (unlisted ids untouched), and repeated
-  // calls apply in accumulation order.
+  // patch takes a (layer) => layer transform applied to each layer, or an
+  // { id: partial } map merged onto the matching layers (others untouched).
   it.each([
-    ["a function, over every layer", Water.renameIds((id) => id.replace("water", "sea")), ["sea-outline", "sea"]],
-    ["a lookup, leaving unlisted ids untouched", Water.renameIds({ water: "lake" }), ["water-outline", "lake"]],
-    ["repeated calls, in order", Water.renameIds({ water: "lake" }).renameIds({ lake: "sea" }), ["water-outline", "sea"]],
-  ])("renames built ids with %s", (_, builder, expected) => {
+    ["a function, over every layer", Water.patch((l) => ({ ...l, id: l.id.replace("water", "sea") })), ["sea-outline", "sea"]],
+    ["a map, leaving unmatched ids untouched", Water.patch({ water: { id: "lake" } }), ["water-outline", "lake"]],
+    ["repeated calls, in order", Water.patch({ water: { id: "lake" } }).patch({ lake: { id: "sea" } }), ["water-outline", "sea"]],
+  ])("rewrites ids via patch with %s", (_, builder, expected) => {
     expect(builder.build().map((l) => l.id)).toEqual(expected)
+  })
+
+  it("patch's map form deep-merges paint onto the matching layer", () => {
+    const [outline, fill] = Water.patch({ water: { paint: { "fill-opacity": 0.5 } } }).build()
+
+    expect(fill.paint).toEqual({ "fill-color": "blue", "fill-opacity": 0.5 })
+    expect(outline.paint).toEqual({ "line-color": "blue" })
   })
 })
 

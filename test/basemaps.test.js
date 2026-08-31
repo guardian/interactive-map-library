@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { validateStyleMin } from "@maplibre/maplibre-gl-style-spec"
-import { Graphics } from "../src/basemaps/graphics.js"
-import { Protomaps } from "../src/basemaps/protomaps.js"
+import { groups as graphics } from "../src/basemaps/graphics/index.js"
+import { groups as protomaps } from "../src/basemaps/protomaps/index.js"
 
 // Snapshot tests for the generated basemaps, so any code changes that unintentionally change
 // the basemap output leads to failing tests.
@@ -9,8 +9,8 @@ import { Protomaps } from "../src/basemaps/protomaps.js"
 // After code changes that make valid changes to the snapshots, update them with
 // `npm run test -- -u`.
 describe.each([
-  ["Graphics", Graphics.toGlStyle()],
-  ["Protomaps", Protomaps.toGlStyle()],
+  ["Graphics", graphics.Graphics.toGlStyle()],
+  ["Protomaps", protomaps.Protomaps.toGlStyle()],
 ])("%s basemap", (name, style) => {
   it("matches its snapshot", () => {
     expect(style).toMatchSnapshot()

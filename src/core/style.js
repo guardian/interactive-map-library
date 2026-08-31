@@ -52,20 +52,22 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  */
 
 /**
+ * A patch entry: `all` merges `body` onto every layer; `each` replaces each layer
+ * with `fn(layer)`; `byId` merges a partial onto the layer whose id matches, others
+ * untouched.
+ *
+ * @typedef {{ kind: "all", body: object }
+ *   | { kind: "each", fn: (layer: ResolvedLayer) => ResolvedLayer }
+ *   | { kind: "byId", map: Record<string, object> }} Patch
+ */
+
+/**
  * The config a builder accumulates until `.build` resolves it.
  *
  * @typedef {object} StyleConfig
  * @property {LayerContext} [context]
  * @property {Theme} [theme]
- * @property {object[]} [patches] Applied verbatim to every built layer, in order
- * @property {IdRename[]} [renames] Rewrite built layer ids, in order
- */
-
-/**
- * How to rewrite built layer ids: a `(id) => newId` function, or an old-to-new
- * lookup (missing ids left unchanged).
- *
- * @typedef {((id: string) => string) | Record<string, string>} IdRename
+ * @property {Patch[]} [patches] Applied to built layers in order
  */
 
 /**
@@ -150,20 +152,21 @@ const bindLayer = (layer, context) => {
 
 /**
  * @param {ResolvedLayer} layer
- * @param {object} patch
+ * @param {Patch} patch
  * @returns {ResolvedLayer}
  */
-const applyPatch = (layer, patch) => /** @type {ResolvedLayer} */ (merge(layer, patch))
+const applyPatch = (layer, patch) => {
+  if (patch.kind === "each") {
+    return patch.fn(layer)
+  }
 
-/**
- * @param {ResolvedLayer} layer
- * @param {IdRename} rename
- * @returns {ResolvedLayer}
- */
-const applyRename = (layer, rename) => {
-  const id = typeof rename === "function" ? rename(layer.id) : rename[layer.id] ?? layer.id
+  if (patch.kind === "byId") {
+    const partial = patch.map[layer.id]
 
-  return { ...layer, id }
+    return partial === undefined ? layer : /** @type {ResolvedLayer} */ (merge(layer, partial))
+  }
+
+  return /** @type {ResolvedLayer} */ (merge(layer, patch.body))
 }
 
 /**
@@ -198,8 +201,8 @@ const mergeContext = (prev, next) => {
 }
 
 /**
- * Merges two configs. `context` and `theme` shallow-merge; `patches` and
- * `renames` append in order.
+ * Merges two configs. `context` and `theme` shallow-merge; `patches` append in
+ * order.
  *
  * @param {StyleConfig} config
  * @param {StyleConfig} next
@@ -209,7 +212,6 @@ const mergeConfig = (config, next) => ({
   context: mergeContext(config.context ?? {}, next.context ?? {}),
   theme: { ...config.theme, ...next.theme },
   patches: [...(config.patches ?? []), ...(next.patches ?? [])],
-  renames: [...(config.renames ?? []), ...(next.renames ?? [])],
 })
 
 /**
@@ -287,28 +289,31 @@ export class Builder {
   /**
    * Accumulates a patch merged onto every built layer.
    *
-   * @param {object} patch
+   * @param {object} body
    * @returns {this}
    */
-  patch(patch) {
-    return this.withConfig({ patches: [patch] })
+  patchAll(body) {
+    return this.withConfig({ patches: [{ kind: "all", body }] })
   }
 
   /**
-   * Accumulates an id rewrite, letting a style be reapplied without its ids
-   * colliding.
+   * Accumulates a per-layer patch: a `(layer) => layer` transform applied to each
+   * layer, or an `{ id: partial }` map merged onto the matching layers (others
+   * untouched). Lets a style be reapplied under fresh ids without colliding.
    *
    * @example
    * ```js
-   * Railway.renameIds((id) => id.replace("railway", "railway-transit"))
-   * Railway.renameIds({ railway: "railway-transit" })
+   * Railway.patch((layer) => ({ ...layer, id: layer.id.replace("railway", "railway-transit") }))
+   * Railway.patch({ railway: { id: "railway-transit" }, "railway-dash": { id: "railway-transit-dash" } })
    * ```
    *
-   * @param {IdRename} rename
+   * @param {((layer: ResolvedLayer) => ResolvedLayer) | Record<string, object>} spec
    * @returns {this}
    */
-  renameIds(rename) {
-    return this.withConfig({ renames: [rename] })
+  patch(spec) {
+    const patch = typeof spec === "function" ? { kind: "each", fn: spec } : { kind: "byId", map: spec }
+
+    return this.withConfig({ patches: [/** @type {Patch} */ (patch)] })
   }
 
   /**
@@ -320,12 +325,10 @@ export class Builder {
   build() {
     const context = this.config.context ?? {}
     const patches = this.config.patches ?? []
-    const renames = this.config.renames ?? []
 
     return this.resolve(this.fn(this.config.theme ?? {}))
       .map((layer) => bindLayer(layer, context))
       .map((layer) => patches.reduce(applyPatch, layer))
-      .map((layer) => renames.reduce(applyRename, layer))
       .map((layer) => stampStyle(layer, this.name))
   }
 

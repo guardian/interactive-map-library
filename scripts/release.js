@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url"
 
 import ts from "typescript"
 
-import { Graphics } from "../src/basemaps/graphics.js"
-import { Protomaps } from "../src/basemaps/protomaps.js"
+import { groups as graphics } from "../src/basemaps/graphics/index.js"
+import { groups as protomaps } from "../src/basemaps/protomaps/index.js"
 
 /**
  * Releases a versioned snapshot of the library into `dist/<major>.<minor>/`.
@@ -31,8 +31,8 @@ const distDir = resolve(root, "dist")
 const pkgPath = resolve(root, "package.json")
 
 const documents = {
-  "basemaps/graphics.json": Graphics.toGlStyle(),
-  "basemaps/protomaps.json": Protomaps.toGlStyle(),
+  "basemaps/graphics.json": graphics.Graphics.toGlStyle(),
+  "basemaps/protomaps.json": protomaps.Protomaps.toGlStyle(),
 }
 
 // Emits `.d.ts` declarations for every `.js` under `dir`, in place, using the compiler API so the
@@ -122,16 +122,22 @@ const versions = readdirSync(distDir).filter((name) => /^\d+\.\d+$/.test(name))
 
 pkg.version = version
 pkg.exports = {
-  "./basemaps/*": `./dist/${dir}/basemaps/*`,
+  // Each basemap is a directory with an index barrel; the `.json` glob keeps the
+  // standalone document sidecars reachable.
+  "./basemaps/*": `./dist/${dir}/basemaps/*/index.js`,
+  "./basemaps/*.json": `./dist/${dir}/basemaps/*.json`,
   "./core": `./dist/${dir}/core/index.js`,
-  "./styles": `./dist/${dir}/styles/index.js`,
+  "./templates": `./dist/${dir}/templates/index.js`,
+  // ./styles is a back-compat alias for ./templates.
+  "./styles": `./dist/${dir}/templates/index.js`,
   "./tokens": `./dist/${dir}/tokens/index.js`,
   "./filter/openmaptiles": `./dist/${dir}/filter/openmaptiles.js`,
   "./filter/protomaps": `./dist/${dir}/filter/protomaps.js`,
   ...Object.fromEntries(
     versions.flatMap((v) => [
       [`./${v}/*`, `./dist/${v}/*`],
-      [`./${v}/styles`, `./dist/${v}/styles/index.js`],
+      [`./${v}/templates`, `./dist/${v}/templates/index.js`],
+      [`./${v}/styles`, `./dist/${v}/templates/index.js`],
     ]),
   ),
 }

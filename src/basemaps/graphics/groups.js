@@ -1,4 +1,5 @@
 import { group } from "../../core/group.js"
+import { adaptForDatawrapper } from "./util.js"
 import { resources } from "./sources.js"
 import { styles as s } from "./styles.js"
 
@@ -98,7 +99,20 @@ const Basemap = group(
   [s.Background, Land, Reliefs, Water, Roads, Buildings, Bridges, Boundaries, Labels],
   {
     resources,
-    document: { name: "Graphics" },
+    document: {
+      name: "Graphics",
+      // The style library's layers were derived from the GL style doc provided by
+      // Datawrapper (see `app/res/graphics-map-style.json`), so we should preserve
+      // its copyright statement.
+      metadata: {
+        copyright:
+          "Copyright (c) 2016, KlokanTech.com & OpenMapTiles contributors. " +
+          "Copyright (c) 2015, CartoDB Inc. All rights reserved. " +
+          "Derived from 'CartoDB Basemaps' (https://github.com/CartoDB/CartoDB-basemaps) " +
+          "designed by Stamen and Paul Norman for CartoDB Inc., licensed under CC-BY 3.0.",
+      },
+    },
+    post: [adaptForDatawrapper],
   },
 )
 

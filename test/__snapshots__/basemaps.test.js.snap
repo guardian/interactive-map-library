@@ -6,14 +6,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
   "layers": [
     {
       "id": "background",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-          ],
-          "style": "Background",
-        },
-      },
       "paint": {
         "background-color": "#f8f8f8",
       },
@@ -38,17 +30,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "residential",
         ],
       ],
-      "id": "land_residential",
+      "id": "landuse_residential",
       "maxzoom": 10,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Land",
-          ],
-          "style": "LandResidential",
-        },
-      },
       "minzoom": 5,
       "paint": {
         "fill-color": [
@@ -94,16 +77,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "ice",
       ],
-      "id": "land_ice",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Land",
-          ],
-          "style": "LandIce",
-        },
-      },
+      "id": "landcover_ice",
       "paint": {
         "fill-color": "#ffffff",
         "fill-opacity": {
@@ -173,16 +147,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "scrub",
         ],
       ],
-      "id": "land_grass",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Land",
-          ],
-          "style": "LandGrass",
-        },
-      },
+      "id": "landcover_grass",
       "minzoom": 5,
       "paint": {
         "fill-color": "#dcefde",
@@ -213,16 +178,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "wood",
       ],
-      "id": "land_wood",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Land",
-          ],
-          "style": "LandWood",
-        },
-      },
+      "id": "landcover_wood",
       "minzoom": 5,
       "paint": {
         "fill-color": "#cbe4ce",
@@ -253,17 +209,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         1,
       ],
-      "id": "terrain_mountain_1",
+      "id": "mountains_1",
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Reliefs",
-          ],
-          "style": "TerrainMountain1",
-        },
-      },
       "paint": {
         "fill-color": "#ffffff",
         "fill-opacity": {
@@ -302,17 +249,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         2,
       ],
-      "id": "terrain_mountain_2",
+      "id": "mountains_2",
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Reliefs",
-          ],
-          "style": "TerrainMountain2",
-        },
-      },
       "paint": {
         "fill-color": "#ffffff",
         "fill-opacity": {
@@ -372,17 +310,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "terrain_mountain_3",
+      "id": "mountains_3",
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Reliefs",
-          ],
-          "style": "TerrainMountain3",
-        },
-      },
       "paint": {
         "fill-color": "#909090",
         "fill-opacity": {
@@ -445,17 +374,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "terrain_mountain_4",
+      "id": "mountains_4",
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Reliefs",
-          ],
-          "style": "TerrainMountain4",
-        },
-      },
       "paint": {
         "fill-color": "#909090",
         "fill-opacity": {
@@ -509,17 +429,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4849,
         ],
       ],
-      "id": "terrain_mountain_5",
+      "id": "mountains_5",
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Reliefs",
-          ],
-          "style": "TerrainMountain5",
-        },
-      },
       "paint": {
         "fill-color": "#909090",
         "fill-opacity": {
@@ -562,17 +473,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         6,
       ],
-      "id": "terrain_mountain_6",
+      "id": "mountains_6",
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Reliefs",
-          ],
-          "style": "TerrainMountain6",
-        },
-      },
       "paint": {
         "fill-color": "#909090",
         "fill-opacity": {
@@ -614,16 +516,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "LineString",
       ],
-      "id": "water_waterway",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Water",
-          ],
-          "style": "WaterWaterway",
-        },
-      },
+      "id": "waterway",
       "minzoom": 8,
       "paint": {
         "line-color": "#aed6ea",
@@ -664,16 +557,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "swimming_pool",
         ],
       ],
-      "id": "water_body_outline",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Water",
-          ],
-          "style": "WaterBody",
-        },
-      },
+      "id": "water-outline",
       "minzoom": 4,
       "paint": {
         "line-color": "#aed6ea",
@@ -722,16 +606,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "swimming_pool",
         ],
       ],
-      "id": "water_body",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Water",
-          ],
-          "style": "WaterBody",
-        },
-      },
+      "id": "water",
       "paint": {
         "fill-antialias": true,
         "fill-color": "#dbebf7",
@@ -749,16 +624,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "ocean",
       ],
-      "id": "water_ocean_outline",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Water",
-          ],
-          "style": "WaterOcean",
-        },
-      },
+      "id": "ocean-outline",
       "paint": {
         "line-color": "#aed6ea",
         "line-width": 2,
@@ -776,16 +642,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "ocean",
       ],
-      "id": "water_ocean",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Water",
-          ],
-          "style": "WaterOcean",
-        },
-      },
+      "id": "ocean",
       "paint": {
         "fill-antialias": true,
         "fill-color": "#dbebf7",
@@ -814,15 +671,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
       ],
       "id": "land_pedestrian",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-          ],
-          "style": "LandPedestrian",
-        },
-      },
       "paint": {
         "fill-color": "#f8f8f8",
         "fill-outline-color": "rgba(140,140,140,0.625)",
@@ -868,16 +716,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Tunnels",
-          ],
-          "style": "TunnelMinor",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -972,16 +810,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "line-cap": "butt",
         "line-join": "miter",
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Tunnels",
-          ],
-          "style": "TunnelMinor",
-        },
-      },
       "minzoom": 12,
       "paint": {
         "line-color": [
@@ -1067,16 +895,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Tunnels",
-          ],
-          "style": "TunnelMajor",
-        },
       },
       "minzoom": 8,
       "paint": {
@@ -1179,16 +997,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "line-cap": "butt",
         "line-join": "miter",
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Tunnels",
-          ],
-          "style": "TunnelMajor",
-        },
-      },
       "minzoom": 8,
       "paint": {
         "line-color": [
@@ -1270,16 +1078,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Tunnels",
-          ],
-          "style": "TunnelMotorway",
-        },
       },
       "minzoom": 5,
       "paint": {
@@ -1376,16 +1174,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "line-cap": "butt",
         "line-join": "miter",
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Tunnels",
-          ],
-          "style": "TunnelMotorway",
-        },
-      },
       "minzoom": 5,
       "paint": {
         "line-color": [
@@ -1468,16 +1256,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "line-cap": "round",
         "line-join": "round",
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadService",
-        },
-      },
       "minzoom": 5,
       "paint": {
         "line-color": "rgba(0, 0, 0, 0)",
@@ -1533,20 +1311,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_minor_casing",
+      "id": "road_minor-casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadMinor",
-        },
       },
       "minzoom": 5,
       "paint": {
@@ -1605,20 +1373,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_secondary_tertiary_casing",
+      "id": "road_secondary_tertiary-casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadSecondaryTertiary",
-        },
       },
       "minzoom": 6,
       "paint": {
@@ -1681,16 +1439,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadPrimary",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -1768,20 +1516,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_trunk_casing",
+      "id": "road_trunk-casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadTrunk",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -1856,20 +1594,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_motorway_ramp_casing",
+      "id": "road_major_motorway_ramp-casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadMotorwayRamp",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -1944,20 +1672,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_motorway_casing",
+      "id": "road_major_motorway-casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadMotorway",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -2028,16 +1746,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadMinor",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -2114,16 +1822,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "line-cap": "round",
         "line-join": "round",
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadSecondaryTertiary",
-        },
-      },
       "minzoom": 10,
       "paint": {
         "line-color": "#dcdcdc",
@@ -2197,16 +1895,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadPrimary",
-        },
       },
       "minzoom": 8,
       "paint": {
@@ -2292,16 +1980,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadTrunk",
-        },
       },
       "minzoom": 7,
       "paint": {
@@ -2390,20 +2068,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_motorway_ramp",
+      "id": "road_major_motorway_ramp",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadMotorwayRamp",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -2480,20 +2148,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_motorway",
+      "id": "road_major_motorway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "SurfaceRoads",
-          ],
-          "style": "RoadMotorway",
-        },
       },
       "minzoom": 5,
       "paint": {
@@ -2561,17 +2219,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "tunnel",
         ],
       ],
-      "id": "rail_line",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Railways",
-          ],
-          "style": "Rail",
-        },
-      },
+      "id": "railway",
       "minzoom": 13,
       "paint": {
         "line-color": "#c8c8c8",
@@ -2624,16 +2272,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "id": "rail_line_dash",
       "layout": {
         "line-cap": "butt",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Railways",
-          ],
-          "style": "Rail",
-        },
       },
       "minzoom": 13,
       "paint": {
@@ -2688,17 +2326,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "tunnel",
         ],
       ],
-      "id": "rail_transit_line",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Railways",
-          ],
-          "style": "Rail",
-        },
-      },
+      "id": "railway-transit",
       "minzoom": 13,
       "paint": {
         "line-color": "#c8c8c8",
@@ -2751,16 +2379,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "id": "rail_transit_line_dash",
       "layout": {
         "line-cap": "butt",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Roads",
-            "Railways",
-          ],
-          "style": "Rail",
-        },
       },
       "minzoom": 13,
       "paint": {
@@ -2822,15 +2440,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
       ],
       "id": "building",
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Buildings",
-          ],
-          "style": "Building",
-        },
-      },
       "minzoom": 14,
       "paint": {
         "fill-antialias": true,
@@ -2860,19 +2469,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "bridge",
         ],
       ],
-      "id": "bridge_waterway_casing",
+      "id": "waterway-bridge-case",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Bridges",
-          ],
-          "style": "BridgeWaterway",
-        },
       },
       "paint": {
         "line-color": "rgba(140,140,140,0.625)",
@@ -2914,19 +2514,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "bridge",
         ],
       ],
-      "id": "bridge_waterway",
+      "id": "waterway-bridge",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Bridges",
-          ],
-          "style": "BridgeWaterway",
-        },
       },
       "paint": {
         "line-color": "#dbebf7",
@@ -2981,15 +2572,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Boundaries",
-          ],
-          "style": "BoundaryCountry",
-        },
       },
       "paint": {
         "line-blur": [
@@ -3055,15 +2637,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "layout": {
         "line-cap": "round",
         "line-join": "round",
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Boundaries",
-          ],
-          "style": "BoundaryDisputed",
-        },
       },
       "paint": {
         "line-blur": [
@@ -3172,16 +2745,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "text-letter-spacing": 0.15,
         "text-size": 12,
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "WaterLabels",
-          ],
-          "style": "LabelWaterLineMinor",
-        },
-      },
       "minzoom": 10,
       "paint": {
         "icon-opacity": {
@@ -3225,7 +2788,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "LineString",
       ],
-      "id": "label_water_line_major",
+      "id": "water_name",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3253,16 +2816,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "text-size": 12,
       },
       "maxzoom": 14,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "WaterLabels",
-          ],
-          "style": "LabelWaterLineMajor",
-        },
-      },
       "minzoom": 5,
       "paint": {
         "text-color": "#3b8bb6",
@@ -3326,16 +2879,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "text-rotation-alignment": "map",
         "text-size": 12,
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "WaterLabels",
-          ],
-          "style": "LabelWaterPoint",
-        },
-      },
       "minzoom": 2,
       "paint": {
         "icon-opacity": {
@@ -3396,7 +2939,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_road_other",
+      "id": "highway_name_other",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3426,16 +2969,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           0.1,
         ],
         "text-size": 12,
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "HighwayLabels",
-          ],
-          "style": "LabelRoadOther",
-        },
       },
       "minzoom": 15,
       "paint": {
@@ -3473,7 +3006,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_road_motorway",
+      "id": "highway_name_motorway",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3499,16 +3032,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         "text-justify": "center",
         "text-letter-spacing": 0.15,
         "text-size": 12,
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "HighwayLabels",
-          ],
-          "style": "LabelRoadMotorway",
-        },
       },
       "minzoom": 13,
       "paint": {
@@ -3555,7 +3078,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_other",
+      "id": "place_other",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -3646,16 +3169,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           14,
         ],
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceOther",
-        },
-      },
       "minzoom": 14,
       "paint": {
         "text-color": [
@@ -3724,7 +3237,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_suburb",
+      "id": "place_suburb",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -3834,16 +3347,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           16,
         ],
       },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceSuburb",
-        },
-      },
       "minzoom": 12,
       "paint": {
         "icon-opacity": {
@@ -3927,7 +3430,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "village",
         ],
       ],
-      "id": "label_place_village",
+      "id": "place_village",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -4017,16 +3520,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           14,
           14,
         ],
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceVillage",
-        },
       },
       "minzoom": 12,
       "paint": {
@@ -4120,7 +3613,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_town",
+      "id": "place_town",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -4229,16 +3722,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           14,
           16,
         ],
-      },
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceTown",
-        },
       },
       "minzoom": 10,
       "paint": {
@@ -4363,7 +3846,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_city_minor",
+      "id": "place_label_city",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -4493,16 +3976,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
       },
       "maxzoom": 14,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceCityMinor",
-        },
-      },
       "minzoom": 6,
       "paint": {
         "icon-opacity": {
@@ -4615,7 +4088,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "city",
         ],
       ],
-      "id": "label_place_city_major",
+      "id": "place_city_large",
       "layout": {
         "icon-image": [
           "step",
@@ -4772,16 +4245,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
       },
       "maxzoom": 13,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceCityMajor",
-        },
-      },
       "minzoom": 4,
       "paint": {
         "icon-opacity": {
@@ -4879,7 +4342,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "city",
         ],
       ],
-      "id": "label_place_capital",
+      "id": "place_capital",
       "layout": {
         "icon-image": [
           "step",
@@ -5013,16 +4476,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         },
       },
       "maxzoom": 13,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceCapital",
-        },
-      },
       "minzoom": 4,
       "paint": {
         "icon-opacity": {
@@ -5115,7 +4568,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_state",
+      "id": "place_state",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -5199,16 +4652,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
       },
       "maxzoom": 13,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceState",
-        },
-      },
       "minzoom": 5,
       "paint": {
         "icon-opacity": {
@@ -5309,7 +4752,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_country_minor",
+      "id": "place_country_other",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -5431,16 +4874,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         },
       },
       "maxzoom": 10,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceCountryMinor",
-        },
-      },
       "paint": {
         "icon-opacity": {
           "stops": [
@@ -5538,7 +4971,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "country",
         ],
       ],
-      "id": "label_place_country_major",
+      "id": "place_country_major",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -5661,16 +5094,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         },
       },
       "maxzoom": 12,
-      "metadata": {
-        "iml": {
-          "group": [
-            "Graphics",
-            "Labels",
-            "PlaceLabels",
-          ],
-          "style": "LabelPlaceCountryMajor",
-        },
-      },
       "paint": {
         "icon-opacity": {
           "stops": [
@@ -5735,6 +5158,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "type": "symbol",
     },
   ],
+  "metadata": {
+    "copyright": "Copyright (c) 2016, KlokanTech.com & OpenMapTiles contributors. Copyright (c) 2015, CartoDB Inc. All rights reserved. Derived from 'CartoDB Basemaps' (https://github.com/CartoDB/CartoDB-basemaps) designed by Stamen and Paul Norman for CartoDB Inc., licensed under CC-BY 3.0.",
+  },
   "name": "Graphics",
   "sources": {
     "openmaptiles": {

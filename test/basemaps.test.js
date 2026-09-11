@@ -9,9 +9,11 @@ import { groups as protomaps } from "../src/basemaps/protomaps/index.js"
 // After code changes that make valid changes to the snapshots, update them with
 // `npm run test -- -u`.
 describe.each([
-  ["Graphics", graphics.Basemap.render.glStyle()],
-  ["Protomaps", protomaps.Basemap.render.glStyle()],
-])("%s basemap", (name, style) => {
+  // Graphics strips iml provenance in a post-processor, to keep the document it
+  // shares with Datawrapper close to their stock style.
+  ["Graphics", graphics.Basemap.render.glStyle(), { provenance: false }],
+  ["Protomaps", protomaps.Basemap.render.glStyle(), { provenance: true }],
+])("%s basemap", (name, style, { provenance }) => {
   it("matches its snapshot", () => {
     expect(style).toMatchSnapshot()
   })
@@ -35,10 +37,19 @@ describe.each([
     }
   })
 
-  it("stamps every layer with iml.style and an iml.group path rooted at the basemap", () => {
+  it.runIf(provenance)(
+    "stamps every layer with iml.style and an iml.group path rooted at the basemap",
+    () => {
+      for (const l of style.layers) {
+        expect(l.metadata.iml.style).toBeTruthy()
+        expect(l.metadata.iml.group[0]).toBe(name)
+      }
+    },
+  )
+
+  it.runIf(!provenance)("carries no iml provenance", () => {
     for (const l of style.layers) {
-      expect(l.metadata.iml.style).toBeTruthy()
-      expect(l.metadata.iml.group[0]).toBe(name)
+      expect(l.metadata?.iml).toBeUndefined()
     }
   })
 })

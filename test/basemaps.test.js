@@ -9,8 +9,8 @@ import { groups as protomaps } from "../src/basemaps/protomaps/index.js"
 // After code changes that make valid changes to the snapshots, update them with
 // `npm run test -- -u`.
 describe.each([
-  ["Graphics", graphics.Graphics.toGlStyle()],
-  ["Protomaps", protomaps.Protomaps.toGlStyle()],
+  ["Graphics", graphics.Basemap.render.glStyle()],
+  ["Protomaps", protomaps.Basemap.render.glStyle()],
 ])("%s basemap", (name, style) => {
   it("matches its snapshot", () => {
     expect(style).toMatchSnapshot()

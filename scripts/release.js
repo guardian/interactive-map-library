@@ -31,8 +31,8 @@ const distDir = resolve(root, "dist")
 const pkgPath = resolve(root, "package.json")
 
 const documents = {
-  "basemaps/graphics.json": graphics.Graphics.toGlStyle(),
-  "basemaps/protomaps.json": protomaps.Protomaps.toGlStyle(),
+  "basemaps/graphics.json": graphics.Basemap.render.glStyle(),
+  "basemaps/protomaps.json": protomaps.Basemap.render.glStyle(),
 }
 
 // Emits `.d.ts` declarations for every `.js` under `dir`, in place, using the compiler API so the

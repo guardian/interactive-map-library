@@ -1,4 +1,5 @@
-export { GLYPHS_URL as glyphs, SPRITE_URL as sprite } from "../../core/resources.js"
+export { Basemap } from "./groups.js"
+import * as groups from "./groups.js"
+export { groups }
 export { resources } from "./sources.js"
 export { styles } from "./styles.js"
-export { groups } from "./groups.js"

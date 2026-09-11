@@ -21,17 +21,17 @@ const railwayTransit = f
 
 // The bound styles this basemap composes, each keyed by the name consumers import
 // it under. A style reused under a fresh id namespace appears under a second key
-// (LanduseGrass) but keeps its root iml.style, so refinement treats them as one.
+// (LandGrassPark) but keeps its root iml.style, so refinement treats them as one.
 export const styles = {
   Background: t.Background.apply(),
 
-  LanduseResidential: t.LanduseResidential.apply({
+  LandResidential: t.LandResidential.apply({
     ...landuse,
     filter: f.polygon().kind("residential"),
   }),
-  LandcoverIce: t.LandcoverIce.apply({ ...landcoverLayer, filter: f.kind("glacier") }),
-  LandcoverGrass: t.LandcoverGrass.apply({ ...landcoverLayer, filter: f.kind("grassland") }),
-  LanduseGrass: t.LandcoverGrass.apply({
+  LandIce: t.LandIce.apply({ ...landcoverLayer, filter: f.kind("glacier") }),
+  LandGrass: t.LandGrass.apply({ ...landcoverLayer, filter: f.kind("grassland") }),
+  LandGrassPark: t.LandGrass.apply({
     ...landuse,
     filter: f
       .polygon()
@@ -47,25 +47,26 @@ export const styles = {
         "nature_reserve",
         "allotments",
       ),
-  }).patch({ landcover_grass: { id: "landuse_grass" } }),
-  LanduseWood: t.LandcoverWood.apply({
+  }).patch({ land_grass: { id: "land_grass_park" } }),
+  LandWood: t.LandWood.apply({
     ...landuse,
     filter: f.polygon().kind("wood", "forest"),
-  }).patch({ landcover_wood: { id: "landuse_wood" } }),
+  }),
 
-  Waterway: t.Waterway.apply({ ...waterLayer, filter: f.line().kind(...waterwayKinds) }),
-  Water: t.Water.apply({
+  WaterWaterway: t.WaterWaterway.apply({ ...waterLayer, filter: f.line().kind(...waterwayKinds) }),
+
+  WaterBody: t.WaterBody.apply({
     ...waterLayer,
     filter: f.polygon().kind("water", "lake", "reservoir", "dock"),
   }),
-  Ocean: t.Ocean.apply({ ...waterLayer, filter: f.kind(...oceanKinds) }),
 
-  // Landuse polygon re-used as a road platform, kept under its landuse id.
-  LandusePedestrian: t.BridgePlatform.apply({
+  WaterOcean: t.WaterOcean.apply({ ...waterLayer, filter: f.kind(...oceanKinds) }),
+
+  LandPedestrian: t.LandPedestrian.apply({
     ...landuse,
     filter: f.polygon().kind("pedestrian"),
-  }).patch({ bridge_platform: { id: "landuse_pedestrian" } }),
-  Path: t.Path.apply({ ...roadsLayer, filter: f.line().kind("path") }),
+  }),
+  RoadPath: t.RoadPath.apply({ ...roadsLayer, filter: f.line().kind("path") }),
 
   AerowayArea: t.AerowayArea.apply({ ...landuse, filter: f.polygon().kind("aerodrome") }),
   AerowayTaxiway: t.AerowayTaxiway.apply({
@@ -101,21 +102,21 @@ export const styles = {
     filter: f.line().notTunnel().kindDetail("primary"),
   }),
   RoadTrunk: t.RoadTrunk.apply({ ...roadsLayer, filter: f.line().notTunnel().kindDetail("trunk") }),
-  MotorwayRamp: t.MotorwayRamp.apply({
+  RoadMotorwayRamp: t.RoadMotorwayRamp.apply({
     ...roadsLayer,
     filter: f.line().notTunnel().kind("highway", "major_road").ramp(),
   }),
 
-  Motorway: t.Motorway.apply({
+  RoadMotorway: t.RoadMotorway.apply({
     ...roadsLayer,
     filter: f.line().notTunnel().kind("highway").notRamp(),
   }),
 
-  RailwayTransit: t.Railway.apply({ ...roadsLayer, filter: railwayTransit }).patch((layer) => ({
+  RailTransit: t.Rail.apply({ ...roadsLayer, filter: railwayTransit }).patch((layer) => ({
     ...layer,
-    id: layer.id.replace("railway", "railway-transit"),
+    id: layer.id.replace("rail_line", "rail_transit_line"),
   })),
-  Railway: t.Railway.apply({ ...roadsLayer, filter: f.line().notTunnel().kind("rail") }),
+  Rail: t.Rail.apply({ ...roadsLayer, filter: f.line().notTunnel().kind("rail") }),
 
   Building: t.Building.apply({
     ...pm,
@@ -137,21 +138,27 @@ export const styles = {
     filter: f.line().kind("country"),
   }),
 
-  WaterNameLineMajor: t.WaterNameLineMajor.apply({ ...waterLayer, filter: f.line().kind("river") }),
-  WaterNameLineMinor: t.WaterNameLineMinor.apply({ ...waterLayer, filter: f.line().kind("canal") }),
-  WaterName: t.WaterName.apply({ ...waterLayer, filter: f.point() }),
+  LabelWaterLineMajor: t.LabelWaterLineMajor.apply({
+    ...waterLayer,
+    filter: f.line().kind("river"),
+  }),
+  LabelWaterLineMinor: t.LabelWaterLineMinor.apply({
+    ...waterLayer,
+    filter: f.line().kind("canal"),
+  }),
+  LabelWaterPoint: t.LabelWaterPoint.apply({ ...waterLayer, filter: f.point() }),
 
-  HighwayNameOther: t.HighwayNameOther.apply({
+  LabelRoadOther: t.LabelRoadOther.apply({
     ...roadsLayer,
     filter: f.line().kindNot("highway"),
   }),
-  HighwayNameMotorway: t.HighwayNameMotorway.apply({
+  LabelRoadMotorway: t.LabelRoadMotorway.apply({
     ...roadsLayer,
     filter: f.line().kind("highway"),
   }),
 
-  PlaceSuburb: t.PlaceSuburb.apply({ ...places, filter: f.point().kindDetail("suburb") }),
-  PlaceOther: t.PlaceOther.apply({
+  LabelPlaceSuburb: t.LabelPlaceSuburb.apply({ ...places, filter: f.point().kindDetail("suburb") }),
+  LabelPlaceOther: t.LabelPlaceOther.apply({
     ...places,
     filter: f
       .point()
@@ -163,15 +170,17 @@ export const styles = {
         ),
       ),
   }),
-  PlaceVillage: t.PlaceVillage.apply({
+  LabelPlaceVillage: t.LabelPlaceVillage.apply({
     ...places,
     filter: f.point().kind("locality").kindDetail("village", "hamlet"),
   }),
-  PlaceTown: t.PlaceTown.apply({
+
+  LabelPlaceTown: t.LabelPlaceTown.apply({
     ...places,
     filter: f.point().kind("locality").kindDetail("town"),
   }),
-  PlaceCity: t.PlaceCity.apply({
+
+  LabelPlaceCityMinor: t.LabelPlaceCityMinor.apply({
     ...places,
     filter: f
       .point()
@@ -180,20 +189,21 @@ export const styles = {
       .isNot("capital", "yes")
       .isNot("name", "City of Westminster", "City of London"),
   }),
-  PlaceCapital: t.PlaceCapital.apply({
+
+  LabelPlaceCapital: t.LabelPlaceCapital.apply({
     ...places,
     filter: f.point().kind("locality").is("capital", "yes"),
   }),
-  PlaceCityLarge: t.PlaceCityLarge.apply({
+  LabelPlaceCityMajor: t.LabelPlaceCityMajor.apply({
     ...places,
     filter: f.point().kind("locality").kindDetail("city").isNot("capital", "yes").minZoomLte(4),
   }),
-  PlaceState: t.PlaceState.apply({ ...places, filter: f.point().kind("region") }),
-  PlaceCountryMinor: t.PlaceCountryMinor.apply({
+  LabelPlaceState: t.LabelPlaceState.apply({ ...places, filter: f.point().kind("region") }),
+  LabelPlaceCountryMinor: t.LabelPlaceCountryMinor.apply({
     ...places,
     filter: f.point().kind("country").minZoomGte(4),
   }),
-  PlaceCountryMajor: t.PlaceCountryMajor.apply({
+  LabelPlaceCountryMajor: t.LabelPlaceCountryMajor.apply({
     ...places,
     filter: f.point().kind("country").minZoomLte(3),
   }),

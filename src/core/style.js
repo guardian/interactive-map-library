@@ -76,7 +76,7 @@ import { GLYPHS_URL, SPRITE_URL, needsGlyphs, needsSprite } from "./resources.js
  *
  * @example
  * ```js
- * merge(pWaterFill, { id: "ocean", paint: { "fill-opacity": 0.8 } })
+ * merge(pWaterFill, { id: "water_ocean", paint: { "fill-opacity": 0.8 } })
  * ```
  *
  * @param {...Style} parts
@@ -266,7 +266,7 @@ export class Builder {
    *
    * @example
    * ```js
-   * Ocean.apply({ source: "openmaptiles", sourceLayer: "water", filter: f.cls("ocean") })
+   * WaterOcean.apply({ source: "openmaptiles", sourceLayer: "water", filter: f.cls("ocean") })
    * ```
    *
    * @param {LayerContext} [context]
@@ -303,15 +303,16 @@ export class Builder {
    *
    * @example
    * ```js
-   * Railway.patch((layer) => ({ ...layer, id: layer.id.replace("railway", "railway-transit") }))
-   * Railway.patch({ railway: { id: "railway-transit" }, "railway-dash": { id: "railway-transit-dash" } })
+   * Rail.patch((layer) => ({ ...layer, id: layer.id.replace("rail_line", "rail_transit_line") }))
+   * Rail.patch({ rail_line: { id: "rail_transit_line" }, rail_line_dash: { id: "rail_transit_line_dash" } })
    * ```
    *
    * @param {((layer: ResolvedLayer) => ResolvedLayer) | Record<string, object>} spec
    * @returns {this}
    */
   patch(spec) {
-    const patch = typeof spec === "function" ? { kind: "each", fn: spec } : { kind: "byId", map: spec }
+    const patch =
+      typeof spec === "function" ? { kind: "each", fn: spec } : { kind: "byId", map: spec }
 
     return this.withConfig({ patches: [/** @type {Patch} */ (patch)] })
   }
@@ -426,7 +427,7 @@ export class StyleHandle extends Builder {
  *
  * @example
  * ```js
- * export const Ocean = style("Ocean", (theme) => [ ... ])
+ * export const WaterOcean = style("WaterOcean", (theme) => [ ... ])
  * ```
  *
  * @param {string} name

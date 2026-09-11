@@ -33,10 +33,10 @@ const baseRoadWidth = 6.25
 const roadWidths = {
   path:              zInterpExpr({          13: 0.4, 18: 6  }, 1.6),
   minor:             zInterpExpr({          13: 0.6, 18: 28 }, 1.8),
-  secondaryTertiary: zInterpExpr({ 10: 0.8, 13: 1.0, 18: 28 }, 1.6),
-  primary:           zInterpExpr({ 4: 0.12, 13: 2.0, 18: 30 }, 1.4),
-  trunk:             zInterpExpr({ 4: 0.14, 13: 3.4, 18: 30 }, 1.2),
-  motorway:          zInterpExpr({ 4: 0.26, 13: 5.0, 18: 32 }, 1.1),
+  secondaryTertiary: zInterpExpr({ 10: 0.8, 13: 0.8, 18: 28 }, 1.6),
+  primary:           zInterpExpr({ 4: 0.12, 13: 1.4, 18: 28 }, 1.4),
+  trunk:             zInterpExpr({ 4: 0.2,  13: 3.0, 18: 30 }, 1.2),
+  motorway:          zInterpExpr({ 4: 0.3,  13: 4.8, 18: 30 }, 1.1),
   ramp:              zInterpExpr({ 12: 1,   13: 1.6, 18: 16 }, 1.1),
 }
 
@@ -82,7 +82,7 @@ const aerowayWidths = {
 /** The casing colour shared by the major roads, deepening a step at z11. */
 const majorRoadCasingColor = zStep(color.roadCasing, { 11: color.roadCasingStrong })
 
-export const Path = style("Path", () => [
+export const RoadPath = style("RoadPath", () => [
   merge(pRoundLine, pFadeIn("line-opacity", 14, 15), {
     id: "road_path",
     minzoom: 14,
@@ -115,7 +115,7 @@ const pTunnelFill = {
 
 export const TunnelMinor = style("TunnelMinor", () => [
   merge(pTunnelCasing, pFadeIn("line-opacity", 12, 13), {
-    id: "tunnel_minor-casing",
+    id: "tunnel_minor_casing",
     minzoom: 12,
     paint: { "line-width": tunnelCasings.minor },
   }),
@@ -130,7 +130,7 @@ export const TunnelMinor = style("TunnelMinor", () => [
 
 export const TunnelMajor = style("TunnelMajor", () => [
   merge(pTunnelCasing, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
-    id: "tunnel_major-casing",
+    id: "tunnel_major_casing",
     paint: { "line-width": tunnelCasings.major },
   }),
   merge(pTunnelFill, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
@@ -143,7 +143,7 @@ export const TunnelMajor = style("TunnelMajor", () => [
 
 export const TunnelMotorway = style("TunnelMotorway", () => [
   merge(pTunnelCasing, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
-    id: "tunnel_motorway-casing",
+    id: "tunnel_motorway_casing",
     minzoom: 5,
     paint: { "line-width": tunnelCasings.motorway },
   }),
@@ -160,7 +160,7 @@ export const TunnelMotorway = style("TunnelMotorway", () => [
 // surface-road casings so minor roads read continuously at junctions.
 export const RoadService = style("RoadService", () => [
   merge(pRoundLine, pStructuralCasing, {
-    id: "road_service",
+    id: "road_service_casing",
     minzoom: 5,
     paint: { "line-width": roadCasings.minor },
   }),
@@ -168,7 +168,7 @@ export const RoadService = style("RoadService", () => [
 
 export const RoadMinor = style("RoadMinor", () => [
   merge(pRoundLine, pStructuralCasing, {
-    id: "road_minor-casing",
+    id: "road_minor_casing",
     minzoom: 5,
     paint: { "line-width": roadCasings.minor },
   }),
@@ -185,7 +185,7 @@ export const RoadMinor = style("RoadMinor", () => [
 
 export const RoadSecondaryTertiary = style("RoadSecondaryTertiary", () => [
   merge(pRoundLine, pStructuralCasing, {
-    id: "road_secondary_tertiary-casing",
+    id: "road_secondary_tertiary_casing",
     minzoom: 6,
     paint: { "line-width": roadCasings.secondaryTertiary },
   }),
@@ -201,14 +201,14 @@ export const RoadSecondaryTertiary = style("RoadSecondaryTertiary", () => [
 
 export const RoadPrimary = style("RoadPrimary", () => [
   merge(pRoundLine, {
-    id: "road_primary-casing",
+    id: "road_primary_casing",
     minzoom: 12,
     paint: {
       "line-color": majorRoadCasingColor,
       "line-width": roadCasings.primary,
     },
   }),
-  merge(pRoundLine, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
+  merge(pRoundLine, pFadeIn("line-opacity", 8, 11, { min: 0.25 }), {
     id: "road_primary",
     paint: {
       "line-color": color.roadFill,
@@ -219,25 +219,25 @@ export const RoadPrimary = style("RoadPrimary", () => [
 
 export const RoadTrunk = style("RoadTrunk", () => [
   merge(pRoundLine, {
-    id: "road_trunk-casing",
+    id: "road_trunk_casing",
     minzoom: 12,
     paint: {
       "line-color": majorRoadCasingColor,
       "line-width": roadCasings.trunk,
     },
   }),
-  merge(pRoundLine, pFadeIn("line-opacity", 7, 12, { min: 0.25 }), {
+  merge(pRoundLine, pFadeIn("line-opacity", 7, 10, { min: 0.25 }), {
     id: "road_trunk",
     paint: {
-      "line-color": zStep(color.roadFill, { 11: color.roadFillStrong }),
+      "line-color": color.roadFill,
       "line-width": roadWidths.trunk,
     },
   }),
 ])
 
-export const MotorwayRamp = style("MotorwayRamp", () => [
+export const RoadMotorwayRamp = style("RoadMotorwayRamp", () => [
   merge(pRoundLine, {
-    id: "road_major_motorway_ramp-casing",
+    id: "road_motorway_ramp_casing",
     minzoom: 12,
     paint: {
       "line-color": majorRoadCasingColor,
@@ -245,18 +245,21 @@ export const MotorwayRamp = style("MotorwayRamp", () => [
     },
   }),
   merge(pRoundLine, {
-    id: "road_major_motorway_ramp",
+    id: "road_motorway_ramp",
     minzoom: 12,
     paint: {
-      "line-color": zStep(color.roadFill, { 9: color.roadFillStrong }),
+      "line-color": zStep(color.roadFill, {
+        10: color.roadFillStrong,
+        13: color.roadFill,
+      }),
       "line-width": roadWidths.ramp,
     },
   }),
 ])
 
-export const Motorway = style("Motorway", () => [
+export const RoadMotorway = style("RoadMotorway", () => [
   merge(pRoundLine, {
-    id: "road_major_motorway-casing",
+    id: "road_motorway_casing",
     minzoom: 12,
     paint: {
       "line-color": majorRoadCasingColor,
@@ -264,10 +267,13 @@ export const Motorway = style("Motorway", () => [
     },
   }),
   merge(pRoundLine, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
-    id: "road_major_motorway",
+    id: "road_motorway",
     minzoom: 5,
     paint: {
-      "line-color": zStep(color.roadFill, { 10: color.roadFillStrong }),
+      "line-color": zStep(color.roadFill, {
+        10: color.roadFillStrong,
+        12: color.roadFill,
+      }),
       "line-width": roadWidths.motorway,
     },
   }),
@@ -289,36 +295,25 @@ const pRailwayDash = merge(pFadeIn("line-opacity", 13, 14), {
   paint: {
     "line-color": color.railway,
     "line-width": zStep(3, { 15: 4.5 }),
-    "line-dasharray": [0.33, 2.7],
+    "line-dasharray": [0.3, 4],
   },
 })
 
-export const Railway = style("Railway", () => [
-  merge(pRailwayBase, { id: "railway" }),
-  merge(pRailwayDash, { id: "railway-dash" }),
-])
-
-export const BridgePlatform = style("BridgePlatform", () => [
-  merge({
-    id: "bridge_platform",
-    type: "fill",
-    paint: {
-      "fill-color": color.surface,
-      "fill-outline-color": color.bridgeOutline,
-    },
-  }),
+export const Rail = style("Rail", () => [
+  merge(pRailwayBase, { id: "rail_line" }),
+  merge(pRailwayDash, { id: "rail_line_dash" }),
 ])
 
 export const BridgeWaterway = style("BridgeWaterway", () => [
   merge(pMitreLine, {
-    id: "waterway-bridge-casing",
+    id: "bridge_waterway_casing",
     paint: {
       "line-color": color.bridgeOutline,
       "line-width": zInterpExpr({ 4: 0.25, 20: 40 }, 1.55),
     },
   }),
   merge(pRoundLine, {
-    id: "waterway-bridge",
+    id: "bridge_waterway",
     paint: {
       "line-color": color.blueWater,
       "line-width": zInterpExpr({ 4: 0.25, 20: 30 }, 1.55),
@@ -328,7 +323,7 @@ export const BridgeWaterway = style("BridgeWaterway", () => [
 
 export const AerowayArea = style("AerowayArea", () => [
   merge({
-    id: "aeroway-area",
+    id: "aeroway_area",
     type: "fill",
     minzoom: 14,
     paint: {
@@ -339,7 +334,7 @@ export const AerowayArea = style("AerowayArea", () => [
 
 export const AerowayTaxiway = style("AerowayTaxiway", () => [
   merge(pRoundLine, pOverlayLine, {
-    id: "aeroway-taxiway",
+    id: "aeroway_taxiway",
     minzoom: 12,
     paint: {
       "line-width": aerowayWidths.taxiway,
@@ -349,7 +344,7 @@ export const AerowayTaxiway = style("AerowayTaxiway", () => [
 
 export const AerowayRunway = style("AerowayRunway", () => [
   merge(pRoundLine, pOverlayLine, {
-    id: "aeroway-runway",
+    id: "aeroway_runway",
     minzoom: 4,
     paint: {
       "line-width": aerowayWidths.runway,

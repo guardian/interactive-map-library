@@ -28,31 +28,43 @@ const majorTunnel = f
   )
 
 // The bound styles this basemap composes, each keyed by the name consumers import
-// it under. A style applied twice appears under two keys (Railway / RailwayTransit)
+// it under. A style applied twice appears under two keys (Rail / RailTransit)
 // but keeps its root iml.style, so refinement still treats them as one style.
 export const styles = {
   Background: t.Background.apply(),
 
-  LanduseResidential: t.LanduseResidential.apply({ ...landuse, filter: f.polygon().cls("residential") }),
-  LandcoverIce: t.LandcoverIce.apply({ ...landcoverLayer, filter: f.cls("ice") }),
-  LandcoverGrass: t.LandcoverGrass.apply({ ...landcoverLayer, filter: f.cls("grass") }),
-  LandcoverWood: t.LandcoverWood.apply({ ...landcoverLayer, filter: f.cls("wood") }),
+  LandResidential: t.LandResidential.apply({
+    ...landuse,
+    filter: f.polygon().cls("residential"),
+  }),
+  LandIce: t.LandIce.apply({ ...landcoverLayer, filter: f.cls("ice") }),
+  LandGrass: t.LandGrass.apply({
+    ...landcoverLayer,
+    filter: f.cls("grass").isNot("subclass", "scrub"),
+  }),
+  LandWood: t.LandWood.apply({ ...landcoverLayer, filter: f.cls("wood") }),
 
-  Mountains1: t.Mountains1.apply({ ...terrain, filter: f.is("shadow", 1) }),
-  Mountains2: t.Mountains2.apply({ ...terrain, filter: f.is("shadow", 2) }),
-  Mountains3: t.Mountains3.apply({
+  TerrainMountain1: t.TerrainMountain1.apply({ ...terrain, filter: f.is("shadow", 1) }),
+  TerrainMountain2: t.TerrainMountain2.apply({ ...terrain, filter: f.is("shadow", 2) }),
+  TerrainMountain3: t.TerrainMountain3.apply({
     ...terrain,
     filter: f.is("shadow", 3).isNot("source_id", 2598, 4847, 4851),
   }),
-  Mountains4: t.Mountains4.apply({ ...terrain, filter: f.is("shadow", 4).isNot("source_id", 4848, 4852) }),
-  Mountains5: t.Mountains5.apply({ ...terrain, filter: f.is("shadow", 5).isNot("source_id", 4849) }),
-  Mountains6: t.Mountains6.apply({ ...terrain, filter: f.is("shadow", 6) }),
+  TerrainMountain4: t.TerrainMountain4.apply({
+    ...terrain,
+    filter: f.is("shadow", 4).isNot("source_id", 4848, 4852),
+  }),
+  TerrainMountain5: t.TerrainMountain5.apply({
+    ...terrain,
+    filter: f.is("shadow", 5).isNot("source_id", 4849),
+  }),
+  TerrainMountain6: t.TerrainMountain6.apply({ ...terrain, filter: f.is("shadow", 6) }),
 
-  Waterway: t.Waterway.apply({ ...waterway, filter: f.line() }),
-  Water: t.Water.apply({ ...waterLayer, filter: f.polygon().clsNot("swimming_pool") }),
-  Ocean: t.Ocean.apply({ ...waterLayer, filter: f.cls("ocean") }),
+  WaterWaterway: t.WaterWaterway.apply({ ...waterway, filter: f.line() }),
+  WaterBody: t.WaterBody.apply({ ...waterLayer, filter: f.polygon().clsNot("swimming_pool") }),
+  WaterOcean: t.WaterOcean.apply({ ...waterLayer, filter: f.cls("ocean") }),
 
-  BridgePlatform: t.BridgePlatform.apply({ ...transportation, filter: f.polygon().cls("bridge") }),
+  LandPedestrian: t.LandPedestrian.apply({ ...transportation, filter: f.polygon().cls("bridge") }),
 
   TunnelMinor: t.TunnelMinor.apply({
     ...transportation,
@@ -74,26 +86,33 @@ export const styles = {
   }),
   RoadSecondaryTertiary: t.RoadSecondaryTertiary.apply({
     ...transportation,
-    filter: f.line().notTunnel().cls("secondary", "secondary_construction", "tertiary", "tertiary_construction"),
+    filter: f
+      .line()
+      .notTunnel()
+      .cls("secondary", "secondary_construction", "tertiary", "tertiary_construction"),
   }),
   RoadPrimary: t.RoadPrimary.apply({
     ...transportation,
     filter: f.line().notTunnel().cls("primary", "primary_construction"),
   }),
-  RoadTrunk: t.RoadTrunk.apply({ ...transportation, filter: f.line().notTunnel().where(trunkOrUsState) }),
-  MotorwayRamp: t.MotorwayRamp.apply({
+  RoadTrunk: t.RoadTrunk.apply({
+    ...transportation,
+    filter: f.line().notTunnel().where(trunkOrUsState),
+  }),
+  RoadMotorwayRamp: t.RoadMotorwayRamp.apply({
     ...transportation,
     filter: f.line().notTunnel().cls("motorway", "motorway_construction").ramp(),
   }),
-  Motorway: t.Motorway.apply({
+  RoadMotorway: t.RoadMotorway.apply({
     ...transportation,
     filter: f.line().notTunnel().cls("motorway", "motorway_construction").notRamp(),
   }),
 
-  Railway: t.Railway.apply({ ...transportation, filter: f.cls("rail").notTunnel() }),
-  RailwayTransit: t.Railway
-    .apply({ ...transportation, filter: f.cls("transit").notTunnel() })
-    .patch((layer) => ({ ...layer, id: layer.id.replace("railway", "railway-transit") })),
+  Rail: t.Rail.apply({ ...transportation, filter: f.cls("rail").notTunnel() }),
+  RailTransit: t.Rail.apply({
+    ...transportation,
+    filter: f.cls("transit").notTunnel(),
+  }).patch((layer) => ({ ...layer, id: layer.id.replace("rail_line", "rail_transit_line") })),
 
   Building: t.Building.apply({
     ...omt,
@@ -106,30 +125,55 @@ export const styles = {
   BoundaryCountry: t.BoundaryCountry.apply({
     ...omt,
     sourceLayer: "boundary",
-    filter: f.is("admin_level", 2).is("maritime", 0),
+    filter: f.is("admin_level", 2).is("maritime", 0).isNot("disputed", 1),
   }),
 
-  WaterNameLineMinor: t.WaterNameLineMinor.apply({ ...waterway, filter: f.line().notTunnel().clsNot("stream") }),
-  WaterNameLineMajor: t.WaterNameLineMajor.apply({ ...omt, sourceLayer: "water_name", filter: f.line() }),
-  WaterName: t.WaterName.apply({ ...omt, sourceLayer: "water_name", filter: f.point().clsNot("lake", "bay") }),
+  BoundaryDisputed: t.BoundaryDisputed.apply({
+    ...omt,
+    sourceLayer: "boundary",
+    filter: f.is("admin_level", 2).is("maritime", 0).is("disputed", 1),
+  }),
 
-  HighwayNameOther: t.HighwayNameOther.apply({
+  LabelWaterLineMinor: t.LabelWaterLineMinor.apply({
+    ...waterway,
+    filter: f.line().notTunnel().clsNot("stream"),
+  }),
+  LabelWaterLineMajor: t.LabelWaterLineMajor.apply({
+    ...omt,
+    sourceLayer: "water_name",
+    filter: f.line(),
+  }),
+  LabelWaterPoint: t.LabelWaterPoint.apply({
+    ...omt,
+    sourceLayer: "water_name",
+    filter: f.point().clsNot("lake", "bay"),
+  }),
+
+  LabelRoadOther: t.LabelRoadOther.apply({
     ...transportationName,
     filter: f.line().cls("trunk", "primary", "secondary"),
   }),
-  HighwayNameMotorway: t.HighwayNameMotorway.apply({
+  LabelRoadMotorway: t.LabelRoadMotorway.apply({
     ...transportationName,
     filter: f.line().cls("motorway", "motorway_construction"),
   }),
 
-  PlaceOther: t.PlaceOther.apply({
+  LabelPlaceOther: t.LabelPlaceOther.apply({
     ...place,
-    filter: f.point().clsNot("city", "suburb", "town", "village", "province", "country", "state", "continent"),
+    filter: f
+      .point()
+      .clsNot("city", "suburb", "town", "village", "province", "country", "state", "continent"),
   }),
-  PlaceSuburb: t.PlaceSuburb.apply({ ...place, filter: f.point().cls("suburb").lte("rank", 16) }),
-  PlaceVillage: t.PlaceVillage.apply({ ...place, filter: f.point().cls("village") }),
-  PlaceTown: t.PlaceTown.apply({ ...place, filter: f.point().cls("town").lte("rank", 13) }),
-  PlaceCity: t.PlaceCity.apply({
+  LabelPlaceSuburb: t.LabelPlaceSuburb.apply({
+    ...place,
+    filter: f.point().cls("suburb").lte("rank", 16),
+  }),
+  LabelPlaceVillage: t.LabelPlaceVillage.apply({ ...place, filter: f.point().cls("village") }),
+  LabelPlaceTown: t.LabelPlaceTown.apply({
+    ...place,
+    filter: f.point().cls("town").lte("rank", 13),
+  }),
+  LabelPlaceCityMinor: t.LabelPlaceCityMinor.apply({
     ...place,
     filter: f
       .point()
@@ -138,12 +182,24 @@ export const styles = {
       .gte("rank", 4)
       .isNot("name", "City of Westminster", "City of London"),
   }),
-  PlaceCityLarge: t.PlaceCityLarge.apply({
+  LabelPlaceCityMajor: t.LabelPlaceCityMajor.apply({
     ...place,
     filter: f.point().isNot("capital", 2).lte("rank", 3).cls("city"),
   }),
-  PlaceCapital: t.PlaceCapital.apply({ ...place, filter: f.point().is("capital", 2).cls("city") }),
-  PlaceState: t.PlaceState.apply({ ...place, filter: f.point().cls("state").lte("rank", 1) }),
-  PlaceCountryMinor: t.PlaceCountryMinor.apply({ ...place, filter: f.point().cls("country").gte("rank", 2) }),
-  PlaceCountryMajor: t.PlaceCountryMajor.apply({ ...place, filter: f.point().lte("rank", 1).cls("country") }),
+  LabelPlaceCapital: t.LabelPlaceCapital.apply({
+    ...place,
+    filter: f.point().is("capital", 2).cls("city"),
+  }),
+  LabelPlaceState: t.LabelPlaceState.apply({
+    ...place,
+    filter: f.point().cls("state").lte("rank", 1),
+  }),
+  LabelPlaceCountryMinor: t.LabelPlaceCountryMinor.apply({
+    ...place,
+    filter: f.point().cls("country").gte("rank", 2),
+  }),
+  LabelPlaceCountryMajor: t.LabelPlaceCountryMajor.apply({
+    ...place,
+    filter: f.point().lte("rank", 1).cls("country"),
+  }),
 }

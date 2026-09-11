@@ -11,9 +11,9 @@ const pWaterFill = {
   paint: { "fill-color": color.blueWater, "fill-antialias": true },
 }
 
-export const Waterway = style("Waterway", () => [
+export const WaterWaterway = style("WaterWaterway", () => [
   merge(pFadeIn("line-opacity", 8, 10, { max: 1 }), {
-    id: "waterway",
+    id: "water_waterway",
     type: "line",
     paint: {
       "line-color": color.blueWaterOutline,
@@ -22,23 +22,23 @@ export const Waterway = style("Waterway", () => [
   }),
 ])
 
-export const Water = style("Water", () => [
+export const WaterBody = style("WaterBody", () => [
   merge(pFadeIn("line-opacity", 4, 10), {
-    id: "water-outline",
+    id: "water_body_outline",
     type: "line",
     paint: {
       "line-color": color.blueWaterOutline,
       "line-width": zStep(1, { 13: 2 }),
     },
   }),
-  merge(pWaterFill, { id: "water" }),
+  merge(pWaterFill, { id: "water_body" }),
 ])
 
-export const Ocean = style("Ocean", () => [
+export const WaterOcean = style("WaterOcean", () => [
   merge({
-    id: "ocean-outline",
+    id: "water_ocean_outline",
     type: "line",
     paint: { "line-color": color.blueWaterOutline, "line-width": 2 },
   }),
-  merge(pWaterFill, { id: "ocean" }),
+  merge(pWaterFill, { id: "water_ocean" }),
 ])

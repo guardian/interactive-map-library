@@ -20,7 +20,7 @@ export const Background = style("Background", () => [
 const pLandFade = pFadeIn("fill-opacity", 5, 14, {
   min: 0.2,
   max: 1,
-  base: 1.3,
+  base: 1.2,
 })
 
 /** @type {Partial} */
@@ -41,23 +41,32 @@ const pMountainCap = merge(pMountainFill, {
 const pMountainShade = merge(pMountainFill, {
   paint: {
     "fill-color": color.brownMountain,
-    "fill-opacity": zInterp({ 3: 0.0041, 3.5: 0.25, 6: 0.18, 11.5: 0.15, 11.9: 0.03 }, 0.3),
+    "fill-opacity": zInterp(
+      {
+        3: 0.0041,
+        3.5: 0.25,
+        6: 0.18,
+        11.5: 0.15,
+        11.9: 0.03,
+      },
+      0.3,
+    ),
   },
 })
 
-export const LanduseResidential = style("LanduseResidential", () => [
+export const LandResidential = style("LandResidential", () => [
   // TODO: fade out to 12
-  merge(pFill, pFade("fill-opacity", { in: [5, 6, { min: 0.25 }], out: [10, 11] }), {
-    id: "landuse_residential",
+  merge(pFill, pFade("fill-opacity", { in: [5, 6, { min: 0.25 }], out: [9, 11] }), {
+    id: "land_residential",
     paint: {
-      "fill-color": zStep(color.landuseResidentialFar, { 8: color.landuseResidentialNear }),
+      "fill-color": color.landuseResidential,
     },
   }),
 ])
 
-export const LandcoverIce = style("LandcoverIce", () => [
+export const LandIce = style("LandIce", () => [
   merge(pFill, pNoOutline, {
-    id: "landcover_ice",
+    id: "land_ice",
     paint: {
       "fill-color": color.iceFill,
       // TODO: this doesn't look quite right...
@@ -79,53 +88,66 @@ export const LandcoverIce = style("LandcoverIce", () => [
   }),
 ])
 
-export const LandcoverGrass = style("LandcoverGrass", () => [
+export const LandGrass = style("LandGrass", () => [
   merge(pFill, pLandFade, {
-    id: "landcover_grass",
+    id: "land_grass",
     paint: {
       "fill-color": color.greenGrass,
     },
   }),
 ])
 
-export const LandcoverWood = style("LandcoverWood", () => [
+export const LandWood = style("LandWood", () => [
   merge(pFill, pLandFade, {
-    id: "landcover_wood",
+    id: "land_wood",
     paint: {
       "fill-color": color.greenWood,
     },
   }),
 ])
 
-export const Park = style("Park", () => [
+export const LandPark = style("LandPark", () => [
   merge(pFill, pLandFade, {
-    id: "park",
+    id: "land_park",
     paint: {
       "fill-color": color.greenPark,
     },
   }),
 ])
 
-export const LandcoverPark = style("LandcoverPark", () => [
-  merge(pFill, pLandFade, {
-    id: "landcover_park",
+export const LandPedestrian = style("LandPedestrian", () => [
+  merge(pFill, {
+    id: "land_pedestrian",
     paint: {
-      "fill-color": color.greenPark,
+      "fill-color": color.surface,
+      "fill-outline-color": color.bridgeOutline,
     },
   }),
 ])
 
-export const Mountains1 = style("Mountains1", () => [merge(pMountainCap, { id: "mountains_1" })])
+export const TerrainMountain1 = style("TerrainMountain1", () => [
+  merge(pMountainCap, { id: "terrain_mountain_1" }),
+])
 
-export const Mountains2 = style("Mountains2", () => [merge(pMountainCap, { id: "mountains_2" })])
+export const TerrainMountain2 = style("TerrainMountain2", () => [
+  merge(pMountainCap, { id: "terrain_mountain_2" }),
+])
 
-export const Mountains3 = style("Mountains3", () => [merge(pMountainShade, { id: "mountains_3" })])
+export const TerrainMountain3 = style("TerrainMountain3", () => [
+  merge(pMountainShade, { id: "terrain_mountain_3" }),
+])
 
-export const Mountains4 = style("Mountains4", () => [merge(pMountainShade, { id: "mountains_4" })])
+export const TerrainMountain4 = style("TerrainMountain4", () => [
+  merge(pMountainShade, { id: "terrain_mountain_4" }),
+])
 
-export const Mountains5 = style("Mountains5", () => [merge(pMountainShade, { id: "mountains_5" })])
+export const TerrainMountain5 = style("TerrainMountain5", () => [
+  merge(pMountainShade, { id: "terrain_mountain_5" }),
+])
 
-export const Mountains6 = style("Mountains6", () => [merge(pMountainShade, { id: "mountains_6" })])
+export const TerrainMountain6 = style("TerrainMountain6", () => [
+  merge(pMountainShade, { id: "terrain_mountain_6" }),
+])
 
 export const Building = style("Building", () => [
   merge(pFill, {
@@ -139,9 +161,9 @@ export const Building = style("Building", () => [
   }),
 ])
 
-export const Building3d = style("Building3d", () => [
+export const BuildingExtrusion = style("BuildingExtrusion", () => [
   merge({
-    id: "building3d",
+    id: "building_extrusion",
     type: "fill-extrusion",
     minzoom: 14,
     // Extrusion height/base read from a feature attribute whose name is

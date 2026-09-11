@@ -5,8 +5,7 @@ export const color = {
 
   surface: "#f8f8f8",
 
-  landuseResidentialFar: "#ececec",
-  landuseResidentialNear: "#f0f0f0",
+  landuseResidential: "#f2f2f2",
 
   buildingFill: "#f1f1f1",
   buildingOutline: "#cfcfcf",
@@ -22,7 +21,9 @@ export const color = {
 
   pathFill: "#d8d8d8",
 
-  boundaryCountry: "#a3a3a3",
+  // boundaryCountry: "#a3a3a3",
+  boundaryCountry: "#808080",
+  boundaryCountryCasing: "#ffffff",
 
   placeLabel: "#707070",
   placeLabelStrong: "#121212",
@@ -37,7 +38,7 @@ export const color = {
   greenWood: "#cbe4ce",
   greenGrass: "#dcefde",
 
-  brownMountain: "#684731",
+  brownMountain: "#909090",
 
   taupeBuilding: "#dddad4",
   taupe: "#908b78",

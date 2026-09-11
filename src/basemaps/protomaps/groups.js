@@ -2,15 +2,17 @@ import { group } from "../../core/group.js"
 import { resources } from "./sources.js"
 import { styles as s } from "./styles.js"
 
-const Landcover = group(
-  "Landcover",
-  [s.LanduseResidential, s.LandcoverIce, s.LandcoverGrass, s.LanduseGrass, s.LanduseWood],
+const Land = group(
+  "Land",
+  [s.LandResidential, s.LandIce, s.LandGrass, s.LandGrassPark, s.LandWood],
   { resources },
 )
 
-const Water = group("Water", [s.Waterway, s.Water, s.Ocean], { resources })
+const Water = group("Water", [s.WaterWaterway, s.WaterBody, s.WaterOcean], { resources })
 
-const Aeroways = group("Aeroways", [s.AerowayArea, s.AerowayTaxiway, s.AerowayRunway], { resources })
+const Aeroways = group("Aeroways", [s.AerowayArea, s.AerowayTaxiway, s.AerowayRunway], {
+  resources,
+})
 
 const Tunnels = group("Tunnels", [s.TunnelMinor, s.TunnelMajor, s.TunnelMotorway], { resources })
 
@@ -22,19 +24,19 @@ const SurfaceRoads = group(
     s.RoadSecondaryTertiary,
     s.RoadPrimary,
     s.RoadTrunk,
-    s.MotorwayRamp,
-    s.Motorway,
+    s.RoadMotorwayRamp,
+    s.RoadMotorway,
   ],
   {
     resources,
     post: [
-      // RoadService is a transparent structural casing with no fill and no "-casing"
-      // suffix, so it stays pinned at the front to sit beneath every fill; the paved
-      // roads that follow are partitioned casings-first so a later road's casing
-      // never paints over an earlier road's fill at a junction.
+      // RoadService is a transparent structural casing with no fill, so it stays
+      // pinned at the front to sit beneath every fill; the paved roads that follow
+      // are partitioned casings-first so a later road's casing never paints over an
+      // earlier road's fill at a junction.
       (layers) => {
         const isService = (layer) => layer.metadata?.iml?.style === "RoadService"
-        const isCasing = (layer) => layer.id.endsWith("-casing")
+        const isCasing = (layer) => layer.id.endsWith("_casing")
         const service = layers.filter(isService)
         const paved = layers.filter((layer) => !isService(layer))
 
@@ -44,11 +46,11 @@ const SurfaceRoads = group(
   },
 )
 
-const Railways = group("Railways", [s.RailwayTransit, s.Railway], { resources })
+const Railways = group("Railways", [s.RailTransit, s.Rail], { resources })
 
 const Roads = group(
   "Roads",
-  [s.LandusePedestrian, s.Path, Aeroways, Tunnels, SurfaceRoads, Railways],
+  [s.LandPedestrian, s.RoadPath, Aeroways, Tunnels, SurfaceRoads, Railways],
   { resources },
 )
 
@@ -60,27 +62,27 @@ const Boundaries = group("Boundaries", [s.BoundaryState, s.BoundaryCountry], { r
 
 const WaterLabels = group(
   "WaterLabels",
-  [s.WaterNameLineMajor, s.WaterNameLineMinor, s.WaterName],
+  [s.LabelWaterLineMajor, s.LabelWaterLineMinor, s.LabelWaterPoint],
   { resources },
 )
 
-const HighwayLabels = group("HighwayLabels", [s.HighwayNameOther, s.HighwayNameMotorway], {
+const HighwayLabels = group("HighwayLabels", [s.LabelRoadOther, s.LabelRoadMotorway], {
   resources,
 })
 
 const PlaceLabels = group(
   "PlaceLabels",
   [
-    s.PlaceSuburb,
-    s.PlaceOther,
-    s.PlaceVillage,
-    s.PlaceTown,
-    s.PlaceCity,
-    s.PlaceCapital,
-    s.PlaceCityLarge,
-    s.PlaceState,
-    s.PlaceCountryMinor,
-    s.PlaceCountryMajor,
+    s.LabelPlaceSuburb,
+    s.LabelPlaceOther,
+    s.LabelPlaceVillage,
+    s.LabelPlaceTown,
+    s.LabelPlaceCityMinor,
+    s.LabelPlaceCapital,
+    s.LabelPlaceCityMajor,
+    s.LabelPlaceState,
+    s.LabelPlaceCountryMinor,
+    s.LabelPlaceCountryMajor,
   ],
   { resources },
 )
@@ -90,9 +92,9 @@ const Labels = group("Labels", [WaterLabels, HighwayLabels, PlaceLabels], {
   theme: { textField: ["name:en", "name"] },
 })
 
-const Protomaps = group(
+const Basemap = group(
   "Protomaps",
-  [s.Background, Landcover, Water, Roads, Buildings, Bridges, Boundaries, Labels],
+  [s.Background, Land, Water, Roads, Buildings, Bridges, Boundaries, Labels],
   {
     resources,
     document: {
@@ -105,13 +107,4 @@ const Protomaps = group(
   },
 )
 
-export const groups = {
-  Landcover,
-  Water,
-  Roads,
-  Buildings,
-  Bridges,
-  Boundaries,
-  Labels,
-  Protomaps,
-}
+export { Land, Water, Roads, Buildings, Bridges, Boundaries, Labels, Basemap }

@@ -2,19 +2,22 @@ import { group } from "../../core/group.js"
 import { resources } from "./sources.js"
 import { styles as s } from "./styles.js"
 
-const Landcover = group(
-  "Landcover",
-  [s.LanduseResidential, s.LandcoverIce, s.LandcoverGrass, s.LandcoverWood],
-  { resources },
-)
+const Land = group("Land", [s.LandResidential, s.LandIce, s.LandGrass, s.LandWood], { resources })
 
 const Reliefs = group(
   "Reliefs",
-  [s.Mountains1, s.Mountains2, s.Mountains3, s.Mountains4, s.Mountains5, s.Mountains6],
+  [
+    s.TerrainMountain1,
+    s.TerrainMountain2,
+    s.TerrainMountain3,
+    s.TerrainMountain4,
+    s.TerrainMountain5,
+    s.TerrainMountain6,
+  ],
   { resources },
 )
 
-const Water = group("Water", [s.Waterway, s.Water, s.Ocean], { resources })
+const Water = group("Water", [s.WaterWaterway, s.WaterBody, s.WaterOcean], { resources })
 
 const Tunnels = group("Tunnels", [s.TunnelMinor, s.TunnelMajor, s.TunnelMotorway], { resources })
 
@@ -26,8 +29,8 @@ const SurfaceRoads = group(
     s.RoadSecondaryTertiary,
     s.RoadPrimary,
     s.RoadTrunk,
-    s.MotorwayRamp,
-    s.Motorway,
+    s.RoadMotorwayRamp,
+    s.RoadMotorway,
   ],
   {
     resources,
@@ -38,7 +41,7 @@ const SurfaceRoads = group(
       // fill at a junction.
       (layers) => {
         const isService = (layer) => layer.metadata?.iml?.style === "RoadService"
-        const isCasing = (layer) => layer.id.endsWith("-casing")
+        const isCasing = (layer) => layer.id.endsWith("_casing")
         const service = layers.filter(isService)
         const paved = layers.filter((layer) => !isService(layer))
 
@@ -48,39 +51,39 @@ const SurfaceRoads = group(
   },
 )
 
-const Railways = group("Railways", [s.Railway, s.RailwayTransit], { resources })
+const Railways = group("Railways", [s.Rail, s.RailTransit], { resources })
 
-const Roads = group("Roads", [s.BridgePlatform, Tunnels, SurfaceRoads, Railways], { resources })
+const Roads = group("Roads", [s.LandPedestrian, Tunnels, SurfaceRoads, Railways], { resources })
 
 const Buildings = group("Buildings", [s.Building], { resources })
 
 const Bridges = group("Bridges", [s.BridgeWaterway], { resources })
 
-const Boundaries = group("Boundaries", [s.BoundaryCountry], { resources })
+const Boundaries = group("Boundaries", [s.BoundaryCountry, s.BoundaryDisputed], { resources })
 
 const WaterLabels = group(
   "WaterLabels",
-  [s.WaterNameLineMinor, s.WaterNameLineMajor, s.WaterName],
+  [s.LabelWaterLineMinor, s.LabelWaterLineMajor, s.LabelWaterPoint],
   { resources },
 )
 
-const HighwayLabels = group("HighwayLabels", [s.HighwayNameOther, s.HighwayNameMotorway], {
+const HighwayLabels = group("HighwayLabels", [s.LabelRoadOther, s.LabelRoadMotorway], {
   resources,
 })
 
 const PlaceLabels = group(
   "PlaceLabels",
   [
-    s.PlaceOther,
-    s.PlaceSuburb,
-    s.PlaceVillage,
-    s.PlaceTown,
-    s.PlaceCity,
-    s.PlaceCityLarge,
-    s.PlaceCapital,
-    s.PlaceState,
-    s.PlaceCountryMinor,
-    s.PlaceCountryMajor,
+    s.LabelPlaceOther,
+    s.LabelPlaceSuburb,
+    s.LabelPlaceVillage,
+    s.LabelPlaceTown,
+    s.LabelPlaceCityMinor,
+    s.LabelPlaceCityMajor,
+    s.LabelPlaceCapital,
+    s.LabelPlaceState,
+    s.LabelPlaceCountryMinor,
+    s.LabelPlaceCountryMajor,
   ],
   { resources },
 )
@@ -90,20 +93,13 @@ const Labels = group("Labels", [WaterLabels, HighwayLabels, PlaceLabels], {
   theme: { textField: ["name:en", "name_en", "name"] },
 })
 
-const Graphics = group(
+const Basemap = group(
   "Graphics",
-  [s.Background, Landcover, Reliefs, Water, Roads, Buildings, Bridges, Boundaries, Labels],
-  { resources, document: { name: "Graphics" } },
+  [s.Background, Land, Reliefs, Water, Roads, Buildings, Bridges, Boundaries, Labels],
+  {
+    resources,
+    document: { name: "Graphics" },
+  },
 )
 
-export const groups = {
-  Landcover,
-  Reliefs,
-  Water,
-  Roads,
-  Buildings,
-  Bridges,
-  Boundaries,
-  Labels,
-  Graphics,
-}
+export { Land, Reliefs, Water, Roads, Buildings, Bridges, Boundaries, Labels, Basemap }

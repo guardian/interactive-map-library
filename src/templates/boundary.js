@@ -1,7 +1,7 @@
 import { merge, style } from "../core/style.js"
 import { color } from "../tokens/colors.js"
 import { pFadeIn } from "./utils/partials.js"
-import { zInterp } from "./utils/zoom.js"
+import { zInterp, zStep } from "./utils/zoom.js"
 
 /** @import { Partial } from "./utils/partials.js" */
 
@@ -23,14 +23,27 @@ export const BoundaryState = style("BoundaryState", () => [
   }),
 ])
 
+const boundaryCountryWidth = zInterp({ 0: 0.5, 5: 0.75, 10: 2 })
+
 export const BoundaryCountry = style("BoundaryCountry", () => [
   merge(pBoundaryLine, {
     id: "boundary_country",
-    maxzoom: 8,
     paint: {
       "line-color": color.boundaryCountry,
-      "line-width": zInterp({ 0: 0.5, 5: 1, 7: 1.5 }),
-      "line-blur": 1,
+      "line-width": boundaryCountryWidth,
+      "line-blur": zStep(1, { 9: 1.5 }),
+    },
+  }),
+])
+
+export const BoundaryDisputed = style("BoundaryDisputed", () => [
+  merge(pBoundaryLine, {
+    id: "boundary_disputed",
+    paint: {
+      "line-color": color.boundaryCountry,
+      "line-width": boundaryCountryWidth,
+      "line-blur": zStep(1, { 9: 1.5 }),
+      "line-dasharray": zStep([4, 4], { 12: [6, 6] }),
     },
   }),
 ])

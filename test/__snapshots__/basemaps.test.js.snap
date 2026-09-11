@@ -38,15 +38,15 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "residential",
         ],
       ],
-      "id": "landuse_residential",
-      "maxzoom": 11,
+      "id": "land_residential",
+      "maxzoom": 10,
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
-            "Landcover",
+            "Land",
           ],
-          "style": "LanduseResidential",
+          "style": "LandResidential",
         },
       },
       "minzoom": 5,
@@ -71,11 +71,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
               1,
             ],
             [
-              10,
+              8,
               1,
             ],
             [
-              11,
+              10,
               0,
             ],
           ],
@@ -94,14 +94,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "ice",
       ],
-      "id": "landcover_ice",
+      "id": "land_ice",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverIce",
+          "style": "LandIce",
         },
       },
       "paint": {
@@ -155,28 +155,39 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
     },
     {
       "filter": [
-        "==",
+        "all",
         [
-          "get",
-          "class",
+          "==",
+          [
+            "get",
+            "class",
+          ],
+          "grass",
         ],
-        "grass",
+        [
+          "!=",
+          [
+            "get",
+            "subclass",
+          ],
+          "scrub",
+        ],
       ],
-      "id": "landcover_grass",
+      "id": "land_grass",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverGrass",
+          "style": "LandGrass",
         },
       },
       "minzoom": 5,
       "paint": {
         "fill-color": "#dcefde",
         "fill-opacity": {
-          "base": 1.3,
+          "base": 1.2,
           "stops": [
             [
               5,
@@ -202,21 +213,21 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "wood",
       ],
-      "id": "landcover_wood",
+      "id": "land_wood",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverWood",
+          "style": "LandWood",
         },
       },
       "minzoom": 5,
       "paint": {
         "fill-color": "#cbe4ce",
         "fill-opacity": {
-          "base": 1.3,
+          "base": 1.2,
           "stops": [
             [
               5,
@@ -242,7 +253,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         1,
       ],
-      "id": "mountains_1",
+      "id": "terrain_mountain_1",
       "maxzoom": 12,
       "metadata": {
         "iml": {
@@ -250,7 +261,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Graphics",
             "Reliefs",
           ],
-          "style": "Mountains1",
+          "style": "TerrainMountain1",
         },
       },
       "paint": {
@@ -291,7 +302,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         2,
       ],
-      "id": "mountains_2",
+      "id": "terrain_mountain_2",
       "maxzoom": 12,
       "metadata": {
         "iml": {
@@ -299,7 +310,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Graphics",
             "Reliefs",
           ],
-          "style": "Mountains2",
+          "style": "TerrainMountain2",
         },
       },
       "paint": {
@@ -361,7 +372,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "mountains_3",
+      "id": "terrain_mountain_3",
       "maxzoom": 12,
       "metadata": {
         "iml": {
@@ -369,11 +380,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Graphics",
             "Reliefs",
           ],
-          "style": "Mountains3",
+          "style": "TerrainMountain3",
         },
       },
       "paint": {
-        "fill-color": "#684731",
+        "fill-color": "#909090",
         "fill-opacity": {
           "base": 0.3,
           "stops": [
@@ -434,7 +445,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "mountains_4",
+      "id": "terrain_mountain_4",
       "maxzoom": 12,
       "metadata": {
         "iml": {
@@ -442,11 +453,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Graphics",
             "Reliefs",
           ],
-          "style": "Mountains4",
+          "style": "TerrainMountain4",
         },
       },
       "paint": {
-        "fill-color": "#684731",
+        "fill-color": "#909090",
         "fill-opacity": {
           "base": 0.3,
           "stops": [
@@ -498,7 +509,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4849,
         ],
       ],
-      "id": "mountains_5",
+      "id": "terrain_mountain_5",
       "maxzoom": 12,
       "metadata": {
         "iml": {
@@ -506,11 +517,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Graphics",
             "Reliefs",
           ],
-          "style": "Mountains5",
+          "style": "TerrainMountain5",
         },
       },
       "paint": {
-        "fill-color": "#684731",
+        "fill-color": "#909090",
         "fill-opacity": {
           "base": 0.3,
           "stops": [
@@ -551,7 +562,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         6,
       ],
-      "id": "mountains_6",
+      "id": "terrain_mountain_6",
       "maxzoom": 12,
       "metadata": {
         "iml": {
@@ -559,11 +570,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Graphics",
             "Reliefs",
           ],
-          "style": "Mountains6",
+          "style": "TerrainMountain6",
         },
       },
       "paint": {
-        "fill-color": "#684731",
+        "fill-color": "#909090",
         "fill-opacity": {
           "base": 0.3,
           "stops": [
@@ -603,14 +614,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "LineString",
       ],
-      "id": "waterway",
+      "id": "water_waterway",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
             "Water",
           ],
-          "style": "Waterway",
+          "style": "WaterWaterway",
         },
       },
       "minzoom": 8,
@@ -653,14 +664,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "swimming_pool",
         ],
       ],
-      "id": "water-outline",
+      "id": "water_body_outline",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
             "Water",
           ],
-          "style": "Water",
+          "style": "WaterBody",
         },
       },
       "minzoom": 4,
@@ -711,14 +722,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "swimming_pool",
         ],
       ],
-      "id": "water",
+      "id": "water_body",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
             "Water",
           ],
-          "style": "Water",
+          "style": "WaterBody",
         },
       },
       "paint": {
@@ -738,14 +749,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "ocean",
       ],
-      "id": "ocean-outline",
+      "id": "water_ocean_outline",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
             "Water",
           ],
-          "style": "Ocean",
+          "style": "WaterOcean",
         },
       },
       "paint": {
@@ -765,14 +776,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "ocean",
       ],
-      "id": "ocean",
+      "id": "water_ocean",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
             "Water",
           ],
-          "style": "Ocean",
+          "style": "WaterOcean",
         },
       },
       "paint": {
@@ -802,14 +813,14 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "bridge",
         ],
       ],
-      "id": "bridge_platform",
+      "id": "land_pedestrian",
       "metadata": {
         "iml": {
           "group": [
             "Graphics",
             "Roads",
           ],
-          "style": "BridgePlatform",
+          "style": "LandPedestrian",
         },
       },
       "paint": {
@@ -853,7 +864,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "tunnel_minor-casing",
+      "id": "tunnel_minor_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -1052,7 +1063,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "tunnel_major-casing",
+      "id": "tunnel_major_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -1115,9 +1126,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.19114624505928854,
           13,
-          3,
+          2.7152542372881356,
           18,
-          34.5,
+          32.421052631578945,
         ],
       },
       "source": "openmaptiles",
@@ -1213,9 +1224,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          2,
+          1.8,
           18,
-          30,
+          28,
         ],
       },
       "source": "openmaptiles",
@@ -1255,7 +1266,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "tunnel_motorway-casing",
+      "id": "tunnel_motorway_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -1316,11 +1327,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.412046783625731,
+          0.474757281553398,
           13,
-          7,
+          6.745945945945945,
           18,
-          36.57142857142857,
+          34.5,
         ],
       },
       "source": "openmaptiles",
@@ -1408,11 +1419,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.26,
+          0.3,
           13,
-          5,
+          4.8,
           18,
-          32,
+          30,
         ],
       },
       "source": "openmaptiles",
@@ -1452,7 +1463,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_service",
+      "id": "road_service_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1522,7 +1533,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_minor-casing",
+      "id": "road_minor_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1594,7 +1605,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_secondary_tertiary-casing",
+      "id": "road_secondary_tertiary_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1666,7 +1677,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_primary-casing",
+      "id": "road_primary_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1704,9 +1715,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.17889570552147238,
           13,
-          2.761904761904762,
+          2.502439024390244,
           18,
-          32.637362637362635,
+          30.6046511627907,
         ],
       },
       "source": "openmaptiles",
@@ -1757,7 +1768,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_trunk-casing",
+      "id": "road_trunk_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1793,9 +1804,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.2085015290519878,
+          0.296969696969697,
           13,
-          4.5102040816326525,
+          4.0212765957446805,
           18,
           32.637362637362635,
         ],
@@ -1845,7 +1856,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_major_motorway_ramp-casing",
+      "id": "road_motorway_ramp_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1857,7 +1868,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "MotorwayRamp",
+          "style": "RoadMotorwayRamp",
         },
       },
       "minzoom": 12,
@@ -1933,7 +1944,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_major_motorway-casing",
+      "id": "road_motorway_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -1945,7 +1956,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "Motorway",
+          "style": "RoadMotorway",
         },
       },
       "minzoom": 12,
@@ -1969,11 +1980,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.3849249249249249,
+          0.4432835820895522,
           13,
-          6.4035087719298245,
+          6.171428571428571,
           18,
-          34.666666666666664,
+          32.637362637362635,
         ],
       },
       "source": "openmaptiles",
@@ -2207,7 +2218,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
               0.25,
             ],
             [
-              10,
+              11,
               1,
             ],
           ],
@@ -2224,9 +2235,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          2,
+          1.8,
           18,
-          30,
+          28,
         ],
       },
       "source": "openmaptiles",
@@ -2302,6 +2313,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "#dcdcdc",
           11,
           "#d0d0d0",
+          13,
+          "#dcdcdc",
         ],
         "line-opacity": {
           "stops": [
@@ -2310,7 +2323,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
               0.25,
             ],
             [
-              12,
+              10,
               1,
             ],
           ],
@@ -2325,9 +2338,9 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.14,
+          0.2,
           13,
-          3.4,
+          3,
           18,
           30,
         ],
@@ -2377,7 +2390,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_major_motorway_ramp",
+      "id": "road_motorway_ramp",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -2389,7 +2402,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "MotorwayRamp",
+          "style": "RoadMotorwayRamp",
         },
       },
       "minzoom": 12,
@@ -2400,8 +2413,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#dcdcdc",
-          9,
+          10,
           "#d0d0d0",
+          13,
+          "#dcdcdc",
         ],
         "line-width": [
           "interpolate",
@@ -2465,7 +2480,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           1,
         ],
       ],
-      "id": "road_major_motorway",
+      "id": "road_motorway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -2477,7 +2492,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "Motorway",
+          "style": "RoadMotorway",
         },
       },
       "minzoom": 5,
@@ -2490,6 +2505,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "#dcdcdc",
           10,
           "#d0d0d0",
+          13,
+          "#dcdcdc",
         ],
         "line-opacity": {
           "stops": [
@@ -2513,11 +2530,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.26,
+          0.3,
           13,
-          5,
+          4.8,
           18,
-          32,
+          30,
         ],
       },
       "source": "openmaptiles",
@@ -2544,7 +2561,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "tunnel",
         ],
       ],
-      "id": "railway",
+      "id": "rail_line",
       "metadata": {
         "iml": {
           "group": [
@@ -2552,7 +2569,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
@@ -2604,7 +2621,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "tunnel",
         ],
       ],
-      "id": "railway-dash",
+      "id": "rail_line_dash",
       "layout": {
         "line-cap": "butt",
       },
@@ -2615,15 +2632,15 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
       "paint": {
         "line-color": "#c8c8c8",
         "line-dasharray": [
-          0.33,
-          2.7,
+          0.3,
+          4,
         ],
         "line-opacity": {
           "stops": [
@@ -2671,7 +2688,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "tunnel",
         ],
       ],
-      "id": "railway-transit",
+      "id": "rail_transit_line",
       "metadata": {
         "iml": {
           "group": [
@@ -2679,7 +2696,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
@@ -2731,7 +2748,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "tunnel",
         ],
       ],
-      "id": "railway-transit-dash",
+      "id": "rail_transit_line_dash",
       "layout": {
         "line-cap": "butt",
       },
@@ -2742,15 +2759,15 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
       "paint": {
         "line-color": "#c8c8c8",
         "line-dasharray": [
-          0.33,
-          2.7,
+          0.3,
+          4,
         ],
         "line-opacity": {
           "stops": [
@@ -2843,7 +2860,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "bridge",
         ],
       ],
-      "id": "waterway-bridge-casing",
+      "id": "bridge_waterway_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -2897,7 +2914,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "bridge",
         ],
       ],
-      "id": "waterway-bridge",
+      "id": "bridge_waterway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -2951,13 +2968,20 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
           0,
         ],
+        [
+          "!=",
+          [
+            "get",
+            "disputed",
+          ],
+          1,
+        ],
       ],
       "id": "boundary_country",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
       },
-      "maxzoom": 8,
       "metadata": {
         "iml": {
           "group": [
@@ -2968,8 +2992,16 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         },
       },
       "paint": {
-        "line-blur": 1,
-        "line-color": "#a3a3a3",
+        "line-blur": [
+          "step",
+          [
+            "zoom",
+          ],
+          1,
+          9,
+          1.5,
+        ],
+        "line-color": "#808080",
         "line-width": {
           "stops": [
             [
@@ -2978,11 +3010,106 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             ],
             [
               5,
-              1,
+              0.75,
             ],
             [
-              7,
-              1.5,
+              10,
+              2,
+            ],
+          ],
+        },
+      },
+      "source": "openmaptiles",
+      "source-layer": "boundary",
+      "type": "line",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "get",
+            "admin_level",
+          ],
+          2,
+        ],
+        [
+          "==",
+          [
+            "get",
+            "maritime",
+          ],
+          0,
+        ],
+        [
+          "==",
+          [
+            "get",
+            "disputed",
+          ],
+          1,
+        ],
+      ],
+      "id": "boundary_disputed",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      "metadata": {
+        "iml": {
+          "group": [
+            "Graphics",
+            "Boundaries",
+          ],
+          "style": "BoundaryDisputed",
+        },
+      },
+      "paint": {
+        "line-blur": [
+          "step",
+          [
+            "zoom",
+          ],
+          1,
+          9,
+          1.5,
+        ],
+        "line-color": "#808080",
+        "line-dasharray": [
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              4,
+              4,
+            ],
+          ],
+          12,
+          [
+            "literal",
+            [
+              6,
+              6,
+            ],
+          ],
+        ],
+        "line-width": {
+          "stops": [
+            [
+              0,
+              0.5,
+            ],
+            [
+              5,
+              0.75,
+            ],
+            [
+              10,
+              2,
             ],
           ],
         },
@@ -3018,7 +3145,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "stream",
         ],
       ],
-      "id": "label_water_name_line_minor",
+      "id": "label_water_line_minor",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3042,7 +3169,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-size": 12,
       },
       "metadata": {
@@ -3052,7 +3179,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "WaterLabels",
           ],
-          "style": "WaterNameLineMinor",
+          "style": "LabelWaterLineMinor",
         },
       },
       "minzoom": 10,
@@ -3098,7 +3225,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
         "LineString",
       ],
-      "id": "label_water_name_line_major",
+      "id": "label_water_line_major",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3122,7 +3249,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-size": 12,
       },
       "maxzoom": 14,
@@ -3133,7 +3260,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "WaterLabels",
           ],
-          "style": "WaterNameLineMajor",
+          "style": "LabelWaterLineMajor",
         },
       },
       "minzoom": 5,
@@ -3175,7 +3302,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_water_name",
+      "id": "label_water_point",
       "layout": {
         "text-field": [
           "coalesce",
@@ -3206,7 +3333,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "WaterLabels",
           ],
-          "style": "WaterName",
+          "style": "LabelWaterPoint",
         },
       },
       "minzoom": 2,
@@ -3269,7 +3396,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "highway_name_other",
+      "id": "label_road_other",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3293,7 +3420,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-offset": [
           0,
           0.1,
@@ -3307,7 +3434,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "HighwayLabels",
           ],
-          "style": "HighwayNameOther",
+          "style": "LabelRoadOther",
         },
       },
       "minzoom": 15,
@@ -3346,7 +3473,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "highway_name_motorway",
+      "id": "label_road_motorway",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -3370,7 +3497,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-size": 12,
       },
       "metadata": {
@@ -3380,7 +3507,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "HighwayLabels",
           ],
-          "style": "HighwayNameMotorway",
+          "style": "LabelRoadMotorway",
         },
       },
       "minzoom": 13,
@@ -3526,7 +3653,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceOther",
+          "style": "LabelPlaceOther",
         },
       },
       "minzoom": 14,
@@ -3682,7 +3809,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           14,
           0.05,
           15,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -3714,7 +3841,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceSuburb",
+          "style": "LabelPlaceSuburb",
         },
       },
       "minzoom": 12,
@@ -3898,7 +4025,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceVillage",
+          "style": "LabelPlaceVillage",
         },
       },
       "minzoom": 12,
@@ -4078,7 +4205,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           13,
           0.05,
           14,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -4110,7 +4237,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceTown",
+          "style": "LabelPlaceTown",
         },
       },
       "minzoom": 10,
@@ -4236,7 +4363,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_city",
+      "id": "label_place_city_minor",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -4336,7 +4463,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           12,
           0.05,
           13,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -4373,7 +4500,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCity",
+          "style": "LabelPlaceCityMinor",
         },
       },
       "minzoom": 6,
@@ -4488,7 +4615,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "city",
         ],
       ],
-      "id": "label_place_city_large",
+      "id": "label_place_city_major",
       "layout": {
         "icon-image": [
           "step",
@@ -4507,6 +4634,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          250,
+          7,
           250,
           9,
           250,
@@ -4550,6 +4679,13 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
               "Gdn Text Sans TS3Regular",
             ],
           ],
+          7,
+          [
+            "literal",
+            [
+              "Gdn Text Sans TS3Bold",
+            ],
+          ],
           9,
           [
             "literal",
@@ -4572,16 +4708,20 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           0.05,
+          7,
+          0.05,
           9,
           0.05,
           12,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
           [
             "zoom",
           ],
+          8,
+          7,
           8,
           9,
           8,
@@ -4623,6 +4763,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           12,
+          7,
+          12,
           9,
           14,
           12,
@@ -4637,7 +4779,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCityLarge",
+          "style": "LabelPlaceCityMajor",
         },
       },
       "minzoom": 4,
@@ -4660,6 +4802,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#707070",
+          7,
+          "#707070",
           9,
           "#707070",
           12,
@@ -4671,6 +4815,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#fafafa",
+          7,
+          "#fafafa",
           9,
           "#fafafa",
           12,
@@ -4681,6 +4827,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          2,
+          7,
           2,
           9,
           2,
@@ -4807,7 +4955,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           ],
           0.05,
           12,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -4872,7 +5020,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCapital",
+          "style": "LabelPlaceCapital",
         },
       },
       "minzoom": 4,
@@ -5058,7 +5206,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceState",
+          "style": "LabelPlaceState",
         },
       },
       "minzoom": 5,
@@ -5169,6 +5317,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           250,
+          3,
+          250,
           6,
           250,
         ],
@@ -5178,6 +5328,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          "center",
+          3,
           "center",
           6,
           "center",
@@ -5205,6 +5357,13 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "literal",
             [
+              "Gdn Text Sans TS3Regular",
+            ],
+          ],
+          3,
+          [
+            "literal",
+            [
               "Guardian Text Egyptian Regular",
             ],
           ],
@@ -5222,6 +5381,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "center",
+          3,
+          "center",
           6,
           "center",
         ],
@@ -5230,15 +5391,19 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
-          0.12,
+          0.05,
+          3,
+          0.1,
           6,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
           [
             "zoom",
           ],
+          8,
+          3,
           8,
           6,
           8,
@@ -5273,7 +5438,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCountryMinor",
+          "style": "LabelPlaceCountryMinor",
         },
       },
       "paint": {
@@ -5295,6 +5460,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#707070",
+          3,
+          "#707070",
           6,
           "#707070",
         ],
@@ -5304,6 +5471,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#fafafa",
+          3,
+          "#fafafa",
           6,
           "#fafafa",
         ],
@@ -5312,6 +5481,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          2,
+          3,
           2,
           6,
           2,
@@ -5375,6 +5546,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           250,
+          3,
+          250,
           6,
           250,
         ],
@@ -5385,6 +5558,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          "center",
+          3,
           "center",
           6,
           "center",
@@ -5412,6 +5587,13 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "literal",
             [
+              "Gdn Text Sans TS3Regular",
+            ],
+          ],
+          3,
+          [
+            "literal",
+            [
               "Guardian Text Egyptian Regular",
             ],
           ],
@@ -5429,6 +5611,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "center",
+          3,
+          "center",
           6,
           "center",
         ],
@@ -5437,15 +5621,19 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
-          0.12,
+          0.05,
+          3,
+          0.1,
           6,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
           [
             "zoom",
           ],
+          8,
+          3,
           8,
           6,
           8,
@@ -5480,7 +5668,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCountryMajor",
+          "style": "LabelPlaceCountryMajor",
         },
       },
       "paint": {
@@ -5502,6 +5690,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#707070",
+          3,
+          "#707070",
           6,
           "#707070",
         ],
@@ -5511,6 +5701,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#fafafa",
+          3,
+          "#fafafa",
           6,
           "#fafafa",
         ],
@@ -5519,6 +5711,8 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          2,
+          3,
           2,
           6,
           2,
@@ -5544,6 +5738,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
   "name": "Graphics",
   "sources": {
     "openmaptiles": {
+      "attribution": "© OpenMapTiles © OpenStreetMap contributors",
       "maxzoom": 14,
       "minzoom": 0,
       "tiles": [
@@ -5603,15 +5798,15 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "residential",
         ],
       ],
-      "id": "landuse_residential",
-      "maxzoom": 11,
+      "id": "land_residential",
+      "maxzoom": 10,
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
-            "Landcover",
+            "Land",
           ],
-          "style": "LanduseResidential",
+          "style": "LandResidential",
         },
       },
       "minzoom": 5,
@@ -5636,11 +5831,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
               1,
             ],
             [
-              10,
+              8,
               1,
             ],
             [
-              11,
+              10,
               0,
             ],
           ],
@@ -5659,14 +5854,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
         ],
         "glacier",
       ],
-      "id": "landcover_ice",
+      "id": "land_ice",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverIce",
+          "style": "LandIce",
         },
       },
       "paint": {
@@ -5727,21 +5922,21 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
         ],
         "grassland",
       ],
-      "id": "landcover_grass",
+      "id": "land_grass",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverGrass",
+          "style": "LandGrass",
         },
       },
       "minzoom": 5,
       "paint": {
         "fill-color": "#dcefde",
         "fill-opacity": {
-          "base": 1.3,
+          "base": 1.2,
           "stops": [
             [
               5,
@@ -5791,21 +5986,21 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "landuse_grass",
+      "id": "land_grass_park",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverGrass",
+          "style": "LandGrass",
         },
       },
       "minzoom": 5,
       "paint": {
         "fill-color": "#dcefde",
         "fill-opacity": {
-          "base": 1.3,
+          "base": 1.2,
           "stops": [
             [
               5,
@@ -5847,21 +6042,21 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "landuse_wood",
+      "id": "land_wood",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
-            "Landcover",
+            "Land",
           ],
-          "style": "LandcoverWood",
+          "style": "LandWood",
         },
       },
       "minzoom": 5,
       "paint": {
         "fill-color": "#cbe4ce",
         "fill-opacity": {
-          "base": 1.3,
+          "base": 1.2,
           "stops": [
             [
               5,
@@ -5906,14 +6101,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "waterway",
+      "id": "water_waterway",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
             "Water",
           ],
-          "style": "Waterway",
+          "style": "WaterWaterway",
         },
       },
       "minzoom": 8,
@@ -5964,14 +6159,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "water-outline",
+      "id": "water_body_outline",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
             "Water",
           ],
-          "style": "Water",
+          "style": "WaterBody",
         },
       },
       "minzoom": 4,
@@ -6030,14 +6225,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "water",
+      "id": "water_body",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
             "Water",
           ],
-          "style": "Water",
+          "style": "WaterBody",
         },
       },
       "paint": {
@@ -6066,14 +6261,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "ocean-outline",
+      "id": "water_ocean_outline",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
             "Water",
           ],
-          "style": "Ocean",
+          "style": "WaterOcean",
         },
       },
       "paint": {
@@ -6102,14 +6297,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "ocean",
+      "id": "water_ocean",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
             "Water",
           ],
-          "style": "Ocean",
+          "style": "WaterOcean",
         },
       },
       "paint": {
@@ -6139,14 +6334,14 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "pedestrian",
         ],
       ],
-      "id": "landuse_pedestrian",
+      "id": "land_pedestrian",
       "metadata": {
         "iml": {
           "group": [
             "Protomaps",
             "Roads",
           ],
-          "style": "BridgePlatform",
+          "style": "LandPedestrian",
         },
       },
       "paint": {
@@ -6187,7 +6382,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Protomaps",
             "Roads",
           ],
-          "style": "Path",
+          "style": "RoadPath",
         },
       },
       "minzoom": 14,
@@ -6243,7 +6438,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "aerodrome",
         ],
       ],
-      "id": "aeroway-area",
+      "id": "aeroway_area",
       "metadata": {
         "iml": {
           "group": [
@@ -6289,7 +6484,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "taxiway",
         ],
       ],
-      "id": "aeroway-taxiway",
+      "id": "aeroway_taxiway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -6353,7 +6548,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "runway",
         ],
       ],
-      "id": "aeroway-runway",
+      "id": "aeroway_runway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -6413,7 +6608,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "minor_road",
         ],
       ],
-      "id": "tunnel_minor-casing",
+      "id": "tunnel_minor_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -6586,7 +6781,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "major_road",
         ],
       ],
-      "id": "tunnel_major-casing",
+      "id": "tunnel_major_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -6649,9 +6844,9 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.19114624505928854,
           13,
-          3,
+          2.7152542372881356,
           18,
-          34.5,
+          32.421052631578945,
         ],
       },
       "source": "protomaps",
@@ -6731,9 +6926,9 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          2,
+          1.8,
           18,
-          30,
+          28,
         ],
       },
       "source": "protomaps",
@@ -6763,7 +6958,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "highway",
         ],
       ],
-      "id": "tunnel_motorway-casing",
+      "id": "tunnel_motorway_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -6824,11 +7019,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.412046783625731,
+          0.474757281553398,
           13,
-          7,
+          6.745945945945945,
           18,
-          36.57142857142857,
+          34.5,
         ],
       },
       "source": "protomaps",
@@ -6906,11 +7101,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.26,
+          0.3,
           13,
-          5,
+          4.8,
           18,
-          32,
+          30,
         ],
       },
       "source": "protomaps",
@@ -6951,7 +7146,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "service",
         ],
       ],
-      "id": "road_service",
+      "id": "road_service_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7022,7 +7217,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "service",
         ],
       ],
-      "id": "road_minor-casing",
+      "id": "road_minor_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7099,7 +7294,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_secondary_tertiary-casing",
+      "id": "road_secondary_tertiary_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7164,7 +7359,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "primary",
         ],
       ],
-      "id": "road_primary-casing",
+      "id": "road_primary_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7202,9 +7397,9 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.17889570552147238,
           13,
-          2.761904761904762,
+          2.502439024390244,
           18,
-          32.637362637362635,
+          30.6046511627907,
         ],
       },
       "source": "protomaps",
@@ -7237,7 +7432,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "trunk",
         ],
       ],
-      "id": "road_trunk-casing",
+      "id": "road_trunk_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7273,9 +7468,9 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.2085015290519878,
+          0.296969696969697,
           13,
-          4.5102040816326525,
+          4.0212765957446805,
           18,
           32.637362637362635,
         ],
@@ -7320,7 +7515,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "is_link",
         ],
       ],
-      "id": "road_major_motorway_ramp-casing",
+      "id": "road_motorway_ramp_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7332,7 +7527,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "MotorwayRamp",
+          "style": "RoadMotorwayRamp",
         },
       },
       "minzoom": 12,
@@ -7400,7 +7595,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_major_motorway-casing",
+      "id": "road_motorway_casing",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7412,7 +7607,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "Motorway",
+          "style": "RoadMotorway",
         },
       },
       "minzoom": 12,
@@ -7436,11 +7631,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.3849249249249249,
+          0.4432835820895522,
           13,
-          6.4035087719298245,
+          6.171428571428571,
           18,
-          34.666666666666664,
+          32.637362637362635,
         ],
       },
       "source": "protomaps",
@@ -7673,7 +7868,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
               0.25,
             ],
             [
-              10,
+              11,
               1,
             ],
           ],
@@ -7690,9 +7885,9 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          2,
+          1.8,
           18,
-          30,
+          28,
         ],
       },
       "source": "protomaps",
@@ -7750,6 +7945,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "#dcdcdc",
           11,
           "#d0d0d0",
+          13,
+          "#dcdcdc",
         ],
         "line-opacity": {
           "stops": [
@@ -7758,7 +7955,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
               0.25,
             ],
             [
-              12,
+              10,
               1,
             ],
           ],
@@ -7773,9 +7970,9 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.14,
+          0.2,
           13,
-          3.4,
+          3,
           18,
           30,
         ],
@@ -7820,7 +8017,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "is_link",
         ],
       ],
-      "id": "road_major_motorway_ramp",
+      "id": "road_motorway_ramp",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7832,7 +8029,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "MotorwayRamp",
+          "style": "RoadMotorwayRamp",
         },
       },
       "minzoom": 12,
@@ -7843,8 +8040,10 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#dcdcdc",
-          9,
+          10,
           "#d0d0d0",
+          13,
+          "#dcdcdc",
         ],
         "line-width": [
           "interpolate",
@@ -7900,7 +8099,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "road_major_motorway",
+      "id": "road_motorway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -7912,7 +8111,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "SurfaceRoads",
           ],
-          "style": "Motorway",
+          "style": "RoadMotorway",
         },
       },
       "minzoom": 5,
@@ -7925,6 +8124,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "#dcdcdc",
           10,
           "#d0d0d0",
+          13,
+          "#dcdcdc",
         ],
         "line-opacity": {
           "stops": [
@@ -7948,11 +8149,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.26,
+          0.3,
           13,
-          5,
+          4.8,
           18,
-          32,
+          30,
         ],
       },
       "source": "protomaps",
@@ -8001,7 +8202,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "railway-transit",
+      "id": "rail_transit_line",
       "metadata": {
         "iml": {
           "group": [
@@ -8009,7 +8210,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
@@ -8083,7 +8284,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "railway-transit-dash",
+      "id": "rail_transit_line_dash",
       "layout": {
         "line-cap": "butt",
       },
@@ -8094,15 +8295,15 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
       "paint": {
         "line-color": "#c8c8c8",
         "line-dasharray": [
-          0.33,
-          2.7,
+          0.3,
+          4,
         ],
         "line-opacity": {
           "stops": [
@@ -8156,7 +8357,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "rail",
         ],
       ],
-      "id": "railway",
+      "id": "rail_line",
       "metadata": {
         "iml": {
           "group": [
@@ -8164,7 +8365,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
@@ -8222,7 +8423,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "rail",
         ],
       ],
-      "id": "railway-dash",
+      "id": "rail_line_dash",
       "layout": {
         "line-cap": "butt",
       },
@@ -8233,15 +8434,15 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Roads",
             "Railways",
           ],
-          "style": "Railway",
+          "style": "Rail",
         },
       },
       "minzoom": 13,
       "paint": {
         "line-color": "#c8c8c8",
         "line-dasharray": [
-          0.33,
-          2.7,
+          0.3,
+          4,
         ],
         "line-opacity": {
           "stops": [
@@ -8336,7 +8537,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "waterway-bridge-casing",
+      "id": "bridge_waterway_casing",
       "layout": {
         "line-cap": "butt",
         "line-join": "miter",
@@ -8403,7 +8604,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "waterway-bridge",
+      "id": "bridge_waterway",
       "layout": {
         "line-cap": "round",
         "line-join": "round",
@@ -8535,7 +8736,6 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
         "line-cap": "round",
         "line-join": "round",
       },
-      "maxzoom": 8,
       "metadata": {
         "iml": {
           "group": [
@@ -8546,8 +8746,16 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
         },
       },
       "paint": {
-        "line-blur": 1,
-        "line-color": "#a3a3a3",
+        "line-blur": [
+          "step",
+          [
+            "zoom",
+          ],
+          1,
+          9,
+          1.5,
+        ],
+        "line-color": "#808080",
         "line-width": {
           "stops": [
             [
@@ -8556,11 +8764,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             ],
             [
               5,
-              1,
+              0.75,
             ],
             [
-              7,
-              1.5,
+              10,
+              2,
             ],
           ],
         },
@@ -8588,7 +8796,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "river",
         ],
       ],
-      "id": "label_water_name_line_major",
+      "id": "label_water_line_major",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -8608,7 +8816,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-size": 12,
       },
       "maxzoom": 14,
@@ -8619,7 +8827,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "WaterLabels",
           ],
-          "style": "WaterNameLineMajor",
+          "style": "LabelWaterLineMajor",
         },
       },
       "minzoom": 5,
@@ -8652,7 +8860,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "canal",
         ],
       ],
-      "id": "label_water_name_line_minor",
+      "id": "label_water_line_minor",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -8672,7 +8880,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-size": 12,
       },
       "metadata": {
@@ -8682,7 +8890,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "WaterLabels",
           ],
-          "style": "WaterNameLineMinor",
+          "style": "LabelWaterLineMinor",
         },
       },
       "minzoom": 10,
@@ -8728,7 +8936,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
         ],
         "Point",
       ],
-      "id": "label_water_name",
+      "id": "label_water_point",
       "layout": {
         "text-field": [
           "coalesce",
@@ -8755,7 +8963,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "WaterLabels",
           ],
-          "style": "WaterName",
+          "style": "LabelWaterPoint",
         },
       },
       "minzoom": 2,
@@ -8811,7 +9019,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "highway",
         ],
       ],
-      "id": "highway_name_other",
+      "id": "label_road_other",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -8831,7 +9039,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-offset": [
           0,
           0.1,
@@ -8845,7 +9053,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "HighwayLabels",
           ],
-          "style": "HighwayNameOther",
+          "style": "LabelRoadOther",
         },
       },
       "minzoom": 15,
@@ -8878,7 +9086,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "highway",
         ],
       ],
-      "id": "highway_name_motorway",
+      "id": "label_road_motorway",
       "layout": {
         "symbol-placement": "line-center",
         "symbol-spacing": 1000,
@@ -8898,7 +9106,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "Gdn Text Sans TS3Regular",
         ],
         "text-justify": "center",
-        "text-letter-spacing": 0.2,
+        "text-letter-spacing": 0.15,
         "text-size": 12,
       },
       "metadata": {
@@ -8908,7 +9116,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "HighwayLabels",
           ],
-          "style": "HighwayNameMotorway",
+          "style": "LabelRoadMotorway",
         },
       },
       "minzoom": 13,
@@ -9022,7 +9230,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           14,
           0.05,
           15,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -9054,7 +9262,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceSuburb",
+          "style": "LabelPlaceSuburb",
         },
       },
       "minzoom": 12,
@@ -9286,7 +9494,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceOther",
+          "style": "LabelPlaceOther",
         },
       },
       "minzoom": 14,
@@ -9450,7 +9658,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceVillage",
+          "style": "LabelPlaceVillage",
         },
       },
       "minzoom": 12,
@@ -9619,7 +9827,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           13,
           0.05,
           14,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -9651,7 +9859,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceTown",
+          "style": "LabelPlaceTown",
         },
       },
       "minzoom": 10,
@@ -9770,7 +9978,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_city",
+      "id": "label_place_city_minor",
       "layout": {
         "symbol-spacing": [
           "step",
@@ -9866,7 +10074,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           12,
           0.05,
           13,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -9903,7 +10111,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCity",
+          "style": "LabelPlaceCityMinor",
         },
       },
       "minzoom": 6,
@@ -10075,7 +10283,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
           0.05,
           12,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
@@ -10140,7 +10348,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCapital",
+          "style": "LabelPlaceCapital",
         },
       },
       "minzoom": 4,
@@ -10251,7 +10459,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           ],
         ],
       ],
-      "id": "label_place_city_large",
+      "id": "label_place_city_major",
       "layout": {
         "icon-image": [
           "step",
@@ -10270,6 +10478,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          250,
+          7,
           250,
           9,
           250,
@@ -10309,6 +10519,13 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
               "Gdn Text Sans TS3Regular",
             ],
           ],
+          7,
+          [
+            "literal",
+            [
+              "Gdn Text Sans TS3Bold",
+            ],
+          ],
           9,
           [
             "literal",
@@ -10331,16 +10548,20 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           0.05,
+          7,
+          0.05,
           9,
           0.05,
           12,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
           [
             "zoom",
           ],
+          8,
+          7,
           8,
           9,
           8,
@@ -10382,6 +10603,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           12,
+          7,
+          12,
           9,
           14,
           12,
@@ -10396,7 +10619,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCityLarge",
+          "style": "LabelPlaceCityMajor",
         },
       },
       "minzoom": 4,
@@ -10419,6 +10642,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#707070",
+          7,
+          "#707070",
           9,
           "#707070",
           12,
@@ -10430,6 +10655,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#fafafa",
+          7,
+          "#fafafa",
           9,
           "#fafafa",
           12,
@@ -10440,6 +10667,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          2,
+          7,
           2,
           9,
           2,
@@ -10569,7 +10798,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceState",
+          "style": "LabelPlaceState",
         },
       },
       "minzoom": 5,
@@ -10680,6 +10909,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           250,
+          3,
+          250,
           6,
           250,
         ],
@@ -10689,6 +10920,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          "center",
+          3,
           "center",
           6,
           "center",
@@ -10712,6 +10945,13 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "literal",
             [
+              "Gdn Text Sans TS3Regular",
+            ],
+          ],
+          3,
+          [
+            "literal",
+            [
               "Guardian Text Egyptian Regular",
             ],
           ],
@@ -10729,6 +10969,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "center",
+          3,
+          "center",
           6,
           "center",
         ],
@@ -10737,15 +10979,19 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
-          0.12,
+          0.05,
+          3,
+          0.1,
           6,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
           [
             "zoom",
           ],
+          8,
+          3,
           8,
           6,
           8,
@@ -10780,7 +11026,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCountryMinor",
+          "style": "LabelPlaceCountryMinor",
         },
       },
       "paint": {
@@ -10802,6 +11048,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#707070",
+          3,
+          "#707070",
           6,
           "#707070",
         ],
@@ -10811,6 +11059,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#fafafa",
+          3,
+          "#fafafa",
           6,
           "#fafafa",
         ],
@@ -10819,6 +11069,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          2,
+          3,
           2,
           6,
           2,
@@ -10882,6 +11134,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           250,
+          3,
+          250,
           6,
           250,
         ],
@@ -10892,6 +11146,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          "center",
+          3,
           "center",
           6,
           "center",
@@ -10915,6 +11171,13 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "literal",
             [
+              "Gdn Text Sans TS3Regular",
+            ],
+          ],
+          3,
+          [
+            "literal",
+            [
               "Guardian Text Egyptian Regular",
             ],
           ],
@@ -10932,6 +11195,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "center",
+          3,
+          "center",
           6,
           "center",
         ],
@@ -10940,15 +11205,19 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
-          0.12,
+          0.05,
+          3,
+          0.1,
           6,
-          0.08,
+          0.06,
         ],
         "text-max-width": [
           "step",
           [
             "zoom",
           ],
+          8,
+          3,
           8,
           6,
           8,
@@ -10983,7 +11252,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "Labels",
             "PlaceLabels",
           ],
-          "style": "PlaceCountryMajor",
+          "style": "LabelPlaceCountryMajor",
         },
       },
       "paint": {
@@ -11005,6 +11274,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#707070",
+          3,
+          "#707070",
           6,
           "#707070",
         ],
@@ -11014,6 +11285,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           "#fafafa",
+          3,
+          "#fafafa",
           6,
           "#fafafa",
         ],
@@ -11022,6 +11295,8 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           [
             "zoom",
           ],
+          2,
+          3,
           2,
           6,
           2,

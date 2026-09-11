@@ -6,6 +6,7 @@ export const resources = makeResources({
     tiles: ["https://tiles-stg.dwcdn.net/no-cache/openmaptiles/v8/{z}/{x}/{y}.pbf"],
     minzoom: 0,
     maxzoom: 14,
+    attribution: "© OpenMapTiles © OpenStreetMap contributors",
   },
   terrain: {
     type: "vector",

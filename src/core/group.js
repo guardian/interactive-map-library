@@ -1,5 +1,5 @@
 import { Builder } from "./style.js"
-import { needsGlyphs, needsSprite } from "./resources.js"
+import { applyResources, applyLayers, glStyle } from "../adapters/maplibre.js"
 
 /**
  * @import { ResolvedLayer, StyleConfig, Theme } from "./style.js"
@@ -40,6 +40,21 @@ import { needsGlyphs, needsSprite } from "./resources.js"
  */
 
 /**
+ * A tagged node passed to a {@link Group#remove} predicate: a group node carries
+ * its `Group`, a style leaf its `Builder` handle. `kind` discriminates the two.
+ *
+ * @typedef {{ kind: "group", name: string | undefined, group: Group }
+ *   | { kind: "style", name: string | undefined, style: Builder }} RemovableNode
+ */
+
+/**
+ * A {@link Group#remove} matcher: a name (matching a group or style anywhere in
+ * the subtree) or a predicate over a {@link RemovableNode}.
+ *
+ * @typedef {string | ((node: RemovableNode) => boolean)} RemoveMatcher
+ */
+
+/**
  * Prepends `name` to each layer's `iml.group` path.
  *
  * @param {ResolvedLayer[]} layers
@@ -65,37 +80,6 @@ const stampGroup = (layers, name) => {
  * @returns {StyleConfig}
  */
 const inheritable = (config) => ({ theme: config.theme })
-
-/**
- * The name an omit/pick argument matches on. A nameless instance throws, since
- * identity matching belongs to the `...By` variants.
- *
- * @param {string | { name?: string }} arg
- * @param {string} axis "group" or "style", for the error message
- */
-const nameOf = (arg, axis) => {
-  if (typeof arg === "string") {
-    return arg
-  }
-
-  if (arg.name === undefined) {
-    throw new Error(`cannot omit/pick a ${axis} by a nameless instance; use the by-predicate variant`)
-  }
-
-  return arg.name
-}
-
-/**
- * The subset of `lookup` that `layers` reference by `source` name.
- *
- * @param {Record<string, object>} lookup
- * @param {ResolvedLayer[]} layers
- */
-const resolveSources = (lookup, layers) => {
-  const referenced = new Set(layers.map((layer) => layer.source).filter(Boolean))
-
-  return Object.fromEntries(Object.entries(lookup).filter(([name]) => referenced.has(name)))
-}
 
 /**
  * `root` and its descendant group nodes, depth first.
@@ -126,7 +110,7 @@ const styleLeaves = (root) =>
 
 /**
  * An ordered, nestable set of children (styles or sub-groups) that flattens to
- * layers on demand. Immutable — every method returns a new group. Prefer the
+ * layers on demand. Immutable: every method returns a new group. Prefer the
  * {@link group} factory to constructing directly.
  */
 export class Group {
@@ -147,7 +131,7 @@ export class Group {
    *
    * @param {Partial<GroupConfig>} overrides
    */
-  copy(overrides) {
+  #copy(overrides) {
     return new Group(this.name, this.children, { ...this.config, ...overrides })
   }
 
@@ -157,27 +141,11 @@ export class Group {
    * @param {Theme} theme
    */
   theme(theme) {
-    return this.copy({ theme: { ...this.config.theme, ...theme } })
+    return this.#copy({ theme: { ...this.config.theme, ...theme } })
   }
 
-  /**
-   * A new group carrying the given resources, from which its layers' sources,
-   * glyphs and sprite are resolved.
-   *
-   * @param {Resources} resources
-   */
-  withResources(resources) {
-    return this.copy({ resources })
-  }
-
-  /**
-   * A new group carrying the given document fields, so a root group's
-   * `.toGlStyle()` needs no args.
-   *
-   * @param {DocumentFields} document
-   */
-  document(document) {
-    return this.copy({ document: { ...this.config.document, ...document } })
+  get resources() {
+    return this.config.resources
   }
 
   /**
@@ -199,28 +167,85 @@ export class Group {
   }
 
   /**
-   * The names of every named group in this subtree, including this one. Reports
-   * the tree, so an emptied group still appears.
+   * A new group with the matched groups and styles removed, wherever they nest.
+   * A removed group takes its whole subtree; a removed style's leaves are pruned
+   * while the tree shape is kept (an emptied group stays, contributing no layers).
    *
-   * @returns {string[]}
+   * A matcher is a name — matching a group or a style anywhere in the subtree — or
+   * a predicate over a tagged node ({@link RemovableNode}). A name matching neither
+   * a group nor a style throws, guarding against typos.
+   *
+   * @example
+   * ```js
+   * Roads.remove("Railways")                                  // a group + its subtree
+   * Roads.remove("RoadMotorway")                                  // a style, wherever it sits
+   * Roads.remove("Railways", "RoadMotorway")                      // several
+   * Roads.remove((node) => node.kind === "style" && node.name.startsWith("Place"))
+   * ```
+   *
+   * @param {...RemoveMatcher} matchers
    */
-  groupNames() {
-    return groupNodes(this)
-      .map((node) => node.name)
-      .filter((name) => name !== undefined)
+  remove(...matchers) {
+    const names = matchers.filter((matcher) => typeof matcher === "string")
+    const predicates = matchers.filter((matcher) => typeof matcher === "function")
+
+    const present = new Set([
+      ...groupNodes(this).map((node) => node.name),
+      ...styleLeaves(this).map((leaf) => leaf.name),
+    ])
+
+    for (const name of names) {
+      if (!present.has(name)) {
+        throw new Error(`no group or style named "${name}" to remove`)
+      }
+    }
+
+    const nameSet = new Set(names)
+
+    const groupMatches = (group) => {
+      if (nameSet.has(group.name)) {
+        return true
+      }
+
+      return predicates.some((pred) => pred({ kind: "group", name: group.name, group }))
+    }
+
+    const styleMatches = (style) => {
+      if (nameSet.has(style.name)) {
+        return true
+      }
+
+      return predicates.some((pred) => pred({ kind: "style", name: style.name, style }))
+    }
+
+    return this.#removeMatching(groupMatches, styleMatches)
   }
 
   /**
-   * The names of every style leaf in this subtree, deduplicated.
+   * A new group with matched sub-groups dropped whole and matched style leaves
+   * pruned, applied recursively.
    *
-   * @returns {string[]}
+   * @param {(group: Group) => boolean} groupMatches
+   * @param {(style: Builder) => boolean} styleMatches
    */
-  styleNames() {
-    const names = styleLeaves(this)
-      .map((leaf) => leaf.name)
-      .filter((name) => name !== undefined)
+  #removeMatching(groupMatches, styleMatches) {
+    const children = this.children.flatMap((child) => {
+      if (child instanceof Group) {
+        if (groupMatches(child)) {
+          return []
+        }
 
-    return [...new Set(names)]
+        return [child.#removeMatching(groupMatches, styleMatches)]
+      }
+
+      if (styleMatches(child)) {
+        return []
+      }
+
+      return [child]
+    })
+
+    return new Group(this.name, children, this.config)
   }
 
   /**
@@ -235,11 +260,10 @@ export class Group {
     const walk = (node, depth) => {
       const indent = "  ".repeat(depth)
 
+      lines.push(`${indent}${node.name ?? "(anonymous)"}`)
+
       if (node instanceof Group) {
-        lines.push(`${indent}${node.name ?? "(anonymous)"}`)
         node.children.forEach((child) => walk(child, depth + 1))
-      } else {
-        lines.push(`${indent}${node.name ?? "(anonymous)"}`)
       }
     }
 
@@ -249,233 +273,68 @@ export class Group {
   }
 
   /**
-   * A new group with every group matching `pred` pruned, along with its subtree.
-   *
-   * @param {(group: Group) => boolean} pred
-   */
-  omitGroupsBy(pred) {
-    const children = this.children
-      .filter((child) => !(child instanceof Group) || !pred(child))
-      .map((child) => (child instanceof Group ? child.omitGroupsBy(pred) : child))
-
-    return new Group(this.name, children, this.config)
-  }
-
-  /**
-   * A new group keeping only the subtrees rooted at a group matching `pred`, plus
-   * the ancestor path to each. Leaves not under a kept group are dropped.
-   *
-   * @param {(group: Group) => boolean} pred
-   */
-  pickGroupsBy(pred) {
-    const children = this.children.flatMap((child) => {
-      if (!(child instanceof Group)) {
-        return []
-      }
-
-      if (pred(child)) {
-        return [child]
-      }
-
-      const picked = child.pickGroupsBy(pred)
-
-      return picked.children.length > 0 ? [picked] : []
-    })
-
-    return new Group(this.name, children, this.config)
-  }
-
-  /**
-   * A new group with the named groups pruned, wherever they nest. A name is a
-   * string or a group's `.name`; an unmatched name throws.
-   *
-   * @param {...(string | Group)} groups
-   */
-  omitGroups(...groups) {
-    const names = new Set(groups.map((group) => nameOf(group, "group")))
-    const present = new Set(this.groupNames())
-
-    for (const name of names) {
-      if (!present.has(name)) {
-        throw new Error(`no group named "${name}" to omit`)
-      }
-    }
-
-    return this.omitGroupsBy((group) => names.has(group.name))
-  }
-
-  /**
-   * A new group keeping only the named group subtrees. An unmatched name throws.
-   *
-   * @param {...(string | Group)} groups
-   */
-  pickGroups(...groups) {
-    const names = new Set(groups.map((group) => nameOf(group, "group")))
-    const present = new Set(this.groupNames())
-
-    for (const name of names) {
-      if (!present.has(name)) {
-        throw new Error(`no group named "${name}" to pick`)
-      }
-    }
-
-    return this.pickGroupsBy((group) => names.has(group.name))
-  }
-
-  /**
-   * A new group with every style leaf matching `pred` pruned. Tree shape is
-   * preserved: an emptied group stays, contributing no layers.
-   *
-   * @param {(style: Builder) => boolean} pred
-   */
-  omitStylesBy(pred) {
-    const children = this.children
-      .filter((child) => child instanceof Group || !pred(child))
-      .map((child) => (child instanceof Group ? child.omitStylesBy(pred) : child))
-
-    return new Group(this.name, children, this.config)
-  }
-
-  /**
-   * A new group keeping only the style leaves matching `pred`.
-   *
-   * @param {(style: Builder) => boolean} pred
-   */
-  pickStylesBy(pred) {
-    return this.omitStylesBy((style) => !pred(style))
-  }
-
-  /**
-   * A new group with the named styles' leaves pruned, wherever they sit. A name is
-   * a string or a style's `.name`; an unmatched name throws.
-   *
-   * @param {...(string | Builder)} styles
-   */
-  omitStyles(...styles) {
-    const names = new Set(styles.map((style) => nameOf(style, "style")))
-    const present = new Set(this.styleNames())
-
-    for (const name of names) {
-      if (!present.has(name)) {
-        throw new Error(`no style named "${name}" to omit`)
-      }
-    }
-
-    return this.omitStylesBy((style) => names.has(style.name))
-  }
-
-  /**
-   * A new group keeping only the named styles' leaves. An unmatched name throws.
-   *
-   * @param {...(string | Builder)} styles
-   */
-  pickStyles(...styles) {
-    const names = new Set(styles.map((style) => nameOf(style, "style")))
-    const present = new Set(this.styleNames())
-
-    for (const name of names) {
-      if (!present.has(name)) {
-        throw new Error(`no style named "${name}" to pick`)
-      }
-    }
-
-    return this.pickStylesBy((style) => names.has(style.name))
-  }
-
-  /**
-   * The source definitions this group's layers reference, keyed by name, for the
-   * imperative `map.addSource(name, def)` path.
-   *
-   * @returns {Record<string, object>}
-   */
-  getSources() {
-    return resolveSources(this.config.resources?.sources ?? {}, this.build())
-  }
-
-  /**
-   * The glyphs URL this group's layers need, or `undefined` if none render text,
-   * for the imperative `map.setGlyphs(url)` path.
-   *
-   * @returns {string | undefined}
-   */
-  getGlyphsUrl() {
-    return needsGlyphs(this.build()) ? this.config.resources?.glyphs : undefined
-  }
-
-  /**
-   * The sprite URL this group's layers need, or `undefined` if none render an
-   * icon.
-   *
-   * @returns {string | undefined}
-   */
-  getSpriteUrl() {
-    return needsSprite(this.build()) ? this.config.resources?.sprite : undefined
-  }
-
-  /**
-   * Flattens the tree to layers in z-order: pushes inherited config into each
-   * child, builds it, runs post-processors, and stamps `iml.group`.
+   * Flattens the tree to layers in z-order (an escape hatch below the
+   * `render.<target>` path): pushes inherited config into each child, builds it,
+   * stamps `iml.group`, and runs post-processors over the finished layers.
    *
    * @returns {ResolvedLayer[]}
    */
-  build() {
+  layers() {
     const base = inheritable(this.config)
 
     const built = this.children.flatMap((child) => {
       if (child instanceof Group) {
-        return child.under(this.config).build()
+        return child.#inheritFrom(this.config).layers()
       }
 
       return child.inherit(base).build()
     })
 
-    const processed = (this.config.post ?? []).reduce((layers, post) => post(layers), built)
+    let layers = stampGroup(built, this.name)
 
-    return stampGroup(processed, this.name)
+    for (const post of this.config.post ?? []) {
+      layers = post(layers)
+    }
+
+    return layers
   }
 
   /**
-   * A copy with `parent`'s `theme` merged underneath its own and its `resources`
+   * A copy with `parent`'s theme merged underneath its own and its resources
    * inherited where unset, so this group's own values win.
    *
    * @param {GroupConfig} parent
    */
-  under(parent) {
-    const inheritsTheme = parent.theme !== undefined
-    const inheritsResources = parent.resources !== undefined && this.config.resources === undefined
-
-    if (!inheritsTheme && !inheritsResources) {
-      return this
-    }
-
-    return this.copy({
+  #inheritFrom(parent) {
+    return this.#copy({
       theme: { ...parent.theme, ...this.config.theme },
       resources: this.config.resources ?? parent.resources,
     })
   }
 
   /**
-   * Resolves the tree to a complete GL style document. Sources, glyphs and sprite
-   * are derived from the built layers, emitted only when referenced.
+   * Renders the group for a target, keyed by map library. A member taking a live
+   * map instance mounts onto it (adding its sources, glyphs, sprite and layers)
+   * and returns nothing; `glStyle` takes no map and returns a GL style document.
    *
-   * @returns {object}
+   * @example
+   * ```js
+   * Roads.render.maplibre(map)   // onto a live MapLibre instance
+   * Roads.render.glStyle()       // as a GL style document, for a map constructor
+   * ```
    */
-  toGlStyle() {
-    const { version, name, metadata } = this.config.document ?? {}
-    const resources = this.config.resources
-    const layers = this.build()
-
-    const glyphs = needsGlyphs(layers) ? resources?.glyphs : undefined
-    const sprite = needsSprite(layers) ? resources?.sprite : undefined
-
+  get render() {
     return {
-      version: version ?? 8,
-      ...(name !== undefined && { name }),
-      ...(glyphs !== undefined && { glyphs }),
-      ...(sprite !== undefined && { sprite }),
-      ...(metadata !== undefined && { metadata }),
-      sources: resolveSources(resources?.sources ?? {}, layers),
-      layers,
+      maplibre: (map) => {
+        const layers = this.layers()
+
+        if (this.config.resources !== undefined) {
+          applyResources(map, this.config.resources)
+        }
+
+        applyLayers(map, layers)
+      },
+      glStyle: () => glStyle(this.layers(), this.config.resources, this.config.document),
     }
   }
 }
@@ -487,7 +346,7 @@ export class Group {
  *
  * @example
  * ```js
- * group("Water", [Waterway, Ocean], { resources })
+ * group("Water", [WaterWaterway, WaterOcean], { resources })
  * group([Water, Roads]) // anonymous, structural
  * ```
  *
@@ -509,7 +368,11 @@ export class Group {
  */
 export const group = (nameOrChildren, childrenOrConfig, config) => {
   if (typeof nameOrChildren === "string") {
-    return new Group(nameOrChildren, /** @type {GroupChild[]} */ (childrenOrConfig ?? []), config ?? {})
+    return new Group(
+      nameOrChildren,
+      /** @type {GroupChild[]} */ (childrenOrConfig ?? []),
+      config ?? {},
+    )
   }
 
   return new Group(undefined, nameOrChildren, /** @type {GroupConfig} */ (childrenOrConfig ?? {}))

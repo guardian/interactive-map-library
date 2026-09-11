@@ -15,10 +15,10 @@ const Label = style("Label", (theme) => [
 
 const Road = style("Road", () => [{ id: "road", type: "line" }])
 
-describe("group build", () => {
+describe("group layers", () => {
   it("concatenates children in order and stamps iml.style + iml.group", () => {
     const g = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })])
-    const layers = g.build()
+    const layers = g.layers()
 
     expect(layers.map((l) => l.id)).toEqual(["water-outline", "water"])
     for (const layer of layers) {
@@ -28,7 +28,7 @@ describe("group build", () => {
 
   it("accretes the group path from leaf to root through nesting", () => {
     const g = group("Roads", [group("Railways", [Road.apply({ source: "omt" })])])
-    const [road] = g.build()
+    const [road] = g.layers()
 
     expect(road.metadata.iml.group).toEqual(["Roads", "Railways"])
   })
@@ -38,7 +38,7 @@ describe("group build", () => {
       Water.apply({ source: "omt", sourceLayer: "water", filter: new Filter().polygon() }),
     ])
 
-    for (const layer of g.build()) {
+    for (const layer of g.layers()) {
       expect(layer).toMatchObject({ source: "omt", "source-layer": "water" })
     }
   })
@@ -51,7 +51,7 @@ describe("group build", () => {
       }),
     ]).theme({ textField: "name" })
 
-    const byId = Object.fromEntries(g.build().map((l) => [l.id, l]))
+    const byId = Object.fromEntries(g.layers().map((l) => [l.id, l]))
 
     expect(byId["label"].layout["text-field"]).toBe("name")
     expect(byId["loud-label"].layout["text-field"]).toBe("SHOUT")
@@ -61,7 +61,7 @@ describe("group build", () => {
     const reverse = (layers) => [...layers].reverse()
     const g = group("R", [Water.apply({ source: "omt" })], { post: [reverse] })
 
-    expect(g.build().map((l) => l.id)).toEqual(["water", "water-outline"])
+    expect(g.layers().map((l) => l.id)).toEqual(["water", "water-outline"])
   })
 })
 
@@ -83,7 +83,7 @@ describe("optional group name", () => {
       group([Road.apply({ source: "omt" })]),
     ])
 
-    const [road] = g.build()
+    const [road] = g.layers()
 
     expect(road.metadata.iml.group).toEqual(["Named"])
   })
@@ -91,22 +91,15 @@ describe("optional group name", () => {
   it("still binds children and theme through an anonymous wrapper", () => {
     const g = group([Label.apply({ source: "omt" })]).theme({ textField: "name" })
 
-    expect(g.build()[0].layout["text-field"]).toBe("name")
+    expect(g.layers()[0].layout["text-field"]).toBe("name")
   })
 })
 
-describe("discovery", () => {
-  it("lists named groups and styles in the subtree, anonymous groups excluded", () => {
-    const g = group("Root", [group([Water.apply({ source: "omt" })]), group("Inner", [])])
+describe("describe", () => {
+  it("renders an indented tree, anonymous groups labelled", () => {
+    const g = group("Root", [group("Inner", [Road.apply({ source: "omt" })]), group([])])
 
-    expect(g.groupNames()).toEqual(["Root", "Inner"])
-    expect(g.styleNames()).toEqual(["Water"])
-  })
-
-  it("describe renders an indented tree", () => {
-    const g = group("Root", [group("Inner", [Road.apply({ source: "omt" })])])
-
-    expect(g.describe()).toBe("Root\n  Inner\n    Road")
+    expect(g.describe()).toBe("Root\n  Inner\n    Road\n  (anonymous)")
   })
 })
 
@@ -116,120 +109,134 @@ describe("append / prepend", () => {
     const appended = base.append(Water.apply({ source: "omt" }))
     const prepended = base.prepend(Water.apply({ source: "omt" }))
 
-    expect(appended.build().map((l) => l.id)).toEqual(["road", "water-outline", "water"])
-    expect(prepended.build().map((l) => l.id)).toEqual(["water-outline", "water", "road"])
+    expect(appended.layers().map((l) => l.id)).toEqual(["road", "water-outline", "water"])
+    expect(prepended.layers().map((l) => l.id)).toEqual(["water-outline", "water", "road"])
     expect(base.children).toHaveLength(1)
   })
 })
 
-const ids = (g) => g.build().map((l) => l.id)
+const ids = (g) => g.layers().map((l) => l.id)
 
-describe("omitGroups / pickGroups", () => {
-  // omit drops a matched group's subtree wherever it sits; pick keeps it whole
-  // with its ancestor path, dropping siblings.
-  it.each([
-    ["omitGroups", (t) => t.omitGroups("Railways"), ["Root", "Water", "Roads", "Labels"], ["water-outline", "water", "road", "label"]],
-    ["pickGroups", (t) => t.pickGroups("Railways"), ["Root", "Roads", "Railways"], ["railway"]],
-  ])("%s matches a nested group by name", (_, refine, names, layerIds) => {
-    const g = refine(buildTree())
+describe("remove", () => {
+  it("drops a matched group's whole subtree, wherever it nests", () => {
+    const g = buildTree().remove("Railways")
 
-    expect(g.groupNames()).toEqual(names)
-    expect(ids(g)).toEqual(layerIds)
+    expect(ids(g)).toEqual(["water-outline", "water", "road", "label"])
   })
 
-  it("accepts an instance, matching by its name", () => {
+  it("drops a matched style's leaves everywhere, preserving tree shape", () => {
+    const g = buildTree().remove("Road")
+
+    // The emptied Railways group node survives, contributing no layers.
+    expect(ids(g)).toEqual(["water-outline", "water", "label"])
+    expect(g.describe()).toContain("Railways")
+  })
+
+  it("matches groups and styles in a single call", () => {
+    const g = buildTree().remove("Water", "Label")
+
+    expect(ids(g)).toEqual(["road", "railway"])
+  })
+
+  it("accepts a group instance, matching by its name", () => {
     const Railways = group("Railways", [Road.apply({ source: "omt" })])
-    const g = group("Root", [Railways]).omitGroups(Railways)
+    const g = group("Root", [Railways]).remove(Railways.name)
 
-    expect(g.build()).toHaveLength(0)
+    expect(g.layers()).toHaveLength(0)
   })
 
-  it("throws on a name absent from the current tree, including a double-remove", () => {
-    expect(() => buildTree().omitGroups("Nope")).toThrow(/no group named "Nope"/)
-    expect(() => buildTree().omitGroups("Railways").omitGroups("Railways")).toThrow()
-  })
-})
-
-describe("omitStyles / pickStyles", () => {
-  // Leaf-level: omit drops a style's leaves wherever they sit (tree shape kept),
-  // pick keeps only the named style's leaves.
-  it.each([
-    ["omitStyles", (t) => t.omitStyles("Road"), ["water-outline", "water", "label"]],
-    ["pickStyles", (t) => t.pickStyles("Water"), ["water-outline", "water"]],
-  ])("%s matches a style by name, preserving tree shape", (_, refine, layerIds) => {
-    const g = refine(buildTree())
-
-    expect(g.groupNames()).toContain("Railways")
-    expect(ids(g)).toEqual(layerIds)
-  })
-
-  it("omitStylesBy sees the builder handle for identity matching", () => {
+  it("a predicate sees the tagged node for identity and pattern matching", () => {
     const only = Road.apply({ source: "omt" })
     const g = group("Root", [only, Road.apply({ source: "omt" }).patch({ road: { id: "road-2" } })])
 
-    expect(ids(g.omitStylesBy((s) => s === only))).toEqual(["road-2"])
+    expect(ids(g.remove((node) => node.kind === "style" && node.style === only))).toEqual(["road-2"])
   })
 
-  it("throws on an absent style name, and rejects a nameless instance", () => {
-    expect(() => buildTree().omitStyles("Nope")).toThrow(/no style named "Nope"/)
-
-    const nameless = style(undefined, () => [{ id: "x", type: "line" }])
-    expect(() => buildTree().omitStyles(nameless.apply({ source: "omt" }))).toThrow(/nameless/)
+  it("throws on a name matching neither a group nor a style", () => {
+    expect(() => buildTree().remove("Nope")).toThrow(/no group or style named "Nope"/)
+    expect(() => buildTree().remove("Railways").remove("Railways")).toThrow()
   })
 })
 
 describe("provenance invariant", () => {
-  it("every named group in the tree that keeps a leaf appears in iml.group, and vice versa", () => {
+  it("every group name in iml.group is a named group still in the tree", () => {
     const tree = buildTree()
-    const nonEmpty = new Set(tree.build().flatMap((l) => l.metadata.iml.group))
-    const named = new Set(tree.groupNames())
+    const stamped = new Set(tree.layers().flatMap((l) => l.metadata.iml.group))
 
-    for (const name of nonEmpty) {
-      expect(named).toContain(name)
+    for (const name of stamped) {
+      expect(tree.describe()).toContain(name)
     }
   })
 })
 
 const twoSources = resources({ omt: { type: "vector" }, terrain: { type: "vector" } })
 
-describe("group toGlStyle", () => {
-  it("emits only referenced sources", () => {
-    const doc = group("Root", [Water.apply({ source: "omt", sourceLayer: "water" })], { resources: twoSources })
-      .document({ name: "Test" })
-      .toGlStyle()
+describe("render.glStyle", () => {
+  it("emits only referenced sources, in a versioned document", () => {
+    const doc = group("Root", [Water.apply({ source: "omt", sourceLayer: "water" })], {
+      resources: twoSources,
+      document: { name: "Test" },
+    }).render.glStyle()
 
     expect(Object.keys(doc.sources)).toEqual(["omt"])
     expect(doc).toMatchObject({ version: 8, name: "Test" })
     expect(doc.layers).toHaveLength(2)
   })
-})
 
-describe("group resources", () => {
-  const water = () => Water.apply({ source: "omt", sourceLayer: "water" })
+  it("resolves nothing when no resources are carried", () => {
+    const doc = group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })]).render.glStyle()
 
-  // Sources come from the group's resources, tree-shaken to those the built layers
-  // reference; resources flow to a sub-group that hasn't set their own. A group with
-  // no resources resolves nothing.
-  it.each([
-    ["the subset its layers reference", group("Water", [water()], { resources: twoSources }), { omt: { type: "vector" } }],
-    ["resources inherited by a sub-group", group("Outer", [group("Inner", [water()])], { resources: twoSources }), { omt: { type: "vector" } }],
-    ["nothing when no resources are carried", group("Water", [water()]), {}],
-  ])("getSources resolves %s", (_, g, expected) => {
-    expect(g.getSources()).toEqual(expected)
+    expect(doc.sources).toEqual({})
   })
 
-  it("emits its resolved sources through toGlStyle, omitting unreferenced ones", () => {
-    const g = group("Water", [water()], { resources: twoSources })
-
-    expect(g.toGlStyle().sources).toEqual({ omt: { type: "vector" } })
-    expect(g.toGlStyle().layers).toHaveLength(2)
-  })
-
-  it("derives glyphs only when a layer renders text", () => {
-    const withText = group("Labels", [Label.apply({ source: "omt" })], { resources: twoSources }).theme({ textField: "name" })
+  it("emits glyphs only when a layer renders text", () => {
+    const withText = group("Labels", [Label.apply({ source: "omt" })], { resources: twoSources }).theme({
+      textField: "name",
+    })
     const withoutText = group("Water", [Water.apply({ source: "omt" })], { resources: twoSources })
 
-    expect(withText.getGlyphsUrl()).toBeTruthy()
-    expect(withoutText.getGlyphsUrl()).toBeUndefined()
+    expect(withText.render.glStyle().glyphs).toBeTruthy()
+    expect(withoutText.render.glStyle().glyphs).toBeUndefined()
+  })
+})
+
+describe("render.maplibre", () => {
+  const fakeMap = () => {
+    const map = {
+      sources: {},
+      layers: [],
+      glyphs: undefined,
+      sprite: undefined,
+      addSource: (name, def) => (map.sources[name] = def),
+      getSource: (name) => map.sources[name],
+      addLayer: (layer) => map.layers.push(layer),
+      setGlyphs: (url) => (map.glyphs = url),
+      setSprite: (url) => (map.sprite = url),
+    }
+
+    return map
+  }
+
+  it("adds referenced sources and this group's layers onto a live map", () => {
+    const map = fakeMap()
+
+    group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })], {
+      resources: twoSources,
+    }).render.maplibre(map)
+
+    expect(Object.keys(map.sources)).toEqual(["omt", "terrain"])
+    expect(map.layers.map((l) => l.id)).toEqual(["water-outline", "water"])
+    expect(map.glyphs).toBeTruthy()
+  })
+
+  it("leaves an already-present source untouched", () => {
+    const map = fakeMap()
+    map.addSource("omt", { type: "vector", tiles: ["mine"] })
+
+    group("Water", [Water.apply({ source: "omt", sourceLayer: "water" })], {
+      resources: twoSources,
+    }).render.maplibre(map)
+
+    expect(map.sources.omt).toEqual({ type: "vector", tiles: ["mine"] })
   })
 })

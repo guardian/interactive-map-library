@@ -6,11 +6,12 @@ A toolkit for authoring MapLibre/Mapbox GL basemaps and styles. Source lives in
 
 ## Vocabulary
 
-- **Style** — a named stack of one or more GL layers (`Motorway`, `Ocean`,
-  `PlaceCapital`). A road's casing + fill, or water's outline + fill, are one
-  style, not two. `style("Name", (theme) => Layer[])`; lives in `src/styles/`.
+- **Style** — a named stack of one or more GL layers (`RoadMotorway`, `WaterOcean`,
+  `LabelPlaceCapital`). A road's casing + fill, or water's outline + fill, are one
+  style, not two. `style("Name", (theme) => Layer[])`; templates live in
+  `src/templates/`.
 - **Partial** — a reusable style fragment (`pRoundLine`, `pFadeIn`, `pTextField`)
-  merged into a layer body. Prefixed `p`. In `src/styles/utils/partials.js`.
+  merged into a layer body. Prefixed `p`. In `src/templates/utils/partials.js`.
 - **Group** — a named, ordered, nestable set of children (styles or sub-groups),
   in `src/core/group.js`. It retains its tree and flattens to layers on demand.
   A **basemap** (`Graphics`, `Protomaps`) is the root group.
@@ -22,16 +23,16 @@ A toolkit for authoring MapLibre/Mapbox GL basemaps and styles. Source lives in
 ## The layering model
 
 ```
-Partial   →   Style        →   Group     →   Basemap
-pRoundLine    Motorway         Roads         (the root group)
-              Water            Water
-              Railway          Labels
+Partial   →   Style          →   Group     →   Basemap
+pRoundLine    RoadMotorway       Roads         (the root group)
+              Water              Water
+              Rail               Labels
 ```
 
 Everything is a lazy, immutable builder. A style accumulates config through
-`.apply()`/`.theme()`/`.patch()`/`.renameIds()`; a group is an immutable tree.
-Nothing resolves to layers until one root `.build()`/`.toGlStyle()` walk. `theme`
-flows down the tree; `iml` provenance flows up.
+`.apply()`/`.theme()`/`.patch()`/`.patchAll()`; a group is an immutable tree.
+Nothing resolves to layers until one root `.layers()`/`.render.*` walk. `theme`
+and `resources` flow down the tree; `iml` provenance flows up.
 
 ## Styles
 
@@ -43,9 +44,11 @@ one). The style is the entrypoint:
   dropped and a shared filter can't drift. `context.filter` is AND-ed with each
   layer's own filter. Chainable; `.build()` resolves to bound, stamped layers.
 - **`.theme(theme)`** — accumulates rendering preferences passed to the style fn.
-- **`.patch(patch)`** — a verbatim merge applied to every built layer.
-- **`.renameIds(fn | { oldId: newId })`** — rewrites built ids, so a style can be
-  re-applied without id collisions (e.g. `Railway` → `railway-transit`).
+- **`.patchAll(body)`** — a verbatim merge applied to every built layer.
+- **`.patch(fn | { id: partial })`** — a `(layer) => layer` transform over each
+  layer, or a per-id partial deep-merged onto the matching layers (others
+  untouched). Rewrites ids so a style can be re-applied without collisions (e.g.
+  `Rail` → `rail_transit_line`).
 - **`Style.onlyLayer(id).apply(...)`** — narrows to one layer. Throws if absent.
 - **`merge(...parts)`** — shallow-merges `layout`/`paint`, last-wins otherwise.
   Used inside style bodies.
@@ -59,87 +62,91 @@ third-party contract — keep them verbatim.
 `group(name?, children, config?)` — the name is optional (a named group is a
 provenance level stamped into `iml.group`; an anonymous one is a structural
 container that stamps nothing, so a consumer's throwaway wrapper doesn't pollute
-library provenance). `config` is `{ theme, sources, document, post }`.
+library provenance). `config` is `{ theme, resources, document, post }`.
 
-- **`.build()`** walks the tree once: pushes `theme` down to children that haven't
-  set their own, builds leaves, runs `post` processors over built child layers,
-  stamps `iml.group`, and concatenates in order (child order = z-order).
-- **`.toGlStyle()`** resolves to a full GL document. Sources are derived — only
-  definitions a built layer references by `source` are emitted; glyphs/sprite are
-  included only when a layer needs them (`text-field`/`icon-image`).
-- Source binding lives on the **leaf** (`.apply`); a group inherits none. Shared
-  bindings are factored with plain object spread. The `sources` *lookup* (name →
-  definition) merges across the subtree, so a group composed from self-contained
-  sub-groups resolves their sources without re-declaring them; the outer definition
-  wins on a name conflict.
+- **`.layers()`** walks the tree once: pushes `theme` and `resources` down to
+  children that haven't set their own, builds leaves, runs `post` processors over
+  built child layers, stamps `iml.group`, and concatenates in order (child order =
+  z-order). An escape hatch below the `.render.*` path.
+- **`.render.glStyle()`** resolves to a full GL document. Sources are derived —
+  only definitions a built layer references by `source` are emitted; glyphs/sprite
+  are included only when a layer needs them (`text-field`/`icon-image`).
+- **`.render.maplibre(map)`** mounts onto a live map: adds the group's sources,
+  glyphs, sprite, and layers.
+- **`resources`** (a `resources({ name: def })` bundle) carries the sources plus
+  glyphs/sprite URLs, set on the group and inherited by descendants that set none.
+  `resources.prepare.maplibre(map)` wires the externals onto a live map on their
+  own. Source *binding* lives on the **leaf** (`.apply`); shared bindings are
+  factored with plain object spread.
 
 ### Refining a group
 
-Refinement returns a new group (immutable, chainable). Two axes — group nodes and
-style leaves — each with subtractive/additive and name/predicate forms:
+Refinement returns a new group (immutable, chainable):
 
-- **`.omitGroups(...names)` / `.pickGroups(...names)`** — a **node-drop**. Matches
-  a group name anywhere in the subtree. `pick` keeps matched subtrees whole,
-  retaining the ancestor path and pruning siblings along it. A name is a string or
-  an instance's `.name`; an unmatched name throws (typo guard).
-- **`.omitStyles(...names)` / `.pickStyles(...names)`** — a **leaf-prune**. Drops
-  layers of the named styles wherever they sit; tree shape is preserved (an
-  emptied group node stays, contributing no layers). Same string-or-instance
-  matching; unmatched throws. The axis is deliberately coarse: `omitStyles("Railway")`
-  drops every `Railway` variant, including renamed re-applications.
-- **`.omitGroupsBy(fn)` / `.pickGroupsBy(fn)`** — predicate over the `Group` node.
-- **`.omitStylesBy(fn)` / `.pickStylesBy(fn)`** — predicate over the style
-  builder handle. Identity and name-pattern matching live here
-  (`omitStylesBy(s => s === mine)`, `omitStylesBy(s => s.name.startsWith("Place"))`).
+- **`.remove(...matchers)`** — drops matched groups and styles across the subtree.
+  A matched group takes its whole subtree; a matched style's leaves are pruned
+  while tree shape is kept (an emptied group node stays, contributing no layers). A
+  matcher is a name — matching a group *or* a style anywhere in the tree — or a
+  predicate over a tagged node (`{ kind: "group" | "style", name, group | style }`),
+  where identity and name-pattern matching live (`n => n.kind === "style" && n.style
+  === mine`). A name matching neither a group nor a style throws (typo guard). The
+  name axis is coarse: `remove("Rail")` drops every `Rail` variant, including
+  re-applications under fresh ids.
 - **`.append(...children)` / `.prepend(...children)`** — add the consumer's own
   children. `group([...])` composition is the other additive primitive.
+
+To keep only a few groups, compose a new root from the exported ones rather than
+subtracting.
 
 ### Discovery
 
 - **`.describe()`** — a returned (not logged) indented tree of group + style names.
-- **`.groupNames()` / `.styleNames()`** — flat arrays of every named group / style
-  in the subtree, for testing, linting, and programmatic refinement. They report
-  the tree (what is refinable), not the built output.
 
 ## Examples
 
-Define a style (`src/styles/`) — plural (casing + fill), ids kept verbatim, name
-matching the export binding:
+Define a style template (`src/templates/`) — plural (casing + fill), ids kept
+verbatim, name matching the export binding:
 
 ```js
-export const Ocean = style("Ocean", () => [
-  merge({ id: "ocean-outline", type: "line", paint: { "line-color": color.blueWaterOutline } }),
-  merge(pWaterFill, { id: "ocean" }),
+export const WaterOcean = style("WaterOcean", () => [
+  merge({ id: "water_ocean_outline", type: "line", paint: { "line-color": color.blueWaterOutline } }),
+  merge(pWaterFill, { id: "water_ocean" }),
 ])
 ```
 
-Author a basemap (`src/basemaps/`) — regions are named groups, a style re-applied
-under new ids via `.renameIds`, a `post` processor reorders where needed:
+Author a basemap (`src/basemaps/<name>/`): `sources.js` builds the `resources`;
+`styles.js` binds each template into a `styles` map, a style re-applied under fresh
+ids via `.patch`; `groups.js` references those styles by name; `index.js` is the
+barrel:
 
 ```js
-const Railways = group("Railways", [
-  s.Railway.apply({ ...transportation, filter: f.cls("rail").notTunnel() }),
-  s.Railway
+// styles.js
+export const styles = {
+  Rail: t.Rail.apply({ ...transportation, filter: f.cls("rail").notTunnel() }),
+  RailTransit: t.Rail
     .apply({ ...transportation, filter: f.cls("transit").notTunnel() })
-    .renameIds((id) => id.replace("railway", "railway-transit")),
-], { sources })
+    .patch((layer) => ({ ...layer, id: layer.id.replace("rail_line", "rail_transit_line") })),
+}
 
-export const Roads = group("Roads", [Tunnels, SurfaceRoads, Railways], { sources })
-
-export const Graphics = group("Graphics", [
-  s.Background.apply(), Landcover, Water, Roads, Labels,
-], { sources, document: { name: "Graphics" } })
+// groups.js — a `post` processor reorders where needed
+const Railways = group("Railways", [s.Rail, s.RailTransit], { resources })
+const Roads = group("Roads", [Tunnels, SurfaceRoads, Railways], { resources })
+const Graphics = group("Graphics", [s.Background, Landcover, Water, Roads, Labels], {
+  resources,
+  document: { name: "Graphics" },
+})
 ```
 
-Consume — render as-is, refine, or compose your own root from library groups:
+Consume — mount onto a live map, hand a document to a constructor, refine, or
+compose your own root:
 
 ```js
-import { Graphics, Water, Roads } from "interactive-map-library/basemaps/graphics.js"
+import { groups } from "interactive-map-library/basemaps/graphics"
 
-map.setStyle(Graphics.toGlStyle())                                   // as-is
-map.setStyle(Graphics.omitGroups("Railways").toGlStyle())            // minus a group
-map.setStyle(Graphics.pickGroups("Water", "Roads", "Labels").toGlStyle())  // a few groups
+groups.Graphics.render.maplibre(map)                                 // onto a live map
+new maplibregl.Map({ style: groups.Graphics.render.glStyle() })      // via the constructor
+groups.Graphics.remove("Railways").render.maplibre(map)             // minus a group or style
 
-const Mine = group([Water, Roads.omitGroups("Railways"), myLabels], { sources: mySources })
-map.setStyle(Mine.toGlStyle())                                       // compose your own
+const Mine = group([groups.Water, groups.Roads.remove("Railways")], { resources: mine })
+Mine.render.maplibre(map)                                            // compose your own
 ```

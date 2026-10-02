@@ -43,6 +43,11 @@ export const styles = {
     ...landcoverLayer,
     filter: f.cls("grass").isNot("subclass", "scrub"),
   }),
+  LandPark: t.LandPark.apply({ ...omt, sourceLayer: "park" }).patchAll({
+    // Datawrapper requires the presence of this layer, but we don't want it,
+    // so make it invisible
+    layout: { visibility: "none" },
+  }),
   LandWood: t.LandWood.apply({ ...landcoverLayer, filter: f.cls("wood") }),
 
   TerrainMountain1: t.TerrainMountain1.apply({ ...terrain, filter: f.is("shadow", 1) }),
@@ -66,6 +71,11 @@ export const styles = {
   WaterOcean: t.WaterOcean.apply({ ...waterLayer, filter: f.cls("ocean") }),
 
   LandPedestrian: t.LandPedestrian.apply({ ...transportation, filter: f.polygon().cls("bridge") }),
+
+  RoadPath: t.RoadPath.apply({
+    ...transportation,
+    filter: f.line().cls("path", "path_construction", "track", "track_construction"),
+  }),
 
   TunnelMinor: t.TunnelMinor.apply({
     ...transportation,
@@ -126,6 +136,12 @@ export const styles = {
   }),
 
   BridgeWaterway: t.BridgeWaterway.apply({ ...waterway, filter: f.line().bridge() }),
+
+  BoundaryState: t.BoundaryState.apply({
+    ...omt,
+    sourceLayer: "boundary",
+    filter: f.is("admin_level", 4).is("maritime", 0),
+  }),
 
   BoundaryCountry: t.BoundaryCountry.apply({
     ...omt,

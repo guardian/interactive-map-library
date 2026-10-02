@@ -3,7 +3,7 @@ import { adaptForDatawrapper } from "./util.js"
 import { resources } from "./sources.js"
 import { styles as s } from "./styles.js"
 
-const Land = group("Land", [s.LandResidential, s.LandIce, s.LandGrass, s.LandWood], { resources })
+const Land = group("Land", [s.LandResidential, s.LandIce, s.LandGrass, s.LandPark, s.LandWood], { resources })
 
 const Reliefs = group(
   "Reliefs",
@@ -58,7 +58,7 @@ const SurfaceRoads = group(
 
 const Railways = group("Railways", [s.Rail, s.RailTransit], { resources })
 
-const Roads = group("Roads", [s.LandPedestrian, Aeroways, Tunnels, SurfaceRoads, Railways], {
+const Roads = group("Roads", [s.LandPedestrian, s.RoadPath, Aeroways, Tunnels, SurfaceRoads, Railways], {
   resources,
 })
 
@@ -66,7 +66,7 @@ const Buildings = group("Buildings", [s.Building], { resources })
 
 const Bridges = group("Bridges", [s.BridgeWaterway], { resources })
 
-const Boundaries = group("Boundaries", [s.BoundaryCountry, s.BoundaryDisputed], { resources })
+const Boundaries = group("Boundaries", [s.BoundaryState, s.BoundaryCountry, s.BoundaryDisputed], { resources })
 
 const WaterLabels = group(
   "WaterLabels",

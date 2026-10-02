@@ -11,6 +11,7 @@ export const DATAWRAPPER_IDS = {
   land_residential: "landuse_residential",
   land_ice: "landcover_ice",
   land_grass: "landcover_grass",
+  land_park: "park",
   land_wood: "landcover_wood",
 
   terrain_mountain_1: "mountains_1",
@@ -28,6 +29,8 @@ export const DATAWRAPPER_IDS = {
 
   // Our replacement for their four bridge_* line layers
   land_pedestrian: null,
+
+  road_path: "road_path",
 
   aeroway_area: "aeroway-area",
   aeroway_taxiway: "aeroway-taxiway",
@@ -68,6 +71,8 @@ export const DATAWRAPPER_IDS = {
 
   bridge_waterway_casing: "waterway-bridge-case",
   bridge_waterway: "waterway-bridge",
+
+  boundary_state: "boundary_state",
 
   // We split disputed boundaries out of their boundary_country
   boundary_disputed: null,

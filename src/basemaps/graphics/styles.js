@@ -76,12 +76,16 @@ export const styles = {
     filter: f.line().cls("path", "path_construction", "track", "track_construction"),
   }),
 
-  TunnelMinor: t.TunnelMinor.apply({
+  // Datawrapper allows one layer per tunnel type, so we draw only the casing
+  TunnelMinor: t.TunnelMinor.onlyLayer("tunnel_minor_casing").apply({
     ...transportation,
     filter: f.line().tunnel().cls("minor", "minor_construction"),
   }),
-  TunnelMajor: t.TunnelMajor.apply({ ...transportation, filter: majorTunnel }),
-  TunnelMotorway: t.TunnelMotorway.apply({
+  TunnelMajor: t.TunnelMajor.onlyLayer("tunnel_major_casing").apply({
+    ...transportation,
+    filter: majorTunnel,
+  }),
+  TunnelMotorway: t.TunnelMotorway.onlyLayer("tunnel_motorway_casing").apply({
     ...transportation,
     filter: f.line().tunnel().cls("motorway", "motorway_construction"),
   }),

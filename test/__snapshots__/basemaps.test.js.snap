@@ -810,10 +810,35 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       },
       "minzoom": 12,
       "paint": {
-        "line-color": "#b0b0b0",
+        "line-color": "#c0c0c0",
         "line-dasharray": [
-          4,
-          2,
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
+          13,
+          [
+            "literal",
+            [
+              3,
+              1.5,
+            ],
+          ],
+          16,
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
         ],
         "line-gap-width": [
           "interpolate",
@@ -851,7 +876,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           13,
-          0.25,
+          0.35,
           18,
           2.2105263157894726,
         ],
@@ -2042,10 +2067,35 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       },
       "minzoom": 8,
       "paint": {
-        "line-color": "#b0b0b0",
+        "line-color": "#c0c0c0",
         "line-dasharray": [
-          4,
-          2,
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
+          13,
+          [
+            "literal",
+            [
+              3,
+              1.5,
+            ],
+          ],
+          16,
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
         ],
         "line-gap-width": [
           "interpolate",
@@ -2085,7 +2135,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.25,
+          0.35,
           13,
           0.368421052631579,
           18,
@@ -2136,10 +2186,35 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       },
       "minzoom": 5,
       "paint": {
-        "line-color": "#b0b0b0",
+        "line-color": "#c0c0c0",
         "line-dasharray": [
-          4,
-          2,
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
+          13,
+          [
+            "literal",
+            [
+              3,
+              1.5,
+            ],
+          ],
+          16,
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
         ],
         "line-gap-width": [
           "interpolate",
@@ -2179,7 +2254,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.25,
+          0.35,
           13,
           0.9729729729729728,
           18,
@@ -4058,6 +4133,225 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "Point",
         ],
         [
+          "==",
+          [
+            "get",
+            "capital",
+          ],
+          2,
+        ],
+        [
+          "==",
+          [
+            "get",
+            "class",
+          ],
+          "city",
+        ],
+      ],
+      "id": "place_capital",
+      "layout": {
+        "icon-image": [
+          "step",
+          [
+            "zoom",
+          ],
+          "",
+          0,
+          "square-12",
+          12,
+          "",
+        ],
+        "icon-size": 0.625,
+        "symbol-spacing": [
+          "step",
+          [
+            "zoom",
+          ],
+          250,
+          12,
+          250,
+        ],
+        "text-anchor": [
+          "step",
+          [
+            "zoom",
+          ],
+          "center",
+          0,
+          "left",
+          12,
+          "center",
+        ],
+        "text-field": [
+          "coalesce",
+          [
+            "get",
+            "name:en",
+          ],
+          [
+            "get",
+            "name_en",
+          ],
+          [
+            "get",
+            "name",
+          ],
+        ],
+        "text-font": [
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              "Gdn Text Sans TS3Bold",
+            ],
+          ],
+          12,
+          [
+            "literal",
+            [
+              "GH Guardian Headline Bold",
+            ],
+          ],
+        ],
+        "text-justify": "center",
+        "text-letter-spacing": [
+          "step",
+          [
+            "zoom",
+          ],
+          0.05,
+          12,
+          0.06,
+        ],
+        "text-max-width": [
+          "step",
+          [
+            "zoom",
+          ],
+          8,
+          12,
+          8,
+        ],
+        "text-offset": [
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              0,
+              0,
+            ],
+          ],
+          0,
+          [
+            "literal",
+            [
+              0.625,
+              0.25,
+            ],
+          ],
+          12,
+          [
+            "literal",
+            [
+              0,
+              0,
+            ],
+          ],
+        ],
+        "text-size": {
+          "stops": [
+            [
+              4,
+              12,
+            ],
+            [
+              8,
+              14,
+            ],
+            [
+              12,
+              16,
+            ],
+          ],
+        },
+      },
+      "maxzoom": 13,
+      "minzoom": 4,
+      "paint": {
+        "icon-opacity": {
+          "stops": [
+            [
+              4,
+              0.5,
+            ],
+            [
+              5,
+              1,
+            ],
+          ],
+        },
+        "text-color": [
+          "step",
+          [
+            "zoom",
+          ],
+          "#707070",
+          12,
+          "#707070",
+        ],
+        "text-halo-color": [
+          "step",
+          [
+            "zoom",
+          ],
+          "#fafafa",
+          12,
+          "#fafafa",
+        ],
+        "text-halo-width": [
+          "step",
+          [
+            "zoom",
+          ],
+          2,
+          12,
+          2,
+        ],
+        "text-opacity": {
+          "stops": [
+            [
+              4,
+              0.5,
+            ],
+            [
+              5,
+              1,
+            ],
+          ],
+        },
+      },
+      "source": "openmaptiles",
+      "source-layer": "place",
+      "type": "symbol",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
+          "Point",
+        ],
+        [
           "!=",
           [
             "get",
@@ -4295,225 +4589,6 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           7,
           2,
           9,
-          2,
-          12,
-          2,
-        ],
-        "text-opacity": {
-          "stops": [
-            [
-              4,
-              0.5,
-            ],
-            [
-              5,
-              1,
-            ],
-          ],
-        },
-      },
-      "source": "openmaptiles",
-      "source-layer": "place",
-      "type": "symbol",
-    },
-    {
-      "filter": [
-        "all",
-        [
-          "==",
-          [
-            "geometry-type",
-          ],
-          "Point",
-        ],
-        [
-          "==",
-          [
-            "get",
-            "capital",
-          ],
-          2,
-        ],
-        [
-          "==",
-          [
-            "get",
-            "class",
-          ],
-          "city",
-        ],
-      ],
-      "id": "place_capital",
-      "layout": {
-        "icon-image": [
-          "step",
-          [
-            "zoom",
-          ],
-          "",
-          0,
-          "square-12",
-          12,
-          "",
-        ],
-        "icon-size": 0.625,
-        "symbol-spacing": [
-          "step",
-          [
-            "zoom",
-          ],
-          250,
-          12,
-          250,
-        ],
-        "text-anchor": [
-          "step",
-          [
-            "zoom",
-          ],
-          "center",
-          0,
-          "left",
-          12,
-          "center",
-        ],
-        "text-field": [
-          "coalesce",
-          [
-            "get",
-            "name:en",
-          ],
-          [
-            "get",
-            "name_en",
-          ],
-          [
-            "get",
-            "name",
-          ],
-        ],
-        "text-font": [
-          "step",
-          [
-            "zoom",
-          ],
-          [
-            "literal",
-            [
-              "Gdn Text Sans TS3Bold",
-            ],
-          ],
-          12,
-          [
-            "literal",
-            [
-              "GH Guardian Headline Bold",
-            ],
-          ],
-        ],
-        "text-justify": "center",
-        "text-letter-spacing": [
-          "step",
-          [
-            "zoom",
-          ],
-          0.05,
-          12,
-          0.06,
-        ],
-        "text-max-width": [
-          "step",
-          [
-            "zoom",
-          ],
-          8,
-          12,
-          8,
-        ],
-        "text-offset": [
-          "step",
-          [
-            "zoom",
-          ],
-          [
-            "literal",
-            [
-              0,
-              0,
-            ],
-          ],
-          0,
-          [
-            "literal",
-            [
-              0.625,
-              0.25,
-            ],
-          ],
-          12,
-          [
-            "literal",
-            [
-              0,
-              0,
-            ],
-          ],
-        ],
-        "text-size": {
-          "stops": [
-            [
-              4,
-              12,
-            ],
-            [
-              8,
-              14,
-            ],
-            [
-              12,
-              16,
-            ],
-          ],
-        },
-      },
-      "maxzoom": 13,
-      "minzoom": 4,
-      "paint": {
-        "icon-opacity": {
-          "stops": [
-            [
-              4,
-              0.5,
-            ],
-            [
-              5,
-              1,
-            ],
-          ],
-        },
-        "text-color": [
-          "step",
-          [
-            "zoom",
-          ],
-          "#707070",
-          12,
-          "#707070",
-        ],
-        "text-halo-color": [
-          "step",
-          [
-            "zoom",
-          ],
-          "#fafafa",
-          12,
-          "#fafafa",
-        ],
-        "text-halo-width": [
-          "step",
-          [
-            "zoom",
-          ],
           2,
           12,
           2,
@@ -6128,10 +6203,107 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       },
       "minzoom": 12,
       "paint": {
-        "line-color": "#b0b0b0",
+        "line-color": "#e2e2e2",
+        "line-opacity": {
+          "stops": [
+            [
+              12,
+              0.25,
+            ],
+            [
+              13,
+              0.5,
+            ],
+          ],
+        },
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.8,
+          ],
+          [
+            "zoom",
+          ],
+          13,
+          0.6,
+          18,
+          28,
+        ],
+      },
+      "source": "protomaps",
+      "source-layer": "roads",
+      "type": "line",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
+          "LineString",
+        ],
+        [
+          "has",
+          "is_tunnel",
+        ],
+        [
+          "==",
+          [
+            "get",
+            "kind",
+          ],
+          "minor_road",
+        ],
+      ],
+      "id": "tunnel_minor_casing",
+      "layout": {
+        "line-cap": "butt",
+        "line-join": "miter",
+      },
+      "metadata": {
+        "iml": {
+          "group": [
+            "Protomaps",
+            "Roads",
+            "Tunnels",
+          ],
+          "style": "TunnelMinor",
+        },
+      },
+      "minzoom": 12,
+      "paint": {
+        "line-color": "#c0c0c0",
         "line-dasharray": [
-          4,
-          2,
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
+          13,
+          [
+            "literal",
+            [
+              3,
+              1.5,
+            ],
+          ],
+          16,
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
         ],
         "line-gap-width": [
           "interpolate",
@@ -6169,7 +6341,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           13,
-          0.25,
+          0.35,
           18,
           2.2105263157894726,
         ],
@@ -6218,10 +6390,109 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       },
       "minzoom": 8,
       "paint": {
-        "line-color": "#b0b0b0",
-        "line-dasharray": [
+        "line-color": "#e2e2e2",
+        "line-opacity": {
+          "stops": [
+            [
+              8,
+              0.125,
+            ],
+            [
+              10,
+              0.5,
+            ],
+          ],
+        },
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.4,
+          ],
+          [
+            "zoom",
+          ],
           4,
-          2,
+          0.12,
+          13,
+          1.4,
+          18,
+          28,
+        ],
+      },
+      "source": "protomaps",
+      "source-layer": "roads",
+      "type": "line",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
+          "LineString",
+        ],
+        [
+          "has",
+          "is_tunnel",
+        ],
+        [
+          "==",
+          [
+            "get",
+            "kind",
+          ],
+          "major_road",
+        ],
+      ],
+      "id": "tunnel_major_casing",
+      "layout": {
+        "line-cap": "butt",
+        "line-join": "miter",
+      },
+      "metadata": {
+        "iml": {
+          "group": [
+            "Protomaps",
+            "Roads",
+            "Tunnels",
+          ],
+          "style": "TunnelMajor",
+        },
+      },
+      "minzoom": 8,
+      "paint": {
+        "line-color": "#c0c0c0",
+        "line-dasharray": [
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
+          13,
+          [
+            "literal",
+            [
+              3,
+              1.5,
+            ],
+          ],
+          16,
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
         ],
         "line-gap-width": [
           "interpolate",
@@ -6261,7 +6532,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.25,
+          0.35,
           13,
           0.368421052631579,
           18,
@@ -6312,10 +6583,109 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       },
       "minzoom": 5,
       "paint": {
-        "line-color": "#b0b0b0",
-        "line-dasharray": [
+        "line-color": "#e2e2e2",
+        "line-opacity": {
+          "stops": [
+            [
+              5,
+              0.125,
+            ],
+            [
+              10,
+              0.5,
+            ],
+          ],
+        },
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.1,
+          ],
+          [
+            "zoom",
+          ],
           4,
-          2,
+          0.3,
+          13,
+          4.8,
+          18,
+          30,
+        ],
+      },
+      "source": "protomaps",
+      "source-layer": "roads",
+      "type": "line",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
+          "LineString",
+        ],
+        [
+          "has",
+          "is_tunnel",
+        ],
+        [
+          "==",
+          [
+            "get",
+            "kind",
+          ],
+          "highway",
+        ],
+      ],
+      "id": "tunnel_motorway_casing",
+      "layout": {
+        "line-cap": "butt",
+        "line-join": "miter",
+      },
+      "metadata": {
+        "iml": {
+          "group": [
+            "Protomaps",
+            "Roads",
+            "Tunnels",
+          ],
+          "style": "TunnelMotorway",
+        },
+      },
+      "minzoom": 5,
+      "paint": {
+        "line-color": "#c0c0c0",
+        "line-dasharray": [
+          "step",
+          [
+            "zoom",
+          ],
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
+          13,
+          [
+            "literal",
+            [
+              3,
+              1.5,
+            ],
+          ],
+          16,
+          [
+            "literal",
+            [
+              5,
+              2.5,
+            ],
+          ],
         ],
         "line-gap-width": [
           "interpolate",
@@ -6355,7 +6725,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
             "zoom",
           ],
           4,
-          0.25,
+          0.35,
           13,
           0.9729729729729728,
           18,

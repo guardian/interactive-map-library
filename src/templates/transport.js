@@ -39,7 +39,7 @@ const casing = (cap, ratio) => (w) => w + (cap * w) / (w + cap / ratio)
 
 const roadCasing = casing(3.2, 0.5)
 
-const tunnelOutline = (w) => Math.max(0.25, (casing(6, 0.6)(w) - w) / 2)
+const tunnelCasing = (w) => Math.max(0.35, (casing(6, 0.6)(w) - w) / 2)
 
 const casingFor = (fn, widthExpr) =>
   widthExpr.map((item, i) => (i >= 4 && (i - 3) % 2 === 1 ? fn(item) : item))
@@ -59,10 +59,10 @@ const tunnelWidths = {
   motorway: roadWidths.motorway,
 }
 
-const tunnelOutlines = {
-  minor: casingFor(tunnelOutline, tunnelWidths.minor),
-  major: casingFor(tunnelOutline, tunnelWidths.major),
-  motorway: casingFor(tunnelOutline, tunnelWidths.motorway),
+const tunnelCasings = {
+  minor: casingFor(tunnelCasing, tunnelWidths.minor),
+  major: casingFor(tunnelCasing, tunnelWidths.major),
+  motorway: casingFor(tunnelCasing, tunnelWidths.motorway),
 }
 
 const aerowayWidths = {
@@ -84,46 +84,69 @@ export const RoadPath = style("RoadPath", () => [
   }),
 ])
 
-// `line-gap-width` draws the line as two strokes either side of a transparent gap
-// the width of the road. Where tunnels are drawn above the surface roads, a road
-// that crosses over a tunnel still shows through the gap.
 /** @type {Partial} */
-const pTunnelOutline = {
+const pTunnelCasing = {
   type: "line",
-  layout: { "line-cap": "butt", "line-join": "miter" },
+  layout: {
+    "line-cap": "butt",
+    "line-join": "miter",
+  },
   paint: {
-    "line-color": color.tunnelOutline,
-    "line-dasharray": [4, 2],
+    "line-color": color.roadCasing,
+    "line-dasharray": zStep([3, 2], { 16: [5, 3] }),
   },
 }
 
+/** @type {Partial} */
+const pTunnelFill = {
+  type: "line",
+  layout: { "line-cap": "butt", "line-join": "miter" },
+  paint: { "line-color": color.tunnelFill },
+}
+
 export const TunnelMinor = style("TunnelMinor", () => [
-  merge(pTunnelOutline, pFadeIn("line-opacity", 12, 13), {
+  merge(pTunnelFill, pFadeIn("line-opacity", 12, 13, { min: 0.25, max: 0.5 }), {
     id: "tunnel_minor",
     minzoom: 12,
     paint: {
-      "line-width": tunnelOutlines.minor,
+      "line-width": tunnelWidths.minor,
+    },
+  }),
+  merge(pTunnelCasing, pFadeIn("line-opacity", 12, 13), {
+    id: "tunnel_minor_casing",
+    minzoom: 12,
+    paint: {
+      "line-width": tunnelCasings.minor,
       "line-gap-width": tunnelWidths.minor,
     },
   }),
 ])
 
 export const TunnelMajor = style("TunnelMajor", () => [
-  merge(pTunnelOutline, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
+  merge(pTunnelFill, pFadeIn("line-opacity", 8, 10, { min: 0.125, max: 0.5 }), {
     id: "tunnel_major",
+    paint: { "line-width": tunnelWidths.major },
+  }),
+  merge(pTunnelCasing, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
+    id: "tunnel_major_casing",
     paint: {
-      "line-width": tunnelOutlines.major,
+      "line-width": tunnelCasings.major,
       "line-gap-width": tunnelWidths.major,
     },
   }),
 ])
 
 export const TunnelMotorway = style("TunnelMotorway", () => [
-  merge(pTunnelOutline, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
+  merge(pTunnelFill, pFadeIn("line-opacity", 5, 10, { min: 0.125, max: 0.5 }), {
     id: "tunnel_motorway",
     minzoom: 5,
+    paint: { "line-width": tunnelWidths.motorway },
+  }),
+  merge(pTunnelCasing, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
+    id: "tunnel_motorway_casing",
+    minzoom: 5,
     paint: {
-      "line-width": tunnelOutlines.motorway,
+      "line-width": tunnelCasings.motorway,
       "line-gap-width": tunnelWidths.motorway,
     },
   }),

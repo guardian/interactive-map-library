@@ -32,9 +32,9 @@ export const DATAWRAPPER_IDS = {
   aeroway_taxiway: "aeroway-taxiway",
   aeroway_runway: "aeroway-runway",
 
-  tunnel_minor: "tunnel_minor",
-  tunnel_major: "tunnel_major",
-  tunnel_motorway: "tunnel_motorway",
+  tunnel_minor_casing: "tunnel_minor",
+  tunnel_major_casing: "tunnel_major",
+  tunnel_motorway_casing: "tunnel_motorway",
 
   // They fold service roads into road_minor-casing.
   road_service_casing: "road_service_casing",

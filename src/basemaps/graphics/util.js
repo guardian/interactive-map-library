@@ -1,9 +1,10 @@
+import { f } from "../../filter/openmaptiles.js"
+
 /**
  * Maps this basemap's layer ids onto the ids in Datawrapper's original map style
  * (`app/res/graphics-map-style.json`).
  *
- * `null` marks a layer we introduced that has no counterpart in their document -
- * it keeps our id.
+ * `null` marks a layer we introduced that has no counterpart in their document.
  */
 export const DATAWRAPPER_IDS = {
   background: "background",
@@ -27,7 +28,7 @@ export const DATAWRAPPER_IDS = {
   water_ocean_outline: "ocean-outline",
   water_ocean: "ocean",
 
-  // Our replacement for their four bridge_* line layers
+  // Bridge decks, which they don't draw
   land_pedestrian: null,
 
   road_path: "road_path",
@@ -96,20 +97,52 @@ export const DATAWRAPPER_IDS = {
   label_place_state: "place_state",
   label_place_country_minor: "place_country_other",
   label_place_country_major: "place_country_major",
+
+  building_3d: "building3d",
 }
 
+const minorBridge = f.line().bridge().cls("minor_road", "minor", "minor_construction")
+
+const majorBridge = f
+  .line()
+  .bridge()
+  .cls(
+    "primary",
+    "primary_construction",
+    "secondary",
+    "secondary_construction",
+    "tertiary",
+    "tertiary_construction",
+    "trunk",
+  )
+
+const hiddenLine = (id, filter) => ({
+  id,
+  type: "line",
+  source: "openmaptiles",
+  "source-layer": "transportation",
+  filter: filter.compile(),
+  layout: { visibility: "none" },
+})
+
+const hiddenBridgeLayers = [
+  hiddenLine("bridge_minor case", minorBridge),
+  hiddenLine("bridge_major_casing", majorBridge),
+  hiddenLine("bridge_minor", minorBridge),
+  hiddenLine("bridge_major", majorBridge),
+]
+
+const hiddenRoadPathCasing = hiddenLine(
+  "road_path-casing",
+  f.line().cls("path", "path_construction", "track", "track_construction"),
+)
 /**
  * Tweaks the Graphics basemap layers to meet Datawrapper's expected structure.
  *
  * The Graphics basemap styles the maps created in Datawrapper's map-maker tool.
- * We share this basemap with Datawrapper, who load it into their tool. They ask
- * that we minimise structural changes (ID changes, new/removed layers, etc) versus
- * their stock basemap (`app/res/graphics-map-style.json`).
- *
- * This function tries its best to fulfill this:
- * * for every basemap layer that has an equivalent in Datawrapper's stock style, we swap its ID
- *   to use Datawrapper's
- * * drop the `iml` provenance stamp
+ * As such, Datawrapper have strict requirements about the layers the style can
+ * contain. We have to sacrifice a few of the intended visual and structural aspects
+ * of our style to meet these requirements.
  *
  * @param {import("../../core/style.js").ResolvedLayer[]} layers
  */
@@ -117,16 +150,27 @@ export function adaptForDatawrapper(layers) {
   const unused = new Set(Object.keys(DATAWRAPPER_IDS))
   const unmapped = []
 
-  const adapted = layers.map((layer) => {
+  const adapted = layers.flatMap((layer) => {
     if (!(layer.id in DATAWRAPPER_IDS)) {
       unmapped.push(layer.id)
-      return stripProvenance(layer)
+      return [stripProvenance(layer)]
     }
 
     unused.delete(layer.id)
-    const target = DATAWRAPPER_IDS[layer.id]
 
-    return stripProvenance(target === null ? layer : { ...layer, id: target })
+    const target = DATAWRAPPER_IDS[layer.id]
+    const renamed = stripProvenance(target === null ? layer : { ...layer, id: target })
+
+    if (target === "waterway-bridge") {
+      // Slot the unused-but-required bridge layers in with the other bridge layers
+      return [renamed, ...hiddenBridgeLayers]
+    }
+
+    if (target === "road_path") {
+      return [hiddenRoadPathCasing, renamed]
+    }
+
+    return [renamed]
   })
 
   if (unmapped.length > 0 || unused.size > 0) {

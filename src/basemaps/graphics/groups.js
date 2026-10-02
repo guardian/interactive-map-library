@@ -102,7 +102,18 @@ const Labels = group("Labels", [WaterLabels, HighwayLabels, PlaceLabels], {
 
 const Basemap = group(
   "Graphics",
-  [s.Background, Land, Reliefs, Water, Roads, Buildings, Bridges, Boundaries, Labels],
+  [
+    s.Background,
+    Land,
+    Reliefs,
+    Water,
+    Roads,
+    Buildings,
+    Bridges,
+    Boundaries,
+    Labels,
+    s.Building3D,
+  ],
   {
     resources,
     document: {

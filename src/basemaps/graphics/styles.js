@@ -11,6 +11,7 @@ const transportation = { ...omt, sourceLayer: "transportation" }
 const aeroway = { ...omt, sourceLayer: "aeroway" }
 const transportationName = { ...omt, sourceLayer: "transportation_name" }
 const place = { ...omt, sourceLayer: "place" }
+const building = { ...omt, sourceLayer: "building" }
 
 const trunkOrUsState = any(f.cls("trunk", "trunk_construction"), f.is("network", "us-state"))
 
@@ -129,10 +130,17 @@ export const styles = {
     filter: f.cls("transit").notTunnel(),
   }).patch((layer) => ({ ...layer, id: layer.id.replace("rail_line", "rail_transit_line") })),
 
-  Building: t.Building.apply({
-    ...omt,
-    sourceLayer: "building",
+  Building: t.Building.apply({ ...building, filter: any(f.gte("layer", 0), f.hasNot("layer")) }),
+
+  Building3D: t.Building3D.apply({
+    ...building,
     filter: any(f.gte("layer", 0), f.hasNot("layer")),
+  }).patchAll({
+    layout: { visibility: "none" },
+    paint: {
+      "fill-extrusion-height": ["get", "render_height"],
+      "fill-extrusion-base": ["get", "render_min_height"],
+    },
   }),
 
   BridgeWaterway: t.BridgeWaterway.apply({ ...waterway, filter: f.line().bridge() }),

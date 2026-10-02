@@ -161,13 +161,11 @@ export const Building = style("Building", () => [
   }),
 ])
 
-export const BuildingExtrusion = style("BuildingExtrusion", () => [
+export const Building3D = style("Building3D", () => [
   merge({
-    id: "building_extrusion",
+    id: "building_3d",
     type: "fill-extrusion",
     minzoom: 14,
-    // Extrusion height/base read from a feature attribute whose name is
-    // schema-specific, so each build supplies them via `patch:` on the layer.
     paint: {
       "fill-extrusion-color": color.taupeBuilding,
       "fill-extrusion-opacity": 0.7,

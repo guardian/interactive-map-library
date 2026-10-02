@@ -1,13 +1,15 @@
 export const color = {
   halo: "#fafafa",
-  overlaySurface: "#ffffff",
   iceFill: "#ffffff",
 
   surface: "#f8f8f8",
 
   landuseResidential: "#f2f2f2",
 
-  buildingFill: "#f1f1f1",
+  aerowayFill: "#ededed",
+  aerowayOutline: "#c8c8c8",
+
+  buildingFill: "#f2f2f2",
   buildingOutline: "#cfcfcf",
 
   boundaryState: "#c8c8c8",

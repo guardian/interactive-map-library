@@ -20,6 +20,10 @@ const Reliefs = group(
 
 const Water = group("Water", [s.WaterWaterway, s.WaterBody, s.WaterOcean], { resources })
 
+const Aeroways = group("Aeroways", [s.AerowayArea, s.AerowayTaxiway, s.AerowayRunway], {
+  resources,
+})
+
 const Tunnels = group("Tunnels", [s.TunnelMinor, s.TunnelMajor, s.TunnelMotorway], { resources })
 
 const SurfaceRoads = group(
@@ -54,7 +58,9 @@ const SurfaceRoads = group(
 
 const Railways = group("Railways", [s.Rail, s.RailTransit], { resources })
 
-const Roads = group("Roads", [s.LandPedestrian, Tunnels, SurfaceRoads, Railways], { resources })
+const Roads = group("Roads", [s.LandPedestrian, Aeroways, Tunnels, SurfaceRoads, Railways], {
+  resources,
+})
 
 const Buildings = group("Buildings", [s.Building], { resources })
 

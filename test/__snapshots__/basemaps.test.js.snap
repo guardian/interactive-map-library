@@ -31,18 +31,10 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
         ],
       ],
       "id": "landuse_residential",
-      "maxzoom": 10,
+      "maxzoom": 11,
       "minzoom": 5,
       "paint": {
-        "fill-color": [
-          "step",
-          [
-            "zoom",
-          ],
-          "#ececec",
-          8,
-          "#f0f0f0",
-        ],
+        "fill-color": "#f2f2f2",
         "fill-opacity": {
           "stops": [
             [
@@ -54,11 +46,11 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
               1,
             ],
             [
-              8,
+              9,
               1,
             ],
             [
-              10,
+              11,
               0,
             ],
           ],
@@ -687,6 +679,163 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           [
             "geometry-type",
           ],
+          "Polygon",
+        ],
+        [
+          "==",
+          [
+            "get",
+            "class",
+          ],
+          "aerodrome",
+        ],
+      ],
+      "id": "aeroway-area",
+      "minzoom": 9,
+      "paint": {
+        "fill-color": "#ededed",
+        "fill-opacity": {
+          "stops": [
+            [
+              9,
+              0.5,
+            ],
+            [
+              10,
+              1,
+            ],
+          ],
+        },
+        "fill-outline-color": "#c8c8c8",
+      },
+      "source": "openmaptiles",
+      "source-layer": "aeroway",
+      "type": "fill",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
+          "LineString",
+        ],
+        [
+          "==",
+          [
+            "get",
+            "class",
+          ],
+          "taxiway",
+        ],
+      ],
+      "id": "aeroway-taxiway",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      "minzoom": 12,
+      "paint": {
+        "line-color": "#dcdcdc",
+        "line-opacity": {
+          "stops": [
+            [
+              12,
+              0.5,
+            ],
+            [
+              13,
+              1,
+            ],
+          ],
+        },
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.5,
+          ],
+          [
+            "zoom",
+          ],
+          12,
+          1,
+          17,
+          10,
+        ],
+      },
+      "source": "openmaptiles",
+      "source-layer": "aeroway",
+      "type": "line",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
+          "LineString",
+        ],
+        [
+          "==",
+          [
+            "get",
+            "class",
+          ],
+          "runway",
+        ],
+      ],
+      "id": "aeroway-runway",
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+      "minzoom": 11,
+      "paint": {
+        "line-color": "#dcdcdc",
+        "line-opacity": {
+          "stops": [
+            [
+              11,
+              0.5,
+            ],
+            [
+              12,
+              1,
+            ],
+          ],
+        },
+        "line-width": [
+          "interpolate",
+          [
+            "exponential",
+            1.5,
+          ],
+          [
+            "zoom",
+          ],
+          11,
+          4,
+          17,
+          50,
+        ],
+      },
+      "source": "openmaptiles",
+      "source-layer": "aeroway",
+      "type": "line",
+    },
+    {
+      "filter": [
+        "all",
+        [
+          "==",
+          [
+            "geometry-type",
+          ],
           "LineString",
         ],
         [
@@ -944,7 +1093,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.19114624505928854,
           13,
-          2.7152542372881356,
+          2.136842105263158,
           18,
           32.421052631578945,
         ],
@@ -1032,7 +1181,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          1.8,
+          1.4,
           18,
           28,
         ],
@@ -1393,7 +1542,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           10,
           1.1555555555555557,
           13,
-          1.4324324324324325,
+          1.1555555555555557,
           18,
           30.6046511627907,
         ],
@@ -1463,7 +1612,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.17889570552147238,
           13,
-          2.502439024390244,
+          1.974358974358974,
           18,
           30.6046511627907,
         ],
@@ -1849,7 +1998,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           10,
           0.8,
           13,
-          1,
+          0.8,
           18,
           28,
         ],
@@ -1923,7 +2072,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          1.8,
+          1.4,
           18,
           28,
         ],
@@ -1983,17 +2132,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       },
       "minzoom": 7,
       "paint": {
-        "line-color": [
-          "step",
-          [
-            "zoom",
-          ],
-          "#dcdcdc",
-          11,
-          "#d0d0d0",
-          13,
-          "#dcdcdc",
-        ],
+        "line-color": "#dcdcdc",
         "line-opacity": {
           "stops": [
             [
@@ -2163,7 +2302,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
           "#dcdcdc",
           10,
           "#d0d0d0",
-          13,
+          12,
           "#dcdcdc",
         ],
         "line-opacity": {
@@ -2443,7 +2582,7 @@ exports[`Graphics basemap > matches its snapshot 1`] = `
       "minzoom": 14,
       "paint": {
         "fill-antialias": true,
-        "fill-color": "#f1f1f1",
+        "fill-color": "#f2f2f2",
         "fill-outline-color": "#cfcfcf",
       },
       "source": "openmaptiles",
@@ -5225,7 +5364,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
         ],
       ],
       "id": "land_residential",
-      "maxzoom": 10,
+      "maxzoom": 11,
       "metadata": {
         "iml": {
           "group": [
@@ -5237,15 +5376,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       },
       "minzoom": 5,
       "paint": {
-        "fill-color": [
-          "step",
-          [
-            "zoom",
-          ],
-          "#ececec",
-          8,
-          "#f0f0f0",
-        ],
+        "fill-color": "#f2f2f2",
         "fill-opacity": {
           "stops": [
             [
@@ -5257,11 +5388,11 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
               1,
             ],
             [
-              8,
+              9,
               1,
             ],
             [
-              10,
+              11,
               0,
             ],
           ],
@@ -5875,9 +6006,22 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "style": "AerowayArea",
         },
       },
-      "minzoom": 14,
+      "minzoom": 9,
       "paint": {
-        "fill-color": "#ffffff",
+        "fill-color": "#ededed",
+        "fill-opacity": {
+          "stops": [
+            [
+              9,
+              0.5,
+            ],
+            [
+              10,
+              1,
+            ],
+          ],
+        },
+        "fill-outline-color": "#c8c8c8",
       },
       "source": "protomaps",
       "source-layer": "landuse",
@@ -5927,7 +6071,19 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       },
       "minzoom": 12,
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": "#dcdcdc",
+        "line-opacity": {
+          "stops": [
+            [
+              12,
+              0.5,
+            ],
+            [
+              13,
+              1,
+            ],
+          ],
+        },
         "line-width": [
           "interpolate",
           [
@@ -5989,9 +6145,21 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "style": "AerowayRunway",
         },
       },
-      "minzoom": 4,
+      "minzoom": 11,
       "paint": {
-        "line-color": "#ffffff",
+        "line-color": "#dcdcdc",
+        "line-opacity": {
+          "stops": [
+            [
+              11,
+              0.5,
+            ],
+            [
+              12,
+              1,
+            ],
+          ],
+        },
         "line-width": [
           "interpolate",
           [
@@ -6270,7 +6438,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.19114624505928854,
           13,
-          2.7152542372881356,
+          2.136842105263158,
           18,
           32.421052631578945,
         ],
@@ -6352,7 +6520,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          1.8,
+          1.4,
           18,
           28,
         ],
@@ -6750,7 +6918,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           10,
           1.1555555555555557,
           13,
-          1.4324324324324325,
+          1.1555555555555557,
           18,
           30.6046511627907,
         ],
@@ -6823,7 +6991,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.17889570552147238,
           13,
-          2.502439024390244,
+          1.974358974358974,
           18,
           30.6046511627907,
         ],
@@ -7234,7 +7402,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           10,
           0.8,
           13,
-          1,
+          0.8,
           18,
           28,
         ],
@@ -7311,7 +7479,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           4,
           0.12,
           13,
-          1.8,
+          1.4,
           18,
           28,
         ],
@@ -7363,17 +7531,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       },
       "minzoom": 7,
       "paint": {
-        "line-color": [
-          "step",
-          [
-            "zoom",
-          ],
-          "#dcdcdc",
-          11,
-          "#d0d0d0",
-          13,
-          "#dcdcdc",
-        ],
+        "line-color": "#dcdcdc",
         "line-opacity": {
           "stops": [
             [
@@ -7550,7 +7708,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
           "#dcdcdc",
           10,
           "#d0d0d0",
-          13,
+          12,
           "#dcdcdc",
         ],
         "line-opacity": {
@@ -7924,7 +8082,7 @@ exports[`Protomaps basemap > matches its snapshot 1`] = `
       "minzoom": 14,
       "paint": {
         "fill-antialias": true,
-        "fill-color": "#f1f1f1",
+        "fill-color": "#f2f2f2",
         "fill-outline-color": "#cfcfcf",
       },
       "source": "protomaps",

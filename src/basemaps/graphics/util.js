@@ -29,6 +29,10 @@ export const DATAWRAPPER_IDS = {
   // Our replacement for their four bridge_* line layers
   land_pedestrian: null,
 
+  aeroway_area: "aeroway-area",
+  aeroway_taxiway: "aeroway-taxiway",
+  aeroway_runway: "aeroway-runway",
+
   // They draw tunnels as a single dashed line; we add real casings
   tunnel_minor_casing: null,
   tunnel_minor: "tunnel_minor",

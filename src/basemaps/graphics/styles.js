@@ -8,6 +8,7 @@ const terrain = { source: "terrain", sourceLayer: "relief" }
 const waterway = { ...omt, sourceLayer: "waterway" }
 const waterLayer = { ...omt, sourceLayer: "water" }
 const transportation = { ...omt, sourceLayer: "transportation" }
+const aeroway = { ...omt, sourceLayer: "aeroway" }
 const transportationName = { ...omt, sourceLayer: "transportation_name" }
 const place = { ...omt, sourceLayer: "place" }
 
@@ -75,6 +76,10 @@ export const styles = {
     ...transportation,
     filter: f.line().tunnel().cls("motorway", "motorway_construction"),
   }),
+
+  AerowayArea: t.AerowayArea.apply({ ...aeroway, filter: f.polygon().cls("aerodrome") }),
+  AerowayTaxiway: t.AerowayTaxiway.apply({ ...aeroway, filter: f.line().cls("taxiway") }),
+  AerowayRunway: t.AerowayRunway.apply({ ...aeroway, filter: f.line().cls("runway") }),
 
   RoadService: t.RoadService.apply({
     ...transportation,

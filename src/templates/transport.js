@@ -22,11 +22,6 @@ const pStructuralCasing = {
   paint: { "line-color": "rgba(0, 0, 0, 0)" },
 }
 
-/** @type {Partial} */
-const pOverlayLine = {
-  paint: { "line-color": color.overlaySurface },
-}
-
 const baseRoadWidth = 6.25
 
 // prettier-ignore
@@ -322,31 +317,31 @@ export const BridgeWaterway = style("BridgeWaterway", () => [
 ])
 
 export const AerowayArea = style("AerowayArea", () => [
-  merge({
+  merge(pFadeIn("fill-opacity", 9, 10), {
     id: "aeroway_area",
     type: "fill",
-    minzoom: 14,
     paint: {
-      "fill-color": color.overlaySurface,
+      "fill-color": color.aerowayFill,
+      "fill-outline-color": color.aerowayOutline,
     },
   }),
 ])
 
 export const AerowayTaxiway = style("AerowayTaxiway", () => [
-  merge(pRoundLine, pOverlayLine, {
+  merge(pRoundLine, pFadeIn("line-opacity", 12, 13), {
     id: "aeroway_taxiway",
-    minzoom: 12,
     paint: {
+      "line-color": color.roadFill,
       "line-width": aerowayWidths.taxiway,
     },
   }),
 ])
 
 export const AerowayRunway = style("AerowayRunway", () => [
-  merge(pRoundLine, pOverlayLine, {
+  merge(pMitreLine, pFadeIn("line-opacity", 11, 12), {
     id: "aeroway_runway",
-    minzoom: 4,
     paint: {
+      "line-color": color.roadFill,
       "line-width": aerowayWidths.runway,
     },
   }),

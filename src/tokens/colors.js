@@ -9,7 +9,7 @@ export const color = {
   aerowayFill: "#ededed",
   aerowayOutline: "#c8c8c8",
 
-  buildingFill: "#f2f2f2",
+  buildingFill: "#f1f1f1",
   buildingOutline: "#cfcfcf",
 
   boundaryState: "#c8c8c8",
@@ -21,7 +21,8 @@ export const color = {
   roadFillStrong: "#d0d0d0",
   roadCasingStrong: "#bbbbbb",
 
-  pathFill: "#d8d8d8",
+  tunnelFill: "#d8d8d8",
+  pathFill: "#e6e6e6",
 
   // boundaryCountry: "#a3a3a3",
   boundaryCountry: "#808080",

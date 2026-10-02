@@ -26,7 +26,7 @@ const baseRoadWidth = 6.25
 
 // prettier-ignore
 const roadWidths = {
-  path:              zInterpExpr({          13: 0.4, 18: 6  }, 1.6),
+  path:              zInterpExpr({          13: 0.3, 18: 3  }, 1.6),
   minor:             zInterpExpr({          13: 0.6, 18: 28 }, 1.8),
   secondaryTertiary: zInterpExpr({ 10: 0.8, 13: 0.8, 18: 28 }, 1.6),
   primary:           zInterpExpr({ 4: 0.12, 13: 1.4, 18: 28 }, 1.4),
@@ -41,10 +41,6 @@ const roadCasing = casing(3.2, 0.5)
 
 const tunnelCasing = casing(6, 0.6)
 
-// `widthExpr` is `["interpolate", ["exponential", base], ["zoom"], zoom, value, ...]`:
-// a 3-element head followed by `zoom, value` stop pairs. We rewrite each stop's
-// value (every second element after the head) through `fn`, leaving the head and
-// zoom keys untouched.
 const casingFor = (fn, widthExpr) =>
   widthExpr.map((item, i) => (i >= 4 && (i - 3) % 2 === 1 ? fn(item) : item))
 
@@ -78,7 +74,7 @@ const aerowayWidths = {
 const majorRoadCasingColor = zStep(color.roadCasing, { 11: color.roadCasingStrong })
 
 export const RoadPath = style("RoadPath", () => [
-  merge(pRoundLine, pFadeIn("line-opacity", 14, 15), {
+  merge(pRoundLine, pFadeIn("line-opacity", 15, 16), {
     id: "road_path",
     minzoom: 14,
     paint: {
@@ -88,9 +84,6 @@ export const RoadPath = style("RoadPath", () => [
   }),
 ])
 
-// Dasharray units are line-widths, so the pattern grows with the road as it
-// widens; halving it at z13 keeps the dashes denser through the mid-to-high
-// zooms rather than spreading into sparse slabs.
 /** @type {Partial} */
 const pTunnelCasing = {
   type: "line",
@@ -105,7 +98,7 @@ const pTunnelCasing = {
 const pTunnelFill = {
   type: "line",
   layout: { "line-cap": "butt", "line-join": "miter" },
-  paint: { "line-color": zStep("#e8e8e8", { 14: color.pathFill }) },
+  paint: { "line-color": zStep("#e8e8e8", { 14: color.tunnelFill }) },
 }
 
 export const TunnelMinor = style("TunnelMinor", () => [
@@ -179,10 +172,13 @@ export const RoadMinor = style("RoadMinor", () => [
 ])
 
 export const RoadSecondaryTertiary = style("RoadSecondaryTertiary", () => [
-  merge(pRoundLine, pStructuralCasing, {
+  merge(pRoundLine, {
     id: "road_secondary_tertiary_casing",
-    minzoom: 6,
-    paint: { "line-width": roadCasings.secondaryTertiary },
+    minzoom: 12,
+    paint: {
+      "line-color": majorRoadCasingColor,
+      "line-width": roadCasings.secondaryTertiary,
+    },
   }),
   merge(pRoundLine, pFadeIn("line-opacity", 10, 12), {
     id: "road_secondary_tertiary",

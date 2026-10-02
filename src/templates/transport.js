@@ -39,7 +39,7 @@ const casing = (cap, ratio) => (w) => w + (cap * w) / (w + cap / ratio)
 
 const roadCasing = casing(3.2, 0.5)
 
-const tunnelCasing = casing(6, 0.6)
+const tunnelOutline = (w) => Math.max(0.25, (casing(6, 0.6)(w) - w) / 2)
 
 const casingFor = (fn, widthExpr) =>
   widthExpr.map((item, i) => (i >= 4 && (i - 3) % 2 === 1 ? fn(item) : item))
@@ -59,10 +59,10 @@ const tunnelWidths = {
   motorway: roadWidths.motorway,
 }
 
-const tunnelCasings = {
-  minor: casingFor(tunnelCasing, tunnelWidths.minor),
-  major: casingFor(tunnelCasing, tunnelWidths.major),
-  motorway: casingFor(tunnelCasing, tunnelWidths.motorway),
+const tunnelOutlines = {
+  minor: casingFor(tunnelOutline, tunnelWidths.minor),
+  major: casingFor(tunnelOutline, tunnelWidths.major),
+  motorway: casingFor(tunnelOutline, tunnelWidths.motorway),
 }
 
 const aerowayWidths = {
@@ -84,62 +84,47 @@ export const RoadPath = style("RoadPath", () => [
   }),
 ])
 
+// `line-gap-width` draws the line as two strokes either side of a transparent gap
+// the width of the road. Where tunnels are drawn above the surface roads, a road
+// that crosses over a tunnel still shows through the gap.
 /** @type {Partial} */
-const pTunnelCasing = {
+const pTunnelOutline = {
   type: "line",
   layout: { "line-cap": "butt", "line-join": "miter" },
   paint: {
-    "line-color": color.roadCasing,
-    "line-dasharray": zStep([0.8, 0.4], { 13: [0.4, 0.2] }),
+    "line-color": color.tunnelOutline,
+    "line-dasharray": [4, 2],
   },
 }
 
-/** @type {Partial} */
-const pTunnelFill = {
-  type: "line",
-  layout: { "line-cap": "butt", "line-join": "miter" },
-  paint: { "line-color": zStep("#e8e8e8", { 14: color.tunnelFill }) },
-}
-
 export const TunnelMinor = style("TunnelMinor", () => [
-  merge(pTunnelCasing, pFadeIn("line-opacity", 12, 13), {
-    id: "tunnel_minor_casing",
-    minzoom: 12,
-    paint: { "line-width": tunnelCasings.minor },
-  }),
-  merge(pTunnelFill, pFadeIn("line-opacity", 12, 13), {
+  merge(pTunnelOutline, pFadeIn("line-opacity", 12, 13), {
     id: "tunnel_minor",
     minzoom: 12,
     paint: {
-      "line-width": tunnelWidths.minor,
+      "line-width": tunnelOutlines.minor,
+      "line-gap-width": tunnelWidths.minor,
     },
   }),
 ])
 
 export const TunnelMajor = style("TunnelMajor", () => [
-  merge(pTunnelCasing, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
-    id: "tunnel_major_casing",
-    paint: { "line-width": tunnelCasings.major },
-  }),
-  merge(pTunnelFill, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
+  merge(pTunnelOutline, pFadeIn("line-opacity", 8, 10, { min: 0.25 }), {
     id: "tunnel_major",
     paint: {
-      "line-width": tunnelWidths.major,
+      "line-width": tunnelOutlines.major,
+      "line-gap-width": tunnelWidths.major,
     },
   }),
 ])
 
 export const TunnelMotorway = style("TunnelMotorway", () => [
-  merge(pTunnelCasing, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
-    id: "tunnel_motorway_casing",
-    minzoom: 5,
-    paint: { "line-width": tunnelCasings.motorway },
-  }),
-  merge(pTunnelFill, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
+  merge(pTunnelOutline, pFadeIn("line-opacity", 5, 10, { min: 0.25 }), {
     id: "tunnel_motorway",
     minzoom: 5,
     paint: {
-      "line-width": tunnelWidths.motorway,
+      "line-width": tunnelOutlines.motorway,
+      "line-gap-width": tunnelWidths.motorway,
     },
   }),
 ])
@@ -270,29 +255,25 @@ export const RoadMotorway = style("RoadMotorway", () => [
   }),
 ])
 
-/** @type {Partial} */
-const pRailwayBase = merge(pFadeIn("line-opacity", 13, 14), {
-  type: "line",
-  paint: {
-    "line-color": color.railway,
-    "line-width": zStep(0.6, { 15: 1 }),
-  },
-})
-
-/** @type {Partial} */
-const pRailwayDash = merge(pFadeIn("line-opacity", 13, 14), {
-  type: "line",
-  layout: { "line-cap": "butt" },
-  paint: {
-    "line-color": color.railway,
-    "line-width": zStep(3, { 15: 4.5 }),
-    "line-dasharray": [0.3, 4],
-  },
-})
-
 export const Rail = style("Rail", () => [
-  merge(pRailwayBase, { id: "rail_line" }),
-  merge(pRailwayDash, { id: "rail_line_dash" }),
+  merge(pFadeIn("line-opacity", 13, 14), {
+    id: "rail_line_dash",
+    type: "line",
+    layout: { "line-cap": "butt" },
+    paint: {
+      "line-color": color.railway,
+      "line-width": zStep(3, { 15: 4.5 }),
+      "line-dasharray": [0.3, 4],
+    },
+  }),
+  merge(pFadeIn("line-opacity", 13, 14), {
+    id: "rail_line",
+    type: "line",
+    paint: {
+      "line-color": color.railway,
+      "line-width": zStep(0.6, { 15: 1 }),
+    },
+  }),
 ])
 
 export const BridgeWaterway = style("BridgeWaterway", () => [

@@ -3,8 +3,6 @@ import { f } from "../../filter/openmaptiles.js"
 /**
  * Maps this basemap's layer ids onto the ids in Datawrapper's original map style
  * (`app/res/graphics-map-style.json`).
- *
- * `null` marks a layer we introduced that has no counterpart in their document.
  */
 export const DATAWRAPPER_IDS = {
   background: "background",
@@ -28,30 +26,23 @@ export const DATAWRAPPER_IDS = {
   water_ocean_outline: "ocean-outline",
   water_ocean: "ocean",
 
-  // Bridge decks, which they don't draw
-  land_pedestrian: null,
-
   road_path: "road_path",
 
   aeroway_area: "aeroway-area",
   aeroway_taxiway: "aeroway-taxiway",
   aeroway_runway: "aeroway-runway",
 
-  // They draw tunnels as a single dashed line; we add real casings
-  tunnel_minor_casing: null,
   tunnel_minor: "tunnel_minor",
-  tunnel_major_casing: null,
   tunnel_major: "tunnel_major",
-  tunnel_motorway_casing: null,
   tunnel_motorway: "tunnel_motorway",
 
   // They fold service roads into road_minor-casing.
-  road_service_casing: null,
+  road_service_casing: "road_service_casing",
   road_minor_casing: "road_minor-casing",
   road_secondary_tertiary_casing: "road_secondary_tertiary-casing",
 
   // They have road_primary but no casing for it
-  road_primary_casing: null,
+  road_primary_casing: "road_primary_casing",
   road_trunk_casing: "road_trunk-casing",
   road_motorway_ramp_casing: "road_major_motorway_ramp-casing",
   road_motorway_casing: "road_major_motorway-casing",
@@ -63,10 +54,12 @@ export const DATAWRAPPER_IDS = {
   road_motorway_ramp: "road_major_motorway_ramp",
   road_motorway: "road_major_motorway",
 
+  // HACK: Datawrapper has two identical layers for railways: "railway" and "railway-transit". In
+  // our style templates, we draw railways with a dash layer on top (to give the impression of
+  // sleepers), which Datawrapper doesn't do... so we sneak this dash layer in with the name
+  // "railway-transit".
+  rail_line_dash: "railway-transit",
   rail_line: "railway",
-  rail_line_dash: null,
-  rail_transit_line: "railway-transit",
-  rail_transit_line_dash: null,
 
   building: "building",
 
@@ -76,13 +69,10 @@ export const DATAWRAPPER_IDS = {
   boundary_state: "boundary_state",
 
   // We split disputed boundaries out of their boundary_country
-  boundary_disputed: null,
+  boundary_disputed: "boundary_disputed",
   boundary_country: "boundary_country",
 
-  // They label no waterways, and label water only as lines
-  label_water_line_minor: null,
-  label_water_line_major: "water_name",
-  label_water_point: null,
+  label_water_point: "water_name",
 
   label_road_other: "highway_name_other",
   label_road_motorway: "highway_name_motorway",
@@ -159,7 +149,7 @@ export function adaptForDatawrapper(layers) {
     unused.delete(layer.id)
 
     const target = DATAWRAPPER_IDS[layer.id]
-    const renamed = stripProvenance(target === null ? layer : { ...layer, id: target })
+    const renamed = stripProvenance({ ...layer, id: target })
 
     if (target === "waterway-bridge") {
       // Slot the unused-but-required bridge layers in with the other bridge layers

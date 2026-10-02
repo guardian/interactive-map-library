@@ -30,8 +30,7 @@ const majorTunnel = f
   )
 
 // The bound styles this basemap composes, each keyed by the name consumers import
-// it under. A style applied twice appears under two keys (Rail / RailTransit)
-// but keeps its root iml.style, so refinement still treats them as one style.
+// it under.
 export const styles = {
   Background: t.Background.apply(),
 
@@ -71,7 +70,6 @@ export const styles = {
   WaterBody: t.WaterBody.apply({ ...waterLayer, filter: f.polygon().clsNot("swimming_pool") }),
   WaterOcean: t.WaterOcean.apply({ ...waterLayer, filter: f.cls("ocean") }),
 
-  LandPedestrian: t.LandPedestrian.apply({ ...transportation, filter: f.polygon().cls("bridge") }),
 
   RoadPath: t.RoadPath.apply({
     ...transportation,
@@ -124,11 +122,7 @@ export const styles = {
     filter: f.line().notTunnel().cls("motorway", "motorway_construction").notRamp(),
   }),
 
-  Rail: t.Rail.apply({ ...transportation, filter: f.cls("rail").notTunnel() }),
-  RailTransit: t.Rail.apply({
-    ...transportation,
-    filter: f.cls("transit").notTunnel(),
-  }).patch((layer) => ({ ...layer, id: layer.id.replace("rail_line", "rail_transit_line") })),
+  Rail: t.Rail.apply({ ...transportation, filter: f.cls("rail", "transit").notTunnel() }),
 
   Building: t.Building.apply({ ...building, filter: any(f.gte("layer", 0), f.hasNot("layer")) }),
 
@@ -163,15 +157,6 @@ export const styles = {
     filter: f.is("admin_level", 2).is("maritime", 0).is("disputed", 1),
   }),
 
-  LabelWaterLineMinor: t.LabelWaterLineMinor.apply({
-    ...waterway,
-    filter: f.line().notTunnel().clsNot("stream"),
-  }),
-  LabelWaterLineMajor: t.LabelWaterLineMajor.apply({
-    ...omt,
-    sourceLayer: "water_name",
-    filter: f.line(),
-  }),
   LabelWaterPoint: t.LabelWaterPoint.apply({
     ...omt,
     sourceLayer: "water_name",

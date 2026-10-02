@@ -21,7 +21,7 @@ export const color = {
   roadFillStrong: "#d0d0d0",
   roadCasingStrong: "#bbbbbb",
 
-  tunnelFill: "#d8d8d8",
+  tunnelOutline: "#b0b0b0",
   pathFill: "#e6e6e6",
 
   // boundaryCountry: "#a3a3a3",

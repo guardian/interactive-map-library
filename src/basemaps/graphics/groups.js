@@ -24,8 +24,6 @@ const Aeroways = group("Aeroways", [s.AerowayArea, s.AerowayTaxiway, s.AerowayRu
   resources,
 })
 
-const Tunnels = group("Tunnels", [s.TunnelMinor, s.TunnelMajor, s.TunnelMotorway], { resources })
-
 const SurfaceRoads = group(
   "SurfaceRoads",
   [
@@ -40,13 +38,13 @@ const SurfaceRoads = group(
   {
     resources,
     post: [
-      // RoadService is a transparent structural casing drawn beneath every fill, so
-      // it stays at the front; the paved roads that follow are partitioned
-      // casings-first so a later road's casing never paints over an earlier road's
-      // fill at a junction.
+      // Re-arrange road layers so all casings are drawn first, then all fill layers are drawn.
+      // This makes the different road types appear conjoined at junctions.
+      // Service roads are excluded from this effect, and always drawn underneath.
       (layers) => {
         const isService = (layer) => layer.metadata?.iml?.style === "RoadService"
         const isCasing = (layer) => layer.id.endsWith("_casing")
+
         const service = layers.filter(isService)
         const paved = layers.filter((layer) => !isService(layer))
 
@@ -56,11 +54,21 @@ const SurfaceRoads = group(
   },
 )
 
-const Railways = group("Railways", [s.Rail, s.RailTransit], { resources })
+const Railways = group("Railways", [s.Rail], { resources })
 
-const Roads = group("Roads", [s.LandPedestrian, s.RoadPath, Aeroways, Tunnels, SurfaceRoads, Railways], {
-  resources,
-})
+const Roads = group(
+  "Roads",
+  [
+    s.RoadPath,
+    s.TunnelMinor,
+    Aeroways,
+    SurfaceRoads,
+    s.TunnelMajor,
+    s.TunnelMotorway,
+    Railways,
+  ],
+  { resources },
+)
 
 const Buildings = group("Buildings", [s.Building], { resources })
 
@@ -68,11 +76,7 @@ const Bridges = group("Bridges", [s.BridgeWaterway], { resources })
 
 const Boundaries = group("Boundaries", [s.BoundaryState, s.BoundaryCountry, s.BoundaryDisputed], { resources })
 
-const WaterLabels = group(
-  "WaterLabels",
-  [s.LabelWaterLineMinor, s.LabelWaterLineMajor, s.LabelWaterPoint],
-  { resources },
-)
+const WaterLabels = group("WaterLabels", [s.LabelWaterPoint], { resources })
 
 const HighwayLabels = group("HighwayLabels", [s.LabelRoadOther, s.LabelRoadMotorway], {
   resources,

@@ -40,18 +40,17 @@ import { applyResources, applyLayers, glStyle } from "../adapters/maplibre.js"
  */
 
 /**
- * A tagged node passed to a {@link Group#remove} predicate: a group node carries
- * its `Group`, a style leaf its `Builder` handle. `kind` discriminates the two.
+ * A group or style in the tree, as passed to a {@link Matcher} function.
  *
  * @typedef {{ kind: "group", name: string | undefined, group: Group }
- *   | { kind: "style", name: string | undefined, style: Builder }} RemovableNode
+ *   | { kind: "style", name: string | undefined, style: Builder }} MatchNode
  */
 
 /**
- * A {@link Group#remove} matcher: a name (matching a group or style anywhere in
- * the subtree) or a predicate over a {@link RemovableNode}.
+ * Chooses nodes for {@link Group#remove} or {@link Group#pick}. A name matches
+ * any group or style with that name, anywhere in the tree.
  *
- * @typedef {string | ((node: RemovableNode) => boolean)} RemoveMatcher
+ * @typedef {string | ((node: MatchNode) => boolean)} Matcher
  */
 
 /**
@@ -172,7 +171,7 @@ export class Group {
    * while the tree shape is kept (an emptied group stays, contributing no layers).
    *
    * A matcher is a name — matching a group or a style anywhere in the subtree — or
-   * a predicate over a tagged node ({@link RemovableNode}). A name matching neither
+   * a predicate over a tagged node ({@link MatchNode}). A name matching neither
    * a group nor a style throws, guarding against typos.
    *
    * @example
@@ -183,9 +182,37 @@ export class Group {
    * Roads.remove((node) => node.kind === "style" && node.name.startsWith("Place"))
    * ```
    *
-   * @param {...RemoveMatcher} matchers
+   * @param {...Matcher} matchers
    */
   remove(...matchers) {
+    const { groupMatches, styleMatches } = this.#compileMatchers(matchers, "remove")
+
+    return this.#removeMatching(groupMatches, styleMatches)
+  }
+
+  /**
+   * A new group with only the matched groups and styles. The groups around a
+   * pick are kept, so its provenance, theme and post-processors still apply.
+   *
+   * @example
+   * ```js
+   * Graphics.pick("Water", "RoadMotorway")    // Water's subtree + motorways inside Roads
+   * Graphics.pick((node) => node.kind === "style" && node.name.startsWith("Label"))
+   * ```
+   *
+   * @param {...Matcher} matchers
+   */
+  pick(...matchers) {
+    const { groupMatches, styleMatches } = this.#compileMatchers(matchers, "pick")
+
+    return this.#pickMatching(groupMatches, styleMatches)
+  }
+
+  /**
+   * @param {Matcher[]} matchers
+   * @param {string} verb
+   */
+  #compileMatchers(matchers, verb) {
     const names = matchers.filter((matcher) => typeof matcher === "string")
     const predicates = matchers.filter((matcher) => typeof matcher === "function")
 
@@ -196,12 +223,14 @@ export class Group {
 
     for (const name of names) {
       if (!present.has(name)) {
-        throw new Error(`no group or style named "${name}" to remove`)
+        throw new Error(`no group or style named "${name}" to ${verb}`)
       }
     }
 
+    /** @type {Set<string | undefined>} */
     const nameSet = new Set(names)
 
+    /** @param {Group} group */
     const groupMatches = (group) => {
       if (nameSet.has(group.name)) {
         return true
@@ -210,6 +239,7 @@ export class Group {
       return predicates.some((pred) => pred({ kind: "group", name: group.name, group }))
     }
 
+    /** @param {Builder} style */
     const styleMatches = (style) => {
       if (nameSet.has(style.name)) {
         return true
@@ -218,7 +248,7 @@ export class Group {
       return predicates.some((pred) => pred({ kind: "style", name: style.name, style }))
     }
 
-    return this.#removeMatching(groupMatches, styleMatches)
+    return { groupMatches, styleMatches }
   }
 
   /**
@@ -227,9 +257,10 @@ export class Group {
    *
    * @param {(group: Group) => boolean} groupMatches
    * @param {(style: Builder) => boolean} styleMatches
+   * @returns {Group}
    */
   #removeMatching(groupMatches, styleMatches) {
-    const children = this.children.flatMap((child) => {
+    const children = this.children.flatMap(/** @returns {GroupChild[]} */ (child) => {
       if (child instanceof Group) {
         if (groupMatches(child)) {
           return []
@@ -243,6 +274,37 @@ export class Group {
       }
 
       return [child]
+    })
+
+    return new Group(this.name, children, this.config)
+  }
+
+  /**
+   * @param {(group: Group) => boolean} groupMatches
+   * @param {(style: Builder) => boolean} styleMatches
+   * @returns {Group}
+   */
+  #pickMatching(groupMatches, styleMatches) {
+    const children = this.children.flatMap(/** @returns {GroupChild[]} */ (child) => {
+      if (!(child instanceof Group)) {
+        if (styleMatches(child)) {
+          return [child]
+        }
+
+        return []
+      }
+
+      if (groupMatches(child)) {
+        return [child]
+      }
+
+      const picked = child.#pickMatching(groupMatches, styleMatches)
+
+      if (picked.children.length === 0) {
+        return []
+      }
+
+      return [picked]
     })
 
     return new Group(this.name, children, this.config)

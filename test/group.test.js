@@ -158,6 +158,19 @@ describe("remove", () => {
   })
 })
 
+describe("pick", () => {
+  it("keeps matched groups and styles, with the groups around them", () => {
+    const g = buildTree().pick("Railways", "Label")
+
+    expect(ids(g)).toEqual(["railway", "label"])
+    expect(g.describe()).toBe("Root\n  Roads\n    Railways\n      Road\n  Labels\n    Label")
+  })
+
+  it("throws on a name matching neither a group nor a style", () => {
+    expect(() => buildTree().pick("Nope")).toThrow(/no group or style named "Nope" to pick/)
+  })
+})
+
 describe("provenance invariant", () => {
   it("every group name in iml.group is a named group still in the tree", () => {
     const tree = buildTree()

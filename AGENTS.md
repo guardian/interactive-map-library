@@ -92,11 +92,10 @@ Refinement returns a new group (immutable, chainable):
   === mine`). A name matching neither a group nor a style throws (typo guard). The
   name axis is coarse: `remove("Rail")` drops every `Rail` variant, including
   re-applications under fresh ids.
+- **`.pick(...matchers)`** — the opposite of `remove`: keeps only the matched
+  groups and styles, plus the groups around them.
 - **`.append(...children)` / `.prepend(...children)`** — add the consumer's own
   children. `group([...])` composition is the other additive primitive.
-
-To keep only a few groups, compose a new root from the exported ones rather than
-subtracting.
 
 ### Discovery
 

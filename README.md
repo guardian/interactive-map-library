@@ -8,14 +8,3 @@ A collection of resources and tools for creating beautiful Visuals-standard maps
 
 > [!WARNING]  
 > This project is in an alpha stage. Expect frequent breaking changes.
-
-## Using the library
-
-This library provides different _tiers_ of resources: full GL style files down to individual design
-tokens. Usage instructions for each tier are detailed below.
-
-### GL style files
-
-Two complete GL style files are...
-
-### Style snippets
